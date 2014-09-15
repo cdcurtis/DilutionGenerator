@@ -1,0 +1,7 @@
+digraph G {
+	blood -> M1
+	water -> M1
+	M1 -> S1
+	S1 -> waste
+	S1 -> output
+}

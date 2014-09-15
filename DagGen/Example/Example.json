@@ -1,0 +1,18 @@
+{ "dag": {
+	 "vertices": [
+		{ "Type" : 0, "Label" : "blood", "ID" : 0},
+		{ "Type" : 0, "Label" : "water", "ID" : 1},
+		{ "Type" : 1, "Label" : "M1", "ID" : 2},
+		{ "Type" : 2, "Label" : "S1", "ID" : 3},
+		{ "Type" : 3, "Label" : "waste", "ID" : 4},
+		{ "Type" : 4, "Label" : "output", "ID" : 5}
+	],
+	 "edges": [
+		{"Parent" : 0, "Child" : 2},
+		{"Parent" : 1, "Child" : 2},
+		{"Parent" : 2, "Child" : 3},
+		{"Parent" : 3, "Child" : 4},
+		{"Parent" : 3, "Child" : 5}
+	]
+	}
+}

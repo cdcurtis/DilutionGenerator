@@ -13,6 +13,7 @@
 #include "Wara/Headers/Wara.h"
 #include "GDA/Headers/GDA.h"
 #include "CoDOS/Headers/CoDOS.h"
+#include "NRT_ISI/Headers/NRT_ISI.h"
 
 int main (int argc, char* argv [])
 {
@@ -24,6 +25,7 @@ int main (int argc, char* argv [])
 	*dag = Wara::RunWara(argc,argv);
 	*dag = GDA::RunGDA(argc, argv);
 	*dag = CoDOS::RunCoDOS(argc,argv);
+	*dag = NRT_ISI::RunNRT_ISI(argc,argv);
 
 	cout<<"hi";
 	return 0;

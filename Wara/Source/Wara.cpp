@@ -902,3 +902,102 @@ DagGen Wara :: RunWara(int argc, char* argv[])
 	return dag;
 }
 
+vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen &dag, vector < int > argv)
+{
+	Remia remia;
+	vector < node* > F;	//Forest
+	vector < CV* > PCV;	//Vector to hold all the PCV's.
+
+	int num, deno;
+	node *T;
+	stack< node * > tree_unique_nodes;
+
+	deno = argv[argv.size()-1];
+	lb = argv[0];
+	ub = argv[argv.size()-2];
+	for(int i = 0; i<argv.size()-1; i++)
+	{
+		num = argv[i];
+		CV* t_cv = new CV(num,deno,(long double)num/(long double)deno);	//prime concentration value
+		PCV.push_back(t_cv);
+	}
+
+	for(int i=0; i<PCV.size();i++)
+	{
+		node *root = new node();
+		root = remia.BuildMixingTree(PCV[i]);
+		SMT.push_back(root);
+	}
+
+
+	Maximal_Droplet_Sharing();
+
+	Droplet_Replacement(SMT);
+
+	remia.BuilEDTforest(SMT, F);
+
+	uid = remia.UID;	//Continue the UID from where remia left
+
+	stack< Vertex *> vertices;
+	for(int i=0; i<F.size();i++)
+	{
+		T = F[i];
+		convertDataStructureForPCV(T, dag, vertices, T);
+	}
+
+	for(int i=0; i<SMT.size();i++)
+	{
+		if(SMT[i]->left == NULL && SMT[i]->right == NULL)
+		{
+			Vertex *vs;
+			for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
+			{
+				if(SMT[i]->dag_uid.top() == dummy.top()->uniqueID)
+				{
+					vs = dummy.top();
+					break;
+				}
+			}
+			if(SMT[i]->status == both_output)
+			{
+				if(SMT[i]->cv->num == lb)
+				{
+					lb_vertices.push_back(vs);
+					lb_vertices.push_back(vs);
+				}
+				else if(SMT[i]->cv->num == ub)
+				{
+					ub_vertices.push_back(vs);
+					ub_vertices.push_back(vs);
+				}
+			}
+			else
+			{
+				if(SMT[i]->cv->num == lb)
+					lb_vertices.push_back(vs);
+				else if(SMT[i]->cv->num == ub)
+					ub_vertices.push_back(vs);
+			}
+		}
+		else
+		{
+			T = SMT[i];
+			while(T != NULL)
+			{
+				if(!checkIfUniqueNodeInStack(tree_unique_nodes, T))
+					tree_unique_nodes.push(T);
+				T = T->right;
+			}
+			tree_unique_nodes.pop();
+		}
+	}
+
+	convertDataStructureForMixingTree(tree_unique_nodes, dag, vertices, PCV);
+
+	vector < vector < Vertex* > > boundary_vertices;
+	boundary_vertices.push_back(lb_vertices);
+	boundary_vertices.push_back(ub_vertices);
+
+	return boundary_vertices;
+}
+

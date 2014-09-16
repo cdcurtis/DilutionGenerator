@@ -9,8 +9,12 @@ private:
 	bool found;	//flag being used to find the parent node for a given node. Part of maximal droplet shraing function logic
 	int uid;
 	string b, r, w, m, s, o;
+		vector < node* > SMT;	//Forest to hold the mixing tree for each PCV.
+	int lb, ub;	//lower and upper boundary CF's from ISI_NCKU
+	vector < Vertex* > lb_vertices;
+	vector < Vertex* > ub_vertices;
+public:
 	int b_count, r_count, w_count, m_count, s_count, o_count;
-	vector < node* > SMT;	//Forest to hold the mixing tree for each PCV.
 
 	Wara();
 	node* Find_parent(node *T, node *p, node *m);
@@ -33,6 +37,7 @@ private:
 	Vertex* getCorrespondingVertex(node *T, stack< Vertex *>& vertices, VertexType type);
 	bool checkIfUniqueNodeInStack(stack< node * > Q, node *n);
 	void convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, stack< Vertex *>& vertices, vector < CV* > PCV);
-public:
+	vector < vector < Vertex* > > WARA_MAIN(DagGen &dag, vector < int > argv);
+
 	static DagGen RunWara(int argc, char* argv[]);
 };

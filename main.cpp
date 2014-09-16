@@ -12,6 +12,7 @@
 #include "Gorma/Headers/Gorma.h"
 #include "Wara/Headers/Wara.h"
 #include "GDA/Headers/GDA.h"
+#include "CoDOS/Headers/CoDOS.h"
 
 int main (int argc, char* argv [])
 {
@@ -22,6 +23,7 @@ int main (int argc, char* argv [])
 	*dag = Gorma::RunGorma(argc, argv);
 	*dag = Wara::RunWara(argc,argv);
 	*dag = GDA::RunGDA(argc, argv);
+	*dag = CoDOS::RunCoDOS(argc,argv);
 
 	cout<<"hi";
 	return 0;

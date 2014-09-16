@@ -2,6 +2,9 @@
 
 Wara :: Wara()
 {
+	found = false;
+	uid=-1;//cdcurtis
+
 	b = "buffer"; r = "reactant"; w = "waste"; m = "mix"; s = "split"; o = "output";
 	b_count = 1; r_count = 1; w_count = 1; m_count = 1; s_count = 1; o_count = 1;
 }
@@ -654,6 +657,7 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& 
 		node *parent = Find_parent(root, NULL, T);
 		for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
 		{
+			vr = NULL; //cdcurtis
 			if(parent->dag_uid.top() == dummy.top()->uniqueID)
 			{
 				vr = dummy.top();
@@ -692,6 +696,7 @@ Vertex* Wara :: getCorrespondingVertex(node *T, stack< Vertex *>& vertices, Vert
 				return dummy.top();
 		}
 	}
+	return NULL;
 }
 
 void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, stack< Vertex *>& vertices, vector < CV* > PCV)

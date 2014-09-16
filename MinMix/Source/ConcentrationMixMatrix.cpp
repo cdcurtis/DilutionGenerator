@@ -168,7 +168,10 @@ TreeRoot combineMinMixLastLevel (vector<LeafNode> newLeafNodes, vector<LeafNode>
         else if(oldMixTrees.size()==1)
    		    ret = oldMixTrees[0];         
         else
+        {
             cout<<"Error Occured: NoMixTreeFound.\n"; 
+            ret = NULL;
+        }
     }
 	return TreeRoot(ret);
 }

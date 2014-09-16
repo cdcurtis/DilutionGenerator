@@ -11,6 +11,7 @@
 #include "Remia/Headers/Remia.h"
 #include "Gorma/Headers/Gorma.h"
 #include "Wara/Headers/Wara.h"
+#include "GDA/Headers/GDA.h"
 
 int main (int argc, char* argv [])
 {
@@ -20,6 +21,7 @@ int main (int argc, char* argv [])
 	*dag = Remia::RunRemia(argc, argv);
 	*dag = Gorma::RunGorma(argc, argv);
 	*dag = Wara::RunWara(argc,argv);
+	*dag = GDA::RunGDA(argc, argv);
 
 	cout<<"hi";
 	return 0;

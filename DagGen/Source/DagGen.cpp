@@ -358,3 +358,112 @@ void DagGen::outputEdges() const
 	return;
 }
 
+vector<Edge*> DagGen::findOutgoingEdges(int Vid) const
+{
+	//TODO:: deprecate this and use find children
+	bool Debug = false;
+	vector<Edge*> curEdgeOut;
+	vector<Edge*> edges = this->edges;
+	for(unsigned e = 0; e < edges.size(); e++)
+	{
+		if(edges.at(e)->parent == Vid)//found outgoing edge
+		{
+			curEdgeOut.push_back(edges.at(e));
+		}
+	}
+	if(Debug)
+	{
+		cout<<"outgoing edges are: "<<flush<<endl;
+		for(unsigned i = 0; i < curEdgeOut.size(); i++)
+		{
+			cout<<"("<<curEdgeOut.at(i)->parent<<", "<<curEdgeOut.at(i)->child<<")"<<flush<<endl;
+		}
+	}
+	return curEdgeOut;
+}
+
+vector<Edge*> DagGen::findIncomingEdges(int Vid) const
+{
+	//TODO:: deprecate this and use find parents
+	bool Debug = true;
+	vector<Edge*> curEdgeIn;
+	vector<Edge*> edges = this->edges;
+	for(unsigned e = 0; e < edges.size(); e++)
+	{
+		if(edges.at(e)->parent == Vid)
+		{
+			curEdgeIn.push_back(edges.at(e));
+		}
+	}
+	if(Debug){cout<<"incoming edges are: "<<flush<<endl;
+	for(unsigned i = 0; i < curEdgeIn.size(); i++)
+	{
+		cout<<"("<<curEdgeIn.at(i)->parent<<", "<<curEdgeIn.at(i)->child<<")"<<flush<<endl;
+	}
+	}
+	return curEdgeIn;
+}
+
+int DagGen::calcNumWaste() const
+{
+	int numWaste = 0;
+	for(unsigned i = 0; i < vertices.size(); i++)
+	{
+		if(vertices.at(i)->label.find("waste") != std::string::npos)
+		{
+			numWaste++;
+		}
+	}
+	return numWaste;
+}
+
+int DagGen::calcNumMixSplits() const
+{
+	int numMS = 0;
+
+	for(unsigned i = 0; i < vertices.size(); i++)
+	{
+		if(vertices.at(i)->label.find("mix") != std::string::npos)
+		{
+			numMS++;
+		}
+	}
+	return numMS;
+}
+
+void DagGen :: removeVertex(int Vid)
+{
+	bool Debug = false;
+	//TODO:://make sure that IDS is decremented on removal of vertex
+	delete (vertices[Vid]);
+	this->IDs = this->IDs-1;
+	vertices.erase(vertices.begin()+Vid, vertices.begin()+Vid+1);
+
+	for(unsigned i = 0; i < vertices.size(); i++)
+	{
+		if (vertices.at(i)->uniqueID > Vid)
+		{
+			if(Debug){cout<<"vertex to be decrememnted before: "<<vertices.at(i)->uniqueID<<", after = "<<vertices.at(i)->uniqueID-1<<flush<<endl;}
+			for(unsigned j = 0; j < edges.size(); j++)
+			{
+				if(edges.at(j)->parent == edges.at(j)->child)
+				{
+					//cout<<"j = "<<j<<", edges size is: "<<edges.size()<<flush<<endl;
+					//cout<<"wtf how did I get a self pointing edge?"<<"("<<edges.at(j)->parent<<","<<edges.at(j)->child<<flush<<endl;
+				}
+				if(edges.at(j)->parent == vertices.at(i)->uniqueID)
+				{
+					if(Debug){cout<<"edge"<<j<<" decremented(par) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<flush<<endl;}
+					edges.at(j)->parent = edges.at(j)->parent-1;
+				}
+				if(edges.at(j)->child == vertices.at(i)->uniqueID)
+				{
+					if(Debug){cout<<"edge"<<j<<" decremented(child) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<flush<<endl;}
+					edges.at(j)->child = edges.at(j)->child-1;
+				}
+			}
+			vertices.at(i)->uniqueID--;
+		}
+	}
+	return;
+}

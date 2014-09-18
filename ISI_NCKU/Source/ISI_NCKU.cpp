@@ -3,6 +3,7 @@
 
 ISI_NCKU :: ISI_NCKU()
 {
+	count=-1;
 	UID = 0;
 	k = -1;
 	lb_index = 1;

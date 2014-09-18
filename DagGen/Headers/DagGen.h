@@ -47,6 +47,7 @@ public:
 	}
 	
 	Vertex * addVertex(VertexType, std :: string );
+	void removeVertex(int Vid);
 	bool isEmpty();
 	bool isValidSingleReactantDilution(std :: vector<double>, int);
 	//bool isValidMultipleReactantDilution(std :: vector<int>);
@@ -67,7 +68,12 @@ public:
 	std :: vector <Vertex*> & Vertices();
 	std :: vector <Edge*> & Edges();
 	std :: string & DagName();
+	std::vector<Edge*> findOutgoingEdges(int Vid) const;
+	std::vector<Edge*> findIncomingEdges(int Vid) const;
 	int getID() const;
+
+	int calcNumWaste() const;
+	int calcNumMixSplits() const;
 
 //	I/O
 	void outputVertices() const;

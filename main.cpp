@@ -23,16 +23,18 @@ int main (int argc, char* argv [])
 	DagGen *dag = NULL;
 
 	*dag = MinMix::RunMinMix(argc, argv);
-	*dag = Remia::RunRemia(argc, argv);
+	dag->generateDotyGraph("foo.txt");
+	dag->generateDotyGraph();
+	/**dag = Remia::RunRemia(argc, argv);
 	*dag = Gorma::RunGorma(argc, argv);
 	*dag = Wara::RunWara(argc,argv);
 	*dag = GDA::RunGDA(argc, argv);
 	*dag = CoDOS::RunCoDOS(argc,argv);
 	*dag = NRT_ISI::RunNRT_ISI(argc,argv);
-	*dag = ISI_NCKU::RunNCKU(argc,argv)
+	*dag = ISI_NCKU::RunNCKU(argc,argv);
 	*dag = GriffDilute::RunGriffith(argc, argv);
 	*dag = RoyDilute::RoyDilute_Process(argc,argv);
 
-	cout<<"hi";
+	cout<<"hi";*/
 	return 0;
 }

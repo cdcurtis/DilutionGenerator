@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 
-using namespace std;
 
 Vertex * DagGen :: getVertex(int id)
 {
@@ -15,17 +14,17 @@ Vertex * DagGen :: getVertex(int id)
 	} 
 	return NULL;
 }
-map<int, vector<int> > DagGen :: createDependencyMap()
+std::map<int, std::vector<int> > DagGen :: createDependencyMap()
 {
-	map <int, vector<int> > childrenParents;
-	map <int, vector<int> > :: iterator it;
+	std::map <int, std::vector<int> > childrenParents;
+	std::map <int, std::vector<int> > :: iterator it;
 	
 	for(int i = 0 ; i <edges.size(); ++i){
 		it = childrenParents.find(edges[i]->child);
 		if(it == childrenParents.end()){
-			  vector<int> t;
+			std::vector<int> t;
 			t.push_back(edges[i]->parent);
-			childrenParents.insert(  pair<int,   vector<int> >(edges[i]->child, t));
+			childrenParents.insert(std::pair<int,std::vector<int> >(edges[i]->child, t));
 		}
 		else
 			it->second.push_back(edges[i]->parent);
@@ -39,21 +38,21 @@ bool DagGen :: isEmpty()
 	return (vertices.size() == 0 || edges.size() == 0);
 }
 
-bool DagGen :: isValidSingleReactantDilution(vector<double> endConcentrations, int base)
+bool DagGen :: isValidSingleReactantDilution(std::vector<double> endConcentrations, int base)
 {
-	map <int, string> namedNodesByID;
-	map <int, vector<int> > childrenParents;
-	map <int, vector<int> > :: iterator it;
-	map <int, ValidationNodeSingleReactant>  NodeIDConcentrations;
+	std::map <int, std::string> namedNodesByID;
+	std::map <int, std::vector<int> > childrenParents;
+	std::map <int, std::vector<int> > :: iterator it;
+	std::map <int, ValidationNodeSingleReactant>  NodeIDConcentrations;
 	
-	vector <int> outputIDs;
+	std::vector <int> outputIDs;
 	
 	childrenParents = createDependencyMap();
 	
 	for(int i = 0; i < vertices.size(); ++i){
 		if(vertices[i]->type == DISPENSE){
 		
-			namedNodesByID.insert(  pair<int,   string>(vertices[i]->uniqueID,vertices[i]->label));
+			namedNodesByID.insert(std::pair<int, std::string>(vertices[i]->uniqueID,vertices[i]->label));
 			if(vertices[i]->label.find("buffer") == -1){
 				NodeIDConcentrations.insert(std::pair <int, ValidationNodeSingleReactant>(vertices[i]->uniqueID, ValidationNodeSingleReactant(1.0,base)));
 			}
@@ -149,7 +148,7 @@ bool DagGen :: isValidSingleReactantDilution(vector<double> endConcentrations, i
 	}
 }*/
 	
-Vertex * DagGen :: addVertex(VertexType vertexType,   string label)
+Vertex * DagGen :: addVertex(VertexType vertexType, std::string label)
 {
 	Vertex* v =  new Vertex(vertexType,label,IDs++);
 	vertices.push_back(v);
@@ -168,7 +167,7 @@ void DagGen :: addEdge (Vertex* parent, Vertex* child)
 
 
 
-void DagGen :: generateJSON( string fileName)
+void DagGen :: generateJSON( std::string fileName)
 {
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 	
@@ -198,15 +197,15 @@ void DagGen :: generateJSON( string fileName)
    		delete(&out); 
 }
 
-void DagGen :: generateMCFLOWDag(  string assayName,   string fileName, int volume, int inputTime, int opTime) {
+void DagGen :: generateMCFLOWDag(std::string assayName, std::string fileName, int volume, int inputTime, int opTime) {
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 	
 	char buffer[10];
 	int inputID = 0;
 	int opID = 0;
-	  map <int,   string> namedNodesByID;
-	  map <int,   vector<int> > childrenParents;
-	  map<int,   vector<int> > :: iterator it;
+	std::map <int, std::string> namedNodesByID;
+	std::map <int, std::vector<int> > childrenParents;
+	std::map<int, std::vector<int> > :: iterator it;
 	
 	 
 	out << "\"assay\":\"" << assayName << "\"\n\n";
@@ -223,7 +222,7 @@ void DagGen :: generateMCFLOWDag(  string assayName,   string fileName, int volu
 	for(int i = 0; i < vertices.size(); ++i){
 		if(vertices[i]->type == DISPENSE){
 			sprintf(buffer,"i%i",inputID++);
-			namedNodesByID.insert(  pair<int,   string>(vertices[i]->uniqueID,buffer));
+			namedNodesByID.insert(std::pair<int, std::string>(vertices[i]->uniqueID,buffer));
 			out << "{ \"objectType\": \"component\", \"name\": \"" << buffer << "\", \"operation\": \"input\", \"executionTime\":" << inputTime << " }\n";
 		}
 	}
@@ -234,15 +233,15 @@ void DagGen :: generateMCFLOWDag(  string assayName,   string fileName, int volu
 			if(vertices[i]->type == MIX ){
 				if(namedNodesByID.count(vertices[i]->uniqueID) == 0 ){
 					changes = true;
-					  vector<int> parents = childrenParents.find(vertices[i]->uniqueID)->second;
+					std::vector<int> parents = childrenParents.find(vertices[i]->uniqueID)->second;
 					int count = 0;
 					for(int i = 0; i < parents.size(); ++i)
 						count+= namedNodesByID.count(parents[i]);
 					if(count == parents.size()) { //this means both parents have been declared. 
 						sprintf(buffer,"O%i",opID++);
-						namedNodesByID.insert(  pair<int,   string>(vertices[i]->uniqueID,buffer));
-						  string parent1 = namedNodesByID.find(parents[0])->second;
-						  string parent2 = namedNodesByID.find(parents[1])->second;
+						namedNodesByID.insert(std::pair<int, std::string>(vertices[i]->uniqueID,buffer));
+						std::string parent1 = namedNodesByID.find(parents[0])->second;
+						std::string parent2 = namedNodesByID.find(parents[1])->second;
 						out << "{ \"objectType\": \"component\", \"name\": \"" << buffer << "\", \"operation\": \"mix\", \"executionTime\":" << opTime << ", \"dependencies\": [{\"name\":\"" << parent1 << "\",\"amount\":"<< volume <<"},{\"name\":\"" << parent2 << "\",\"amount\":"<< volume <<"}] }\n";                          
 					}
 				}
@@ -252,8 +251,8 @@ void DagGen :: generateMCFLOWDag(  string assayName,   string fileName, int volu
 					changes = true;
 					int parentID = childrenParents.find(vertices[i]->uniqueID)->second[0];
 					if(namedNodesByID.count(parentID)!=0){
-						  string parentName = namedNodesByID.find(parentID)->second;
-						namedNodesByID.insert(  pair<int,   string> (vertices[i]->uniqueID, parentName));
+						std::string parentName = namedNodesByID.find(parentID)->second;
+						namedNodesByID.insert(std::pair<int, std::string> (vertices[i]->uniqueID, parentName));
 					}
 				}	
 			}
@@ -261,17 +260,17 @@ void DagGen :: generateMCFLOWDag(  string assayName,   string fileName, int volu
 	}
 }
 
-void DagGen :: generateDropletDag(string fileName, int volume, int time )
+void DagGen :: generateDropletDag(std::string fileName, int volume, int time )
 {
 	//if single output name output and waste
 	//if  multi out name diff.
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 
-    out << "// DAG Specification for " << dagName << endl;
+    out << "// DAG Specification for " << dagName << std::endl;
     if (dagName != "")
-        out << "DAGNAME (" << dagName << ")" << endl;
+        out << "DAGNAME (" << dagName << ")" << std::endl;
     else
-        out << "DAGNAME (DAG)" << endl;
+        out << "DAGNAME (DAG)" << std::endl;
 
     for (unsigned i = 0; i < vertices.size(); i++)
     {
@@ -297,7 +296,7 @@ void DagGen :: generateDropletDag(string fileName, int volume, int time )
    		delete(&out); 
 }
 
-void DagGen :: generateDotyGraph(  string fileName)
+void DagGen :: generateDotyGraph(std::string fileName)
 {
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 
@@ -307,7 +306,7 @@ void DagGen :: generateDotyGraph(  string fileName)
 		out << "\t" << vertices[i]->uniqueID << " [label = \"" << vertices[i]->label << "\"];" << std::endl;
 
 	for(int i = 0; i<edges.size(); ++i)
-		out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID <<   endl;
+		out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID << std::endl;
 	
 	out << "}\n";
 	
@@ -321,12 +320,12 @@ void DagGen::removeEdge(int loc)
 	return;
 }
 
-vector<Vertex*> & DagGen :: Vertices()
+std::vector<Vertex*> & DagGen :: Vertices()
 {
 	return this->vertices;
 }
 
-vector<Edge*> & DagGen :: Edges()
+std::vector<Edge*> & DagGen :: Edges()
 {
 	return this->edges;
 }
@@ -344,7 +343,7 @@ void DagGen::outputVertices() const
 {
 	for(unsigned i = 0; i < vertices.size(); i++)
 	{
-		cout<<"V"<<i<<": "<<vertices.at(i)->label<<", "<<vertices.at(i)->uniqueID<<flush<<endl;
+		std::cout<<"V"<<i<<": "<<vertices.at(i)->label<<", "<<vertices.at(i)->uniqueID<<std::flush<<std::endl;
 	}
 	return;
 }
@@ -353,17 +352,17 @@ void DagGen::outputEdges() const
 {
 	for(unsigned i = 0; i < edges.size(); i++)
 	{
-		cout<<"E"<<i<<": ("<<edges.at(i)->parent<<" -> "<<edges.at(i)->child<<")"<<flush<<endl;
+		std::cout<<"E"<<i<<": ("<<edges.at(i)->parent<<" -> "<<edges.at(i)->child<<")"<<std::flush<<std::endl;
 	}
 	return;
 }
 
-vector<Edge*> DagGen::findOutgoingEdges(int Vid) const
+std::vector<Edge*> DagGen::findOutgoingEdges(int Vid) const
 {
 	//TODO:: deprecate this and use find children
 	bool Debug = false;
-	vector<Edge*> curEdgeOut;
-	vector<Edge*> edges = this->edges;
+	std::vector<Edge*> curEdgeOut;
+	std::vector<Edge*> edges = this->edges;
 	for(unsigned e = 0; e < edges.size(); e++)
 	{
 		if(edges.at(e)->parent == Vid)//found outgoing edge
@@ -373,21 +372,21 @@ vector<Edge*> DagGen::findOutgoingEdges(int Vid) const
 	}
 	if(Debug)
 	{
-		cout<<"outgoing edges are: "<<flush<<endl;
+		std::cout<<"outgoing edges are: "<<std::flush<<std::endl;
 		for(unsigned i = 0; i < curEdgeOut.size(); i++)
 		{
-			cout<<"("<<curEdgeOut.at(i)->parent<<", "<<curEdgeOut.at(i)->child<<")"<<flush<<endl;
+			std::cout<<"("<<curEdgeOut.at(i)->parent<<", "<<curEdgeOut.at(i)->child<<")"<<std::flush<<std::endl;
 		}
 	}
 	return curEdgeOut;
 }
 
-vector<Edge*> DagGen::findIncomingEdges(int Vid) const
+std::vector<Edge*> DagGen::findIncomingEdges(int Vid) const
 {
 	//TODO:: deprecate this and use find parents
 	bool Debug = true;
-	vector<Edge*> curEdgeIn;
-	vector<Edge*> edges = this->edges;
+	std::vector<Edge*> curEdgeIn;
+	std::vector<Edge*> edges = this->edges;
 	for(unsigned e = 0; e < edges.size(); e++)
 	{
 		if(edges.at(e)->parent == Vid)
@@ -395,10 +394,10 @@ vector<Edge*> DagGen::findIncomingEdges(int Vid) const
 			curEdgeIn.push_back(edges.at(e));
 		}
 	}
-	if(Debug){cout<<"incoming edges are: "<<flush<<endl;
+	if(Debug){std::cout<<"incoming edges are: "<<std::flush<<std::endl;
 	for(unsigned i = 0; i < curEdgeIn.size(); i++)
 	{
-		cout<<"("<<curEdgeIn.at(i)->parent<<", "<<curEdgeIn.at(i)->child<<")"<<flush<<endl;
+		std::cout<<"("<<curEdgeIn.at(i)->parent<<", "<<curEdgeIn.at(i)->child<<")"<<std::flush<<std::endl;
 	}
 	}
 	return curEdgeIn;
@@ -443,7 +442,7 @@ void DagGen :: removeVertex(int Vid)
 	{
 		if (vertices.at(i)->uniqueID > Vid)
 		{
-			if(Debug){cout<<"vertex to be decrememnted before: "<<vertices.at(i)->uniqueID<<", after = "<<vertices.at(i)->uniqueID-1<<flush<<endl;}
+			if(Debug){std::cout<<"vertex to be decrememnted before: "<<vertices.at(i)->uniqueID<<", after = "<<vertices.at(i)->uniqueID-1<<std::flush<<std::endl;}
 			for(unsigned j = 0; j < edges.size(); j++)
 			{
 				if(edges.at(j)->parent == edges.at(j)->child)
@@ -453,12 +452,12 @@ void DagGen :: removeVertex(int Vid)
 				}
 				if(edges.at(j)->parent == vertices.at(i)->uniqueID)
 				{
-					if(Debug){cout<<"edge"<<j<<" decremented(par) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<flush<<endl;}
+					if(Debug){std::cout<<"edge"<<j<<" decremented(par) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<std::flush<<std::endl;}
 					edges.at(j)->parent = edges.at(j)->parent-1;
 				}
 				if(edges.at(j)->child == vertices.at(i)->uniqueID)
 				{
-					if(Debug){cout<<"edge"<<j<<" decremented(child) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<flush<<endl;}
+					if(Debug){std::cout<<"edge"<<j<<" decremented(child) is: ("<<edges.at(j)->parent<<","<<edges.at(j)->child<<")"<<std::flush<<std::endl;}
 					edges.at(j)->child = edges.at(j)->child-1;
 				}
 			}

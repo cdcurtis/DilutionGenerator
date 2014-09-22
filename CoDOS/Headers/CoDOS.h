@@ -13,11 +13,10 @@
 #include <sstream>
 #include <limits>
 
-using namespace std;
 
-typedef vector < vector < int > > Matrix;
-typedef vector < int > Entry;
-typedef vector< pair<int, int> > Rect_Cood;
+typedef std::vector < std::vector < int > > Matrix;
+typedef std::vector < int > Entry;
+typedef std::vector< std::pair<int, int> > Rect_Cood;
 
 class CoDOS
 {
@@ -27,14 +26,14 @@ private:
 public:
 	CoDOS();
 
-	void binary(int number, vector < int >& r);
+	void binary(int number, std::vector < int >& r);
 	Matrix ConstructRecipeMatrix(Entry T);
 
-	vector < Rect_Cood > getRectangle(Matrix M);
-	Rect_Cood getHighestPrecedenceRectangle(vector < Rect_Cood > rectangles, Entry W);
+	std::vector < Rect_Cood > getRectangle(Matrix M);
+	Rect_Cood getHighestPrecedenceRectangle(std::vector < Rect_Cood > rectangles, Entry W);
 	Matrix CoDOS_Main(Entry T, Entry W);
 
-	Vertex* createVertex(int count, string str,DagGen &dag, VertexType type);
+	Vertex* createVertex(int count, std::string str,DagGen &dag, VertexType type);
 	void Construct_Graph(Matrix M, DagGen &dag);
 
 	static DagGen RunCoDOS(int argc, char* argv[]);

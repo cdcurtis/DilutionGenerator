@@ -1,4 +1,8 @@
+#ifndef __WARA__H_
+#define __WARA__H_
+
 #include "../../Remia/Headers/Remia.h"
+#include "../../DagGen/Headers/DagGen.h"
 #include <vector>
 
 typedef vector< pair<node*, node*> > RCP;	//RCP - Replacement Candidate Pair
@@ -41,3 +45,5 @@ public:
 
 	static DagGen RunWara(int argc, char* argv[]);
 };
+
+#endif /*__WARA__H_*/

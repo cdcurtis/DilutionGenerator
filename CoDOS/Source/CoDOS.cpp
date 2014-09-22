@@ -1,12 +1,13 @@
 #include "../Headers/CoDOS.h"
 
+using namespace std;
 CoDOS :: CoDOS()
 {
 	d = -1;
 	NR = 0;
 }
 
-void CoDOS :: binary(int number, vector < int >& r) 
+void CoDOS :: binary(int number, std::vector < int >& r)
 {
 	int remainder;
 
@@ -54,10 +55,10 @@ Matrix CoDOS :: ConstructRecipeMatrix(Entry T)
 	return M;
 }
 
-vector < Rect_Cood > CoDOS :: getRectangle(Matrix M)
+std::vector < Rect_Cood > CoDOS :: getRectangle(Matrix M)
 {
 	Rect_Cood K;
-	vector < Rect_Cood > rectangles;
+	std::vector < Rect_Cood > rectangles;
 	int i, j;
 	int N;
 	int x1, y1, x2, y2, x3, y3, x4, y4;
@@ -107,15 +108,15 @@ vector < Rect_Cood > CoDOS :: getRectangle(Matrix M)
 	return rectangles;
 }
 
-Rect_Cood CoDOS :: getHighestPrecedenceRectangle(vector < Rect_Cood > rectangles, Entry W)
+Rect_Cood CoDOS :: getHighestPrecedenceRectangle(std::vector < Rect_Cood > rectangles, Entry W)
 {
 	int r1, r2;
-	vector < int > gain;
-	vector < float > volume;
+	std::vector < int > gain;
+	std::vector < float > volume;
 	Rect_Cood k;
 
 	int max_gain = 0;
-	float min_volume = numeric_limits<float>::max();
+	float min_volume = std::numeric_limits<float>::max();
 
 	int g;
 	float v;
@@ -176,7 +177,7 @@ Matrix CoDOS :: CoDOS_Main(Entry T, Entry W)
 {
 	Matrix M;
 	
-	vector < Rect_Cood > rectangles;
+	std::vector < Rect_Cood > rectangles;
 	Rect_Cood k;
 	int x1,x4,y1,y4;
 
@@ -225,9 +226,9 @@ Matrix CoDOS :: CoDOS_Main(Entry T, Entry W)
 	return M;
 }
 
-Vertex* CoDOS :: createVertex(int count, string str,DagGen &dag, VertexType type)
+Vertex* CoDOS :: createVertex(int count, std::string str,DagGen &dag, VertexType type)
 {
-	ostringstream oss;
+	std::ostringstream oss;
 	Vertex* v;
 
 	oss << count;
@@ -241,7 +242,7 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 {
 	int m = 1, s = 1, w = 1, o = 1;
 	Matrix ver_mat;
-	stack< Vertex *> vertices;
+	std::stack< Vertex *> vertices;
 	Matrix level;
 	bool flag;
 
@@ -324,7 +325,7 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 				Vertex* vw = createVertex(w++, "Waste", dag, WASTE);
 				dag.addEdge(vm, vs);
 				dag.addEdge(vs, vw);
-				for(stack< Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
+				for(std::stack< Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
 				{
 					if(dummy.top()->uniqueID == level[i][j])
 						v1 = dummy.top();
@@ -413,10 +414,10 @@ DagGen CoDOS :: RunCoDOS(int argc, char* argv[])
 	}
 
 
-	cout<<"achievable CV = <";
+	std::cout<<"achievable CV = <";
 	for(i=0; i<argc-2; i++)
-		cout<<T[i]<<",";
-	cout<<">\n";
+		std::cout<<T[i]<<",";
+	std::cout<<">\n";
 
 	M = codos.CoDOS_Main(T,W);
 

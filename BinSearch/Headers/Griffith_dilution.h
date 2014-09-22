@@ -10,7 +10,6 @@
 #ifndef GRIFFITH_DILUTION_H_
 #define GRIFFITH_DILUTION_H_
 
-using namespace std;
 #include <iostream>
 #include <vector>
 #include <cstdlib>

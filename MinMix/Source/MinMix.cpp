@@ -11,13 +11,13 @@
 #include "../../DagGen/Headers/DagGen.h"
 
 
-DagGen MinMix :: RunMinMix(int argc, char* argv[])
+void MinMix :: RunMinMix(int argc, char* argv[], DagGen *dag)
 {
 	MinMix minMix;
 	std :: cout<<"Starting\n";
 	if(argc < 3) {
 		std :: cout <<"ERROR: Invalid Number of Arguments.\n See README for InputFormat.\n";
-		return DagGen();
+		return;
 	}
 //-----------------------<INPUTS>------------------------
 // <fileName> <option>(0), <#parts4ratio>, ...
@@ -48,7 +48,7 @@ DagGen MinMix :: RunMinMix(int argc, char* argv[])
 			break;
 		default:
 			std :: cout << "ERROR: Not a valid Option\n";
-			return DagGen();
+			return;
 		}
 	}
 	Concentration concentration;
@@ -66,19 +66,19 @@ DagGen MinMix :: RunMinMix(int argc, char* argv[])
 	//create the mixTree
 	TreeRoot mixTree = mixM.runMinMix();
 
-	//mixTree.print(cout);
-	DagGen dag = mixTree.createDag(concentration.listOfFluids());
+	mixTree.print(std::cout);
+	*dag = mixTree.createDag(concentration.listOfFluids());
 
 	//dag.generateDropletDag();
 	//dag.generateDotyGraph(fileName + ".dot");
 		//dag.generateDropletDag(fileName + ".txt");
 
-	dag.generateDotyGraph();
-	dag.generateDropletDag();
+	dag->generateDotyGraph();
+	//dag.generateDropletDag();
 
 	std :: cout<<"MEMORY: " << numAllocator<< std :: endl;
-
-	return dag;
+std:: cout<<"returning...\n";
+	return;
 }
 
 std :: vector<int>  MinMix :: convertRatio(std :: string ratio)

@@ -20,11 +20,14 @@
 
 int main (int argc, char* argv [])
 {
+	cout<< "Welcome to my world!" <<endl;
 	DagGen *dag = NULL;
-
-	*dag = MinMix::RunMinMix(argc, argv);
-	dag->generateDotyGraph("foo.txt");
-	dag->generateDotyGraph();
+	cout<<"calling minMix\n";
+	MinMix::RunMinMix(argc, argv, dag);
+	cout<<"left minMix\n";
+	//if (dag != NULL)
+		dag->generateDotyGraph("temptemp.txt");
+//	dag->generateDotyGraph();
 	/**dag = Remia::RunRemia(argc, argv);
 	*dag = Gorma::RunGorma(argc, argv);
 	*dag = Wara::RunWara(argc,argv);
@@ -36,5 +39,6 @@ int main (int argc, char* argv [])
 	*dag = RoyDilute::RoyDilute_Process(argc,argv);
 
 	cout<<"hi";*/
+	cout<<"Terminating"<<endl;
 	return 0;
 }

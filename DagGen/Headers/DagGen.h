@@ -20,6 +20,34 @@ struct Vertex{
 	int uniqueID;
 	Vertex(VertexType t, std :: string l, int id): type(t), label(l), portName(""), uniqueID(id) {}
 	Vertex(VertexType t, std :: string l, std :: string pN, int id): type(t), label(l), portName(pN), uniqueID(id) {}
+
+	void print()
+	{
+		switch (type)
+		{
+		case DISPENSE:
+			std::cout<< "DISPENSE"<<std::endl;
+			break;
+		case MIX:
+			std::cout<< "MIX"<<std::endl;
+			break;
+		case SPLIT:
+			std::cout<< "SPLIT"<<std::endl;
+			break;
+		case WASTE:
+		case OUTPUT:
+			std::cout<< "OUTPUT"<<std::endl;
+			break;
+		default:
+			std::cout<< "UnKnown"<<std::endl;
+			break;
+
+		}
+		std::cout<<"Label: "<< label<<std::endl;
+		std::cout<<"Port Name: " << portName<<std::endl;
+		std::cout<<"ID: "<< uniqueID<<std::endl;
+	}
+
 };
 
 struct Edge{
@@ -27,6 +55,11 @@ struct Edge{
 	int child;
 
 	Edge (int p, int c):parent(p), child(c) { }
+	void print()
+	{
+		std::cout<< "P: "<< parent<<std::endl;
+		std::cout<< "C: "<< child<<std::endl;
+	}
 };
 
 class DagGen {

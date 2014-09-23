@@ -298,20 +298,28 @@ void DagGen :: generateDropletDag(std::string fileName, int volume, int time )
 
 void DagGen :: generateDotyGraph(std::string fileName)
 {
+	if(this->isEmpty())
+		return;
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 
 	out << "digraph G {\n";
 
-	for(int i = 0; i < vertices.size(); ++i)
-		out << "\t" << vertices[i]->uniqueID << " [label = \"" << vertices[i]->label << "\"];" << std::endl;
+	for(int i = 0; i < vertices.size(); ++i){
+		vertices[i]->print();
+		//out << "\t" << vertices[i]->uniqueID << " [label = \"" << vertices[i]->label << "\"];" << std::endl;
 
+	}
 	for(int i = 0; i<edges.size(); ++i)
-		out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID << std::endl;
-	
+	{
+		edges[i]->print();
+		//out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID << std::endl;
+	}
+	std::cout<<"3"<<std::endl;
 	out << "}\n";
-	
+	std::cout<<"4"<<std::endl;
 	if (&out!=&std::cout)  
    		delete(&out); 
+	std::cout<<"endingDoty"<<std::endl;
 }
 
 void DagGen::removeEdge(int loc)

@@ -13,7 +13,7 @@
 class MinMix
 {
 public:
-	static DagGen RunMinMix(int, char *[]);
+	static void RunMinMix(int, char *[], DagGen*);
 
 private:
 	MinMix() { }

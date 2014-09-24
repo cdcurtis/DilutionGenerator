@@ -12,6 +12,9 @@
 #include <fstream>
 #include <stdlib.h>
 #include "../../DagGen/Headers/DagGen.h"
+#include "BrujinGraph.h"
+#include "WeightedGraph.h"
+#include "HamiltonianPath.h"
 
 struct LKHFileMaker{
 	std::string fileName;

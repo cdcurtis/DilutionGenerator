@@ -105,7 +105,7 @@ node_ISI* ISI_NCKU :: LDT(std::vector < int > l)
 			l_left.push_back(l[i]);
 
 		vector < int > l_right;
-		for(int i = ceil(l.size()/2) + 1; i<l.size(); i++)
+		for(unsigned int i = ceil(l.size()/2) + 1; i<l.size(); i++)
 			l_right.push_back(l[i]);
 
 		node_ISI *v_left = LDT(l_left);
@@ -158,7 +158,7 @@ VerticesISI ISI_NCKU :: createVertices(node_ISI *T, Vertex *vs, Vertex *vm)
 	return vertex;
 }
 
-void ISI_NCKU :: createDag(DagGen &dag)
+void ISI_NCKU :: createDag(DagGen *dag)
 {
 	Vertex *vm, *vs, *vw, *vo, *vl, *vr;
 	VerticesISI vertex, vertexl, vertexr;
@@ -168,10 +168,10 @@ void ISI_NCKU :: createDag(DagGen &dag)
 	vm = wara.createVertex(m_count, m, dag, MIX);
 	vs = wara.createVertex(s_count, s, dag, SPLIT);
 	//connect one lower and upper boundary node to the mix of the root
-	dag.addEdge(boundary_vertices_wara[0][lb_index++], vm);
-	dag.addEdge(boundary_vertices_wara[1][ub_index++], vm);
+	dag->addEdge(boundary_vertices_wara[0][lb_index++], vm);
+	dag->addEdge(boundary_vertices_wara[1][ub_index++], vm);
 	//Connect mix to split vertex of root
-	dag.addEdge(vm, vs);
+	dag->addEdge(vm, vs);
 
 	vertex = createVertices(root, vs, vm);
 
@@ -189,7 +189,7 @@ void ISI_NCKU :: createDag(DagGen &dag)
 		vm = wara.createVertex(m_count, m, dag, MIX);
 		vs = wara.createVertex(s_count, s, dag, SPLIT);
 		//Connect mix to split vertex
-		dag.addEdge(vm, vs);
+		dag->addEdge(vm, vs);
 
 		vertex = createVertices(currNode, vs, vm);
 
@@ -199,13 +199,13 @@ void ISI_NCKU :: createDag(DagGen &dag)
 			{
 				vo = wara.createVertex(o_count, o, dag, OUTPUT);
 				//Connect the OUTPUT vertex to split.
-				dag.addEdge(vs, vo);
+				dag->addEdge(vs, vo);
 			}
 			else
 			{
 				vw = wara.createVertex(w_count, w, dag, WASTE);
 				//Connect the Waste vertex to split.
-				dag.addEdge(vs, vw);
+				dag->addEdge(vs, vw);
 			}
 			currentLastLevel.push(vertex);
 		}
@@ -229,7 +229,7 @@ void ISI_NCKU :: createDag(DagGen &dag)
 	}
 
 	//Generate the required number of nodes
-	for(int i = 0; i<tree_vertices.size(); i++)
+	for(unsigned int i = 0; i<tree_vertices.size(); i++)
 	{
 		if(tree_vertices[i].vsplit.size() < 2*tree_vertices[i].T->vertex_count)
 		{
@@ -240,41 +240,41 @@ void ISI_NCKU :: createDag(DagGen &dag)
 			vm = wara.createVertex(m_count, m, dag, MIX);
 			vs = wara.createVertex(s_count, s, dag, SPLIT);
 			//Connect mix to split vertex
-			dag.addEdge(vm, vs);
+			dag->addEdge(vm, vs);
 			tree_vertices[i].vsplit.push_back(vs);
 			tree_vertices[i].vsplit.push_back(vs);
 
 			if(tree_vertices[i].T == root)
 			{
 				//connect one lower and upper boundary node to the mix of the root
-				dag.addEdge(boundary_vertices_wara[0][lb_index++], vm);
-				dag.addEdge(boundary_vertices_wara[1][ub_index++], vm);
+				dag->addEdge(boundary_vertices_wara[0][lb_index++], vm);
+				dag->addEdge(boundary_vertices_wara[1][ub_index++], vm);
 			}
 			else
 			{
 				found = false;
 				node_ISI *parent = Find_parent(root, NULL, tree_vertices[i].T);
-				for(int j = 0; j<tree_vertices.size(); j++)
+				for(unsigned int j = 0; j<tree_vertices.size(); j++)
 					if(tree_vertices[j].T == parent)
 					{
 						vl = tree_vertices[j].vsplit[tree_vertices[j].vsplit.size()-1];
-						dag.addEdge(vl, vm);
+						dag->addEdge(vl, vm);
 						tree_vertices[j].vsplit.pop_back();
 						break;
 					}
 				diff = 2*tree_vertices[i].T->cf - parent->cf;
 
 				if(diff == LB)	//connect one lower boundary node to the mix
-					dag.addEdge(boundary_vertices_wara[0][lb_index++], vm);
+					dag->addEdge(boundary_vertices_wara[0][lb_index++], vm);
 				else if(diff == UB)	//connect one Upper boundary node to the mix
-					dag.addEdge(boundary_vertices_wara[1][ub_index++], vm);
+					dag->addEdge(boundary_vertices_wara[1][ub_index++], vm);
 				else if(diff != LB && diff != UB)
 				{
-					for(int j = 0; j<tree_vertices.size(); j++)
+					for(unsigned int j = 0; j<tree_vertices.size(); j++)
 						if(tree_vertices[j].T->cf == diff)
 						{
 							vr = tree_vertices[j].vsplit[tree_vertices[j].vsplit.size()-1];
-							dag.addEdge(vr, vm);
+							dag->addEdge(vr, vm);
 							tree_vertices[j].vsplit.pop_back();
 							break;
 						}
@@ -286,31 +286,31 @@ void ISI_NCKU :: createDag(DagGen &dag)
 	}
 
 	//Connect the edges of all nodes except the root.
-	for(int i = 1; i<tree_vertices.size(); i++)
+	for(unsigned int i = 1; i<tree_vertices.size(); i++)
 	{
 		found = false;
 		node_ISI *parent = Find_parent(root, NULL, tree_vertices[i].T);
-		for(int j = 0; j<tree_vertices.size(); j++)
+		for(unsigned int j = 0; j<tree_vertices.size(); j++)
 			if(tree_vertices[j].T == parent)
 			{
 				vl = tree_vertices[j].vsplit[tree_vertices[j].vsplit.size()-1];
-				dag.addEdge(vl, tree_vertices[i].vmix);
+				dag->addEdge(vl, tree_vertices[i].vmix);
 				tree_vertices[j].vsplit.pop_back();
 				break;
 			}
 		diff = 2*tree_vertices[i].T->cf - parent->cf;
 
 		if(diff == LB)	//connect one lower boundary node to the mix
-			dag.addEdge(boundary_vertices_wara[0][lb_index++], tree_vertices[i].vmix);
+			dag->addEdge(boundary_vertices_wara[0][lb_index++], tree_vertices[i].vmix);
 		else if(diff == UB)	//connect one Upper boundary node to the mix
-			dag.addEdge(boundary_vertices_wara[1][ub_index++], tree_vertices[i].vmix);
+			dag->addEdge(boundary_vertices_wara[1][ub_index++], tree_vertices[i].vmix);
 		else if(diff != LB && diff != UB)
 		{
-			for(int j = 0; j<tree_vertices.size(); j++)
+			for(unsigned int j = 0; j<tree_vertices.size(); j++)
 				if(tree_vertices[j].T->cf == diff)
 				{
 					vr = tree_vertices[j].vsplit[tree_vertices[j].vsplit.size()-1];
-					dag.addEdge(vr, tree_vertices[i].vmix);
+					dag->addEdge(vr, tree_vertices[i].vmix);
 					tree_vertices[j].vsplit.pop_back();
 					break;
 				}
@@ -327,7 +327,7 @@ void ISI_NCKU :: createDag(DagGen &dag)
 		{
 			vw = wara.createVertex(w_count, w, dag, WASTE);
 			//Connect the OUTPUT vertex to split.
-			dag.addEdge(vl, vw);
+			dag->addEdge(vl, vw);
 			break;
 		}
 		vertexr = currentLastLevel.front();
@@ -338,23 +338,23 @@ void ISI_NCKU :: createDag(DagGen &dag)
 		vm = wara.createVertex(m_count, m, dag, MIX);
 		vs = wara.createVertex(s_count, s, dag, SPLIT);
 		//Connect mix to split vertex
-		dag.addEdge(vm, vs);
-		dag.addEdge(vl, vm);
-		dag.addEdge(vr, vm);
+		dag->addEdge(vm, vs);
+		dag->addEdge(vl, vm);
+		dag->addEdge(vr, vm);
 		if((vertexl.T->cf + vertexr.T->cf)/2 <= max)
 		{
 			vo = wara.createVertex(o_count, o, dag, OUTPUT);
 			//Connect the OUTPUT vertex to split.
-			dag.addEdge(vs, vo);
+			dag->addEdge(vs, vo);
 		}
 		else
 		{
 			vw = wara.createVertex(w_count, w, dag, WASTE);
 			//Connect the OUTPUT vertex to split.
-			dag.addEdge(vs, vw);
+			dag->addEdge(vs, vw);
 		}
 
-		for(int i = 0; i<tree_vertices.size(); i++)
+		for(unsigned int i = 0; i<tree_vertices.size(); i++)
 		{
 			if(tree_vertices[i].T->cf == (vertexl.T->cf + vertexr.T->cf)/2)
 			{
@@ -371,7 +371,7 @@ void ISI_NCKU :: createDag(DagGen &dag)
 	}
 }
 
-DagGen ISI_NCKU :: RunNCKU(int argc, char* argv[])
+DagGen* ISI_NCKU :: RunNCKU(int argc, char* argv[])
 {
 	//a, d, n, count
 	//a-> first CF in the set
@@ -380,7 +380,7 @@ DagGen ISI_NCKU :: RunNCKU(int argc, char* argv[])
 	//count-> Number of CF's to be generated in arithmetic progression starting from 'a'.
 
 	ISI_NCKU ncku;
-	DagGen dag;
+	DagGen * dag = new DagGen();
 	//Extracting the values of 'a', 'd', 'n' & 'count' from argv[]
 	ncku.a = atoi(argv[1]);
 	ncku.d = atoi(argv[2]);
@@ -438,13 +438,13 @@ DagGen ISI_NCKU :: RunNCKU(int argc, char* argv[])
 
 	Vertex *vo_lb = ncku.wara.createVertex(ncku.o_count, ncku.o, dag, OUTPUT);
 	//Connect one of the Split vertex for lower bound to the OUTPUT vertex.
-	dag.addEdge(ncku.boundary_vertices_wara[0][0], vo_lb);
+	dag->addEdge(ncku.boundary_vertices_wara[0][0], vo_lb);
 
 	if(ncku.count == (pow(2,ncku.k+1)+1))
 	{
 		Vertex *vo_ub = ncku.wara.createVertex(ncku.o_count, ncku.o, dag, OUTPUT);
 		//Connect one of the Split vertex for upper bound to the OUTPUT vertex.
-		dag.addEdge(ncku.boundary_vertices_wara[1][ncku.ub_index++], vo_ub);
+		dag->addEdge(ncku.boundary_vertices_wara[1][ncku.ub_index++], vo_ub);
 	}
 
 	ncku.createDag(dag);

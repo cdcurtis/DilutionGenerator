@@ -226,7 +226,7 @@ Matrix CoDOS :: CoDOS_Main(Entry T, Entry W)
 	return M;
 }
 
-Vertex* CoDOS :: createVertex(int count, std::string str,DagGen &dag, VertexType type)
+Vertex* CoDOS :: createVertex(int count, std::string str,DagGen *dag, VertexType type)
 {
 	std::ostringstream oss;
 	Vertex* v;
@@ -234,11 +234,11 @@ Vertex* CoDOS :: createVertex(int count, std::string str,DagGen &dag, VertexType
 	oss << count;
 	str += oss.str();
 
-	v = dag.addVertex(type, str);
+	v = dag->addVertex(type, str);
 	return (v);
 }
 
-void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
+void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 {
 	int m = 1, s = 1, w = 1, o = 1;
 	Matrix ver_mat;
@@ -246,11 +246,11 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 	Matrix level;
 	bool flag;
 
-	for(int i = 0; i<M.size(); i++)
+	for(unsigned int i = 0; i<M.size(); i++)
 	{
 		Entry ver;
 		flag = true;
-		for(int j = 0; j<M[i].size(); j++)
+		for(unsigned int j = 0; j<M[i].size(); j++)
 		{
 			if(M[i][j] == 1)
 			{
@@ -268,13 +268,13 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 					vs = createVertex(s++, "Split", dag, SPLIT);
 					vertices.push(vs);
 					ver.push_back(vs->uniqueID);
-					dag.addEdge(vm, vs);
-					for(int j = 0; j<index[i].size(); j++)
+					dag->addEdge(vm, vs);
+					for(unsigned int j = 0; j<index[i].size(); j++)
 					{
 						if(index[i][j] < NR)
 						{
 							Vertex* vr = createVertex(index[i][j]+1, "Reactant", dag, DISPENSE);
-							dag.addEdge(vr, vm);
+							dag->addEdge(vr, vm);
 						}
 						else
 						{
@@ -282,14 +282,14 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 							Vertex* vs1 = createVertex(s++, "Split", dag, SPLIT);
 							Vertex* vw = createVertex(w++, "Waste", dag, WASTE);
 
-							dag.addEdge(vm1, vs1);
-							dag.addEdge(vs1, vw);
-							dag.addEdge(vs1, vm);
-							for(int k = 0; k<index[index[i][j]].size(); k++)
+							dag->addEdge(vm1, vs1);
+							dag->addEdge(vs1, vw);
+							dag->addEdge(vs1, vm);
+							for(unsigned int k = 0; k<index[index[i][j]].size(); k++)
 							{
 								Vertex* vr = createVertex(index[index[i][j]][k]+1, "Reactant", dag, DISPENSE);
 
-								dag.addEdge(vr, vm1);
+								dag->addEdge(vr, vm1);
 							}
 						}
 					}
@@ -307,7 +307,7 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 	for(int j = 0; j < d; j++)
 	{
 		Entry l;
-		for(int i = 0; i < ver_mat.size(); i++)
+		for(unsigned int i = 0; i < ver_mat.size(); i++)
 			if(ver_mat[i][j] != -1)
 				l.push_back(ver_mat[i][j]);
 		level.push_back(l);
@@ -316,15 +316,15 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 	for(int i = level.size()-1; i>=0; i--)
 	{
 		if(level[i].size() != 0)
-			for(int j = 0; j<level[i].size()-1; j = j+2)
+			for(unsigned int j = 0; j<level[i].size()-1; j = j+2)
 			{
 				Vertex* v1;
 				Vertex* v2;
 				Vertex* vm = createVertex(m++, "Mix", dag, MIX);
 				Vertex* vs = createVertex(s++, "Split", dag, SPLIT);
 				Vertex* vw = createVertex(w++, "Waste", dag, WASTE);
-				dag.addEdge(vm, vs);
-				dag.addEdge(vs, vw);
+				dag->addEdge(vm, vs);
+				dag->addEdge(vs, vw);
 				for(std::stack< Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
 				{
 					if(dummy.top()->uniqueID == level[i][j])
@@ -332,26 +332,26 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen &dag)
 					if(dummy.top()->uniqueID == level[i][j+1])
 						v2 = dummy.top();
 				}
-				dag.addEdge(v1, vm);
-				dag.addEdge(v2, vm);
+				dag->addEdge(v1, vm);
+				dag->addEdge(v2, vm);
 				if(i != 0)
 					level[i-1].push_back(vs->uniqueID);
 				else
 				{
 					Vertex* vo = createVertex(o++, "Output", dag, OUTPUT);
-					dag.addEdge(vs, vo);
+					dag->addEdge(vs, vo);
 				}
 				vertices.push(vs);
 			}
 	}
 }
 
-DagGen CoDOS :: RunCoDOS(int argc, char* argv[])
+DagGen* CoDOS :: RunCoDOS(int argc, char* argv[])
 {
 	//(option)1 - CV_R1, Wt_R1, CV_R2, Wt_R2, CV_R3, Wt_R3, ... -> Each reactant has different weight
 	//(option)2 - CV_R1, CV_R2, CV_R3, CV_R4, ...	-> Each Reactant has same weight i.e., 1
 
-	DagGen dag;
+	DagGen *dag = new DagGen();
 	CoDOS codos;
 	Matrix M;
 	Entry T;	//T holds the target concentration which is concentration of each reactant in the target droplet, like <6,7,3>

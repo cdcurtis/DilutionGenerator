@@ -36,14 +36,14 @@ public:
 	int ERU(vector < node* > G);
 	void Droplet_Replacement(vector < node* >& SMT);
 
-	Vertex* createVertex(int &count, string str,DagGen &dag, VertexType type);
-	void convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& vertices, node *root);
+	Vertex* createVertex(int &count, string str,DagGen *dag, VertexType type);
+	void convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices, node *root);
 	Vertex* getCorrespondingVertex(node *T, stack< Vertex *>& vertices, VertexType type);
 	bool checkIfUniqueNodeInStack(stack< node * > Q, node *n);
-	void convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, stack< Vertex *>& vertices, vector < CV* > PCV);
-	vector < vector < Vertex* > > WARA_MAIN(DagGen &dag, vector < int > argv);
+	void convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, stack< Vertex *>& vertices, vector < CV* > PCV);
+	vector < vector < Vertex* > > WARA_MAIN(DagGen *dag, vector < int > argv);
 
-	static DagGen RunWara(int argc, char* argv[]);
+	static DagGen* RunWara(int argc, char* argv[]);
 };
 
 #endif /*__WARA__H_*/

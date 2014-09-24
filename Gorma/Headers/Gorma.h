@@ -70,12 +70,12 @@ private:
 	bool checkIfUniqueInStack(stack <GormaNode *>& An, GormaNode *n);
 	void getUniqueNodes(GormaNode *T, stack <GormaNode *>& Un);
 
-	void convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag);
-	void createVertex(int &count, string str,DagGen &dag, GormaNode* tmp, stack< Vertex *>& vertices, VertexType type);
+	void convertDataStructure(GormaNode *T, CV* pcv, DagGen *dag);
+	void createVertex(int &count, string str,DagGen *dag, GormaNode* tmp, stack< Vertex *>& vertices, VertexType type);
 	Vertex* getCorrespondingVertex(GormaNode *T, stack< Vertex *>& vertices, VertexType type);
 
 public:
-	static DagGen RunGorma(int argc, char* []);
+	static DagGen* RunGorma(int argc, char* []);
 };
 
 #endif

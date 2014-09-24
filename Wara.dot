@@ -1,0 +1,261 @@
+digraph G {
+	0 [label = "reactant1"];
+	1 [label = "buffer1"];
+	2 [label = "mix1"];
+	3 [label = "split1"];
+	4 [label = "waste1"];
+	5 [label = "buffer2"];
+	6 [label = "mix2"];
+	7 [label = "split2"];
+	8 [label = "buffer3"];
+	9 [label = "mix3"];
+	10 [label = "split3"];
+	11 [label = "buffer4"];
+	12 [label = "mix4"];
+	13 [label = "split4"];
+	14 [label = "waste2"];
+	15 [label = "buffer5"];
+	16 [label = "mix5"];
+	17 [label = "split5"];
+	18 [label = "waste3"];
+	19 [label = "buffer6"];
+	20 [label = "mix6"];
+	21 [label = "split6"];
+	22 [label = "waste4"];
+	23 [label = "reactant2"];
+	24 [label = "reactant3"];
+	25 [label = "reactant4"];
+	26 [label = "reactant5"];
+	27 [label = "reactant6"];
+	28 [label = "buffer7"];
+	29 [label = "mix7"];
+	30 [label = "split7"];
+	31 [label = "waste5"];
+	32 [label = "buffer8"];
+	33 [label = "mix8"];
+	34 [label = "split8"];
+	35 [label = "buffer9"];
+	36 [label = "mix9"];
+	37 [label = "split9"];
+	38 [label = "buffer10"];
+	39 [label = "mix10"];
+	40 [label = "split10"];
+	41 [label = "waste6"];
+	42 [label = "buffer11"];
+	43 [label = "mix11"];
+	44 [label = "split11"];
+	45 [label = "waste7"];
+	46 [label = "buffer12"];
+	47 [label = "mix12"];
+	48 [label = "split12"];
+	49 [label = "waste8"];
+	50 [label = "buffer13"];
+	51 [label = "mix13"];
+	52 [label = "split13"];
+	53 [label = "waste9"];
+	54 [label = "reactant7"];
+	55 [label = "buffer14"];
+	56 [label = "mix14"];
+	57 [label = "split14"];
+	58 [label = "waste10"];
+	59 [label = "buffer15"];
+	60 [label = "mix15"];
+	61 [label = "split15"];
+	62 [label = "waste11"];
+	63 [label = "reactant8"];
+	64 [label = "buffer16"];
+	65 [label = "mix16"];
+	66 [label = "split16"];
+	67 [label = "waste12"];
+	68 [label = "buffer17"];
+	69 [label = "mix17"];
+	70 [label = "split17"];
+	71 [label = "waste13"];
+	72 [label = "reactant9"];
+	73 [label = "mix18"];
+	74 [label = "split18"];
+	75 [label = "output1"];
+	76 [label = "waste14"];
+	77 [label = "mix19"];
+	78 [label = "split19"];
+	79 [label = "output2"];
+	80 [label = "waste15"];
+	81 [label = "mix20"];
+	82 [label = "split20"];
+	83 [label = "output3"];
+	84 [label = "waste16"];
+	85 [label = "mix21"];
+	86 [label = "split21"];
+	87 [label = "output4"];
+	88 [label = "waste17"];
+	89 [label = "mix22"];
+	90 [label = "split22"];
+	91 [label = "output5"];
+	92 [label = "mix23"];
+	93 [label = "split23"];
+	94 [label = "output6"];
+	95 [label = "waste18"];
+	96 [label = "mix24"];
+	97 [label = "split24"];
+	98 [label = "output7"];
+	99 [label = "waste19"];
+	100 [label = "mix25"];
+	101 [label = "split25"];
+	102 [label = "output8"];
+	103 [label = "waste20"];
+	104 [label = "mix26"];
+	105 [label = "split26"];
+	106 [label = "output9"];
+	107 [label = "mix27"];
+	108 [label = "split27"];
+	109 [label = "output10"];
+	110 [label = "waste21"];
+	111 [label = "mix28"];
+	112 [label = "split28"];
+	113 [label = "output11"];
+	114 [label = "waste22"];
+	115 [label = "mix29"];
+	116 [label = "split29"];
+	117 [label = "output12"];
+	118 [label = "waste23"];
+	119 [label = "mix30"];
+	120 [label = "split30"];
+	121 [label = "output13"];
+	122 [label = "waste24"];
+	123 [label = "mix31"];
+	124 [label = "split31"];
+	125 [label = "output14"];
+	126 [label = "waste25"];
+	1 -> 2
+	0 -> 2
+	2 -> 3
+	3 -> 4
+	5 -> 6
+	0 -> 6
+	6 -> 7
+	8 -> 9
+	7 -> 9
+	9 -> 10
+	11 -> 12
+	10 -> 12
+	12 -> 13
+	13 -> 14
+	15 -> 16
+	10 -> 16
+	16 -> 17
+	17 -> 18
+	19 -> 20
+	7 -> 20
+	20 -> 21
+	21 -> 22
+	28 -> 29
+	27 -> 29
+	29 -> 30
+	30 -> 31
+	32 -> 33
+	30 -> 33
+	33 -> 34
+	35 -> 36
+	34 -> 36
+	36 -> 37
+	38 -> 39
+	37 -> 39
+	39 -> 40
+	40 -> 41
+	42 -> 43
+	37 -> 43
+	43 -> 44
+	44 -> 45
+	46 -> 47
+	34 -> 47
+	47 -> 48
+	48 -> 49
+	50 -> 51
+	27 -> 51
+	51 -> 52
+	52 -> 53
+	55 -> 56
+	54 -> 56
+	56 -> 57
+	57 -> 58
+	59 -> 60
+	54 -> 60
+	60 -> 61
+	61 -> 62
+	64 -> 65
+	63 -> 65
+	65 -> 66
+	66 -> 67
+	68 -> 69
+	63 -> 69
+	69 -> 70
+	70 -> 71
+	73 -> 74
+	74 -> 75
+	74 -> 76
+	77 -> 78
+	78 -> 79
+	78 -> 80
+	81 -> 82
+	82 -> 83
+	82 -> 84
+	85 -> 86
+	86 -> 87
+	86 -> 88
+	89 -> 90
+	90 -> 91
+	92 -> 93
+	93 -> 94
+	93 -> 95
+	96 -> 97
+	97 -> 98
+	97 -> 99
+	100 -> 101
+	101 -> 102
+	101 -> 103
+	104 -> 105
+	105 -> 106
+	107 -> 108
+	108 -> 109
+	108 -> 110
+	111 -> 112
+	112 -> 113
+	112 -> 114
+	115 -> 116
+	116 -> 117
+	116 -> 118
+	119 -> 120
+	120 -> 121
+	120 -> 122
+	123 -> 124
+	124 -> 125
+	124 -> 126
+	24 -> 73
+	105 -> 73
+	72 -> 77
+	48 -> 77
+	25 -> 81
+	78 -> 81
+	52 -> 85
+	17 -> 85
+	57 -> 89
+	86 -> 89
+	26 -> 92
+	90 -> 92
+	13 -> 96
+	40 -> 96
+	21 -> 100
+	97 -> 100
+	23 -> 104
+	101 -> 104
+	90 -> 107
+	105 -> 107
+	70 -> 111
+	44 -> 111
+	61 -> 115
+	112 -> 115
+	3 -> 119
+	116 -> 119
+	66 -> 123
+	120 -> 123
+}

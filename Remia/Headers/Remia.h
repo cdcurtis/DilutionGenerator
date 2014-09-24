@@ -56,11 +56,11 @@ public:
 
 	void BuilEDTforest(node *T, vector < node* >& F);
 	void BuilEDTforest(vector < node* >& SMT, vector < node* >& F);
-	Vertex* createVertex(int &count, string str,DagGen &dag, VertexType type);
-	void convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& vertices);
-	void convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Vertex *>& vertices, CV* pcv);
+	Vertex* createVertex(int &count, string str,DagGen *dag, VertexType type);
+	void convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices);
+	void convertDataStructureForMixingTree(node *T, DagGen *dag, stack< Vertex *>& vertices, CV* pcv);
 
-	static DagGen RunRemia(int argc, char* argv[]);
+	static DagGen* RunRemia(int argc, char* argv[]);
 
 };
 

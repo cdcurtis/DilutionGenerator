@@ -27,16 +27,16 @@ void GDA :: findSubset(long double *p, int *Qindex, int index, int low, int high
 	findSubset(p,Qindex,index,low+1,high,sum);
 }
 
-DagGen GDA :: RunGDA(int argc, char* argv[])
+DagGen* GDA :: RunGDA(int argc, char* argv[])
 {
 	//(<b1, b2, b3, ..., bn>, Ca, d)
 	//where <b1, b2, b3, ..., bn> are the CF's of the related inputs <A1, A2, A3, ..., An> & n>=2 & each b is a positive real number such that 0<b<=1
 	//Ca is the desired CF of the biofluid & Ca is a positive real number such that 0<=Ca<=1
 	//d is an integer that detrmines the accuracy level of Ca.
 
-	DagGen dag;
+	DagGen* dag = new DagGen();
 	GDA gda;
-	int i,j;
+	unsigned int i,j;
 	char *stopstring;
 	//Getting the input parameters <b1, b2, b3, ..., bn>, Ca, & d
 	for(i=1; i<argc-2; i++)
@@ -199,32 +199,32 @@ DagGen GDA :: RunGDA(int argc, char* argv[])
 
 	//############################ STEP 13 TO 17 ENDS HERE ############################
 
-	/*cout<<"****************************************\nW :-\n";
-	for(i=0; i<W.size()-1; i++)
+	cout<<"****************************************\nW :-\n";
+	for(i=0; i<gda.W.size()-1; i++)
 	{
-		for(j=0; j<W[i].size(); j++)
-			cout<<W[i][j]<<"\t";
+		for(j=0; j<gda.W[i].size(); j++)
+			cout<<gda.W[i][j]<<"\t";
 		cout<<"\n";
 	}
 
-	cout<<"# Valid R's are = "<<validR.size()<<"\n";
-	for(i=0;i<validR.size();i++)
+	cout<<"# Valid R's are = "<<gda.validR.size()<<"\n";
+	for(i=0;i<gda.validR.size();i++)
 	{
 		V = 0.0;
-		for(j=0;j<validR[i].size();j++)
+		for(j=0;j<gda.validR[i].size();j++)
 		{
-			V += validR[i][j];
-			cout<<validR[i][j]<<"\t";
+			V += gda.validR[i][j];
+			cout<<gda.validR[i][j]<<"\t";
 		}
 		cout<<" = "<<V<<"\n";
 	}
-	cout<<"***********************************************\n# Valid Indexes are = "<<validRindex.size()<<"\n";
-    	for(i=0;i<validRindex.size();i++)
+	cout<<"***********************************************\n# Valid Indexes are = "<<gda.validRindex.size()<<"\n";
+    	for(i=0;i<gda.validRindex.size();i++)
 	{
-		for(j=0; j<validRindex[i].size(); j++)
-			cout<<w[validRindex[i][j]]<<"\t";
+		for(j=0; j<gda.validRindex[i].size(); j++)
+			cout<<gda.w[gda.validRindex[i][j]]<<"\t";
 		cout<<"\n";
-	}*/
+	}
 
 /*	cout<<"Your Dag files are in ../output folder\n";
 

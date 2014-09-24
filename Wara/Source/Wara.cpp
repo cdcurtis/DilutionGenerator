@@ -1,4 +1,5 @@
 #include "../Headers/Wara.h"
+#include <limits>
 
 Wara :: Wara()
 {
@@ -616,7 +617,7 @@ void Wara :: Droplet_Replacement(vector < node* >& SMT)
 	}
 }
 
-Vertex* Wara :: createVertex(int &count, string str, DagGen &dag, VertexType type)
+Vertex* Wara :: createVertex(int &count, string str, DagGen *dag, VertexType type)
 {
 	ostringstream oss;
 	Vertex* v;
@@ -624,11 +625,11 @@ Vertex* Wara :: createVertex(int &count, string str, DagGen &dag, VertexType typ
 	oss << count;
 	str += oss.str();
 	count++;
-	v = dag.addVertex(type, str);
+	v = dag->addVertex(type, str);
 	return (v);
 }
 
-void Wara :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& vertices, node *root)
+void Wara :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices, node *root)
 {
 	Vertex* vr;
 	Vertex* vm;
@@ -652,7 +653,7 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& 
 		//Create a Mix vertex
 		vm = createVertex(m_count, m, dag, MIX);
 		//Connect the buffer vertex to the Mix vertex.
-		dag.addEdge(vb, vm);	
+		dag->addEdge(vb, vm);
 		found = false;
 		node *parent = Find_parent(root, NULL, T);
 		for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
@@ -665,11 +666,11 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& 
 			}
 		}
 		//Connect the reagent/previous intermediate node to the current node's mix
-		dag.addEdge(vr, vm);			
+		dag->addEdge(vr, vm);
 		//Create a Split vertex
 		vs = createVertex(s_count, s, dag, SPLIT);
 		//Connect the Mix vertex to the Split vertex.
-		dag.addEdge(vm, vs);
+		dag->addEdge(vm, vs);
 		vertices.push(vs);
 		T->dag_uid.push(vs->uniqueID);
 
@@ -678,7 +679,7 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& 
 			//Create a Waste vertex
 			vw = createVertex(w_count, w, dag, WASTE);
 			//Connect the Split vertex to the Waste vertex.
-			dag.addEdge(vs, vw);	
+			dag->addEdge(vs, vw);
 		}
 	}
 
@@ -699,7 +700,7 @@ Vertex* Wara :: getCorrespondingVertex(node *T, stack< Vertex *>& vertices, Vert
 	return NULL;
 }
 
-void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, stack< Vertex *>& vertices, vector < CV* > PCV)
+void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, stack< Vertex *>& vertices, vector < CV* > PCV)
 {
 	node *x;
 
@@ -731,7 +732,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, s
 		x->dag_uid.push(vs->uniqueID);
 
 		//Connect the Mix vertex to the Split vertex.
-		dag.addEdge(vm, vs);
+		dag->addEdge(vm, vs);
 
 		if(x->target == yes)
 		{
@@ -739,17 +740,17 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, s
 			{
 				Vertex *vo1 = createVertex(o_count, o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT1 vertex.
-				dag.addEdge(vs, vo1);
+				dag->addEdge(vs, vo1);
 
 				Vertex *vo2 = createVertex(o_count, o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT2 vertex.
-				dag.addEdge(vs, vo2);
+				dag->addEdge(vs, vo2);
 			}
 			else
 			{
 				Vertex *vo = createVertex(o_count, o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT vertex.
-				dag.addEdge(vs, vo);
+				dag->addEdge(vs, vo);
 			}
 		}
 
@@ -758,7 +759,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, s
 			//Create a Waste vertex
 			vw = createVertex(w_count, w, dag, WASTE);
 			//Connect the Split vertex to the Waste vertex.
-			dag.addEdge(vs, vw);
+			dag->addEdge(vs, vw);
 		}
 	}
 
@@ -780,7 +781,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, s
 		}
 
 		//Connect the reactant vertex to the Mix vertex.
-		dag.addEdge(v1, vm);
+		dag->addEdge(v1, vm);
 
 		if(x->right->status == non_reusable)
 		{
@@ -800,15 +801,15 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen &dag, s
 		}
 
 		//Connect the reactant vertex to the Mix vertex.
-		dag.addEdge(v2, vm);
+		dag->addEdge(v2, vm);
 	}
 
 }
 
-DagGen Wara :: RunWara(int argc, char* argv[])
+DagGen * Wara :: RunWara(int argc, char* argv[])
 {//numerator1, numerator2, numerator3, numerator4, numerator5, ....., denominator -> All the target CV's should be represented in the numerator/denominator format with common denominator. E.g., {1/1024, 506/1024, 1023/1024} can be passed as {1, 506, 1023, 1024}
 
-	DagGen dag;
+	DagGen * dag = new DagGen();
 	Wara wara;
 	Remia remia;
 	vector < node* > F;	//Forest
@@ -868,17 +869,17 @@ DagGen Wara :: RunWara(int argc, char* argv[])
 			{
 				Vertex *vo1 = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT1 vertex.
-				dag.addEdge(vs, vo1);
+				dag->addEdge(vs, vo1);
 
 				Vertex *vo2 = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT2 vertex.
-				dag.addEdge(vs, vo2);
+				dag->addEdge(vs, vo2);
 			}
 			else
 			{
 				Vertex *vo = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT vertex.
-				dag.addEdge(vs, vo);
+				dag->addEdge(vs, vo);
 			}
 		}
 		else
@@ -902,7 +903,7 @@ DagGen Wara :: RunWara(int argc, char* argv[])
 	return dag;
 }
 
-vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen &dag, vector < int > argv)
+vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen *dag, vector < int > argv)
 {
 	Remia remia;
 	vector < node* > F;	//Forest
@@ -922,7 +923,7 @@ vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen &dag, vector < int > argv
 		PCV.push_back(t_cv);
 	}
 
-	for(int i=0; i<PCV.size();i++)
+	for(unsigned int i=0; i<PCV.size();i++)
 	{
 		node *root = new node();
 		root = remia.BuildMixingTree(PCV[i]);
@@ -939,13 +940,13 @@ vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen &dag, vector < int > argv
 	uid = remia.UID;	//Continue the UID from where remia left
 
 	stack< Vertex *> vertices;
-	for(int i=0; i<F.size();i++)
+	for(unsigned int i=0; i<F.size();i++)
 	{
 		T = F[i];
 		convertDataStructureForPCV(T, dag, vertices, T);
 	}
 
-	for(int i=0; i<SMT.size();i++)
+	for(unsigned int i=0; i<SMT.size();i++)
 	{
 		if(SMT[i]->left == NULL && SMT[i]->right == NULL)
 		{

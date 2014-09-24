@@ -179,7 +179,7 @@ void Remia :: BuilEDTforest(node *T, vector < node* >& F)
 	}
 }
 
-Vertex* Remia :: createVertex(int &count, string str,DagGen &dag, VertexType type)
+Vertex* Remia :: createVertex(int &count, string str,DagGen *dag, VertexType type)
 {
 	ostringstream oss;
 	Vertex* v;
@@ -187,11 +187,11 @@ Vertex* Remia :: createVertex(int &count, string str,DagGen &dag, VertexType typ
 	oss << count;
 	str += oss.str();
 	count++;
-	v = dag.addVertex(type, str);
+	v = dag->addVertex(type, str);
 	return (v);
 }
 
-void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>& vertices)
+void Remia :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices)
 {
 	Vertex* vr;
 	Vertex* vm;
@@ -222,21 +222,21 @@ void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>&
 			vertices.push(vm);
 
 			//Connect the reactant vertex to the Mix vertex.
-			dag.addEdge(vr, vm);
+			dag->addEdge(vr, vm);
 
 			//Create a buffer dispense vertex
 			vb = createVertex(b_count, b, dag, DISPENSE);
 			vertices.push(vb);
 
 			//Connect the buffer vertex to the Mix vertex.
-			dag.addEdge(vb, vm);
+			dag->addEdge(vb, vm);
 
 			//Create a Split vertex
 			vs = createVertex(s_count, s, dag, SPLIT);
 			vertices.push(vs);
 
 			//Connect the Mix vertex to the Split vertex.
-			dag.addEdge(vm, vs);
+			dag->addEdge(vm, vs);
 
 			if(T->left != NULL)
 				T->left->dag_uid.push(vs->uniqueID);
@@ -249,7 +249,7 @@ void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>&
 				vw = createVertex(w_count, w, dag, WASTE);
 				vertices.push(vw);
 				//Connect the Split vertex to the Waste vertex.
-				dag.addEdge(vs, vw);				
+				dag->addEdge(vs, vw);
 			}
 		}
 		else
@@ -276,17 +276,17 @@ void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>&
 				vertices.push(vm);
 
 				//Connect the buffer vertex to the Mix vertex.
-				dag.addEdge(vb, vm);
+				dag->addEdge(vb, vm);
 
 				//Connect the reactant vertex to the Mix vertex.
-				dag.addEdge(vr, vm);
+				dag->addEdge(vr, vm);
 
 				//Create a Split vertex
 				vs = createVertex(s_count, s, dag, SPLIT);
 				vertices.push(vs);
 
 				//Connect the Mix vertex to the Split vertex.
-				dag.addEdge(vm, vs);
+				dag->addEdge(vm, vs);
 
 				if(T->left != NULL)
 					T->left->dag_uid.push(vs->uniqueID);
@@ -299,7 +299,7 @@ void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>&
 					vw = createVertex(w_count, w, dag, WASTE);
 					vertices.push(vw);
 					//Connect the Split vertex to the Waste vertex.
-					dag.addEdge(vs, vw);				
+					dag->addEdge(vs, vw);
 				}
 				
 			}
@@ -309,7 +309,7 @@ void Remia :: convertDataStructureForPCV(node *T, DagGen &dag, stack< Vertex *>&
 	convertDataStructureForPCV(T->right, dag, vertices);
 }
 
-void Remia :: convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Vertex *>& vertices, CV* pcv)
+void Remia :: convertDataStructureForMixingTree(node *T, DagGen *dag, stack< Vertex *>& vertices, CV* pcv)
 {
 	node *x;
 	stack < node* > Q;
@@ -344,13 +344,13 @@ void Remia :: convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Ver
 		x->dag_uid.push(vs->uniqueID);
 
 		//Connect the Mix vertex to the Split vertex.
-		dag.addEdge(vm, vs);
+		dag->addEdge(vm, vs);
 
 		//Create a Waste vertex
 		vw = createVertex(w_count, w, dag, WASTE);
 		vertices.push(vw);
 		//Connect the Split vertex to the Waste vertex.
-		dag.addEdge(vs, vw);
+		dag->addEdge(vs, vw);
 
 		if(x->cv->val == pcv->val)
 		{
@@ -358,7 +358,7 @@ void Remia :: convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Ver
 			vo = createVertex(o_count, o, dag, OUTPUT);
 			vertices.push(vo);
 			//Connect the Split vertex to the OUTPUT vertex.
-			dag.addEdge(vs, vo);
+			dag->addEdge(vs, vo);
 		}
 
 		//Get the left Vertex of the vertex being handled
@@ -372,7 +372,7 @@ void Remia :: convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Ver
 		}
 
 		//Connect the reactant vertex to the Mix vertex.
-		dag.addEdge(vr, vm);
+		dag->addEdge(vr, vm);
 
 		//Get the right Vertex of the vertex being handled
 		for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
@@ -385,17 +385,17 @@ void Remia :: convertDataStructureForMixingTree(node *T, DagGen &dag, stack< Ver
 		}
 
 		//Connect the reactant vertex to the Mix vertex.
-		dag.addEdge(vr, vm);
+		dag->addEdge(vr, vm);
 	}
 
 }
 
-DagGen Remia :: RunRemia(int argc, char* argv[])
+DagGen* Remia :: RunRemia(int argc, char* argv[])
 {
-	DagGen dag;
+	DagGen* dag = new DagGen();
 	Remia r;
 	if(argc == 0 || argv == NULL )
-		return DagGen();
+		return NULL;
 
 	node *root = new node();
 	vector < node* > F;	//Forest
@@ -422,7 +422,7 @@ DagGen Remia :: RunRemia(int argc, char* argv[])
 	}
 */
 	stack< Vertex *> vertices;
-	for(int i=0; i<F.size();i++)
+	for(unsigned int i=0; i<F.size();i++)
 	{
 		T = F[i];
 		r.convertDataStructureForPCV(T, dag, vertices);
@@ -442,7 +442,7 @@ DagGen Remia :: RunRemia(int argc, char* argv[])
 		}
 		Vertex *vo = r.createVertex(r.o_count, r.o, dag, OUTPUT);
 		//Connect the Split vertex to the OUTPUT vertex.
-		dag.addEdge(vs, vo);
+		dag->addEdge(vs, vo);
 	}
 	else
 		r.convertDataStructureForMixingTree(root, dag, vertices, t_cv);

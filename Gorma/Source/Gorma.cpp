@@ -578,7 +578,7 @@ GormaNode* Gorma :: CMT_Enumeration(CV *ct)
 	return best_t;
 }
 
-void Gorma :: createVertex(int &count, string str,DagGen &dag, GormaNode* tmp, stack< Vertex *>& vertices, VertexType type)
+void Gorma :: createVertex(int &count, string str,DagGen *dag, GormaNode* tmp, stack< Vertex *>& vertices, VertexType type)
 {
 	ostringstream oss;
 	Vertex* v;
@@ -586,7 +586,7 @@ void Gorma :: createVertex(int &count, string str,DagGen &dag, GormaNode* tmp, s
 	oss << count;
 	str += oss.str();
 	count++;
-	v = dag.addVertex(type, str);
+	v = dag->addVertex(type, str);
 	tmp->dag_uid.push(v->uniqueID);
 	vertices.push(v);
 }
@@ -604,7 +604,7 @@ Vertex* Gorma :: getCorrespondingVertex(GormaNode *T, stack< Vertex *>& vertices
 	return NULL;
 }
 
-void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
+void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen *dag)
 {
 	stack <GormaNode *> unique_nodes;
 	GormaNode *tmp = new GormaNode();
@@ -634,7 +634,7 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
 			createVertex(s_count, s, dag, tmp, vertices, SPLIT);
 			v = vertices.top();
 
-			dag.addEdge(vTmp, v);
+			dag->addEdge(vTmp, v);
 		}
 		else if(tmp->status == 0 && tmp->cv->val != pcv->val)
 		{	
@@ -644,12 +644,12 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
 			createVertex(s_count, s, dag, tmp, vertices, SPLIT);
 			v = vertices.top();
 
-			dag.addEdge(vTmp, v);
+			dag->addEdge(vTmp, v);
 
 			createVertex(w_count, w, dag, tmp, vertices, WASTE);
 			vTmp = vertices.top();
 
-			dag.addEdge(v, vTmp);
+			dag->addEdge(v, vTmp);
 		}
 		else if(tmp->cv->val == pcv->val)
 		{	
@@ -659,17 +659,17 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
 			createVertex(s_count, s, dag, tmp, vertices, SPLIT);
 			v = vertices.top();
 
-			dag.addEdge(vTmp, v);
+			dag->addEdge(vTmp, v);
 
 			createVertex(w_count, w, dag, tmp, vertices, WASTE);
 			vTmp = vertices.top();
 
-			dag.addEdge(v, vTmp);
+			dag->addEdge(v, vTmp);
 
 			createVertex(o_count, o, dag, tmp, vertices, OUTPUT);
 			vTmp = vertices.top();
 
-			dag.addEdge(v, vTmp);
+			dag->addEdge(v, vTmp);
 		}
 	}
 
@@ -688,31 +688,31 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
 			else
 				parent = getCorrespondingVertex(tmp->left, vertices, SPLIT);	
 
-			dag.addEdge(parent,child);
+			dag->addEdge(parent,child);
 
 			if(tmp->right->status == non_reusable)
 				parent = getCorrespondingVertex(tmp->right, vertices, DISPENSE);
 			else
 				parent = getCorrespondingVertex(tmp->right, vertices, SPLIT);
 	
-			dag.addEdge(parent,child);
+			dag->addEdge(parent,child);
 		}
 	}
 	
-    	dag.generateJSON("../output/Example.json");
-	dag.generateDropletDag("../output/DropletDag.cpp");
-	dag.generateDotyGraph("../output/Example.dot");
+//    	dag->generateJSON("../output/Example.json");
+//	dag->generateDropletDag("../output/DropletDag.cpp");
+//	dag->generateDotyGraph("../output/Example.dot");
 }
 
-DagGen Gorma:: RunGorma(int argc, char * argv [])
+DagGen* Gorma:: RunGorma(int argc, char * argv [])
 {
 	if(argc == 0 || argv == NULL )
-		return DagGen();
+		return NULL;
 
 	Gorma gorma;
 	GormaNode *root = new GormaNode();
 	int num, deno;
-	DagGen dag;
+	DagGen *dag = new DagGen();
 
 	//	cout<<"Enter numerator and denominator of the prime concentration value, e.g. 11/16 or 17/32\nEnter the numerator - ";
 		num = atoi(argv[1]);

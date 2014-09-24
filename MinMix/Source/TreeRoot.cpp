@@ -1,9 +1,10 @@
 #include <iostream>
 #include <math.h>
 #include "../Headers/TreeRoot.h"
+#include <cstdio>
 
 
-Vertex* TreeRoot :: createDagHelp(DagGen & dag ,leaf mixTree ,std :: vector<std :: string> fluidNames)
+Vertex* TreeRoot :: createDagHelp(DagGen * dag ,leaf mixTree ,std :: vector<std :: string> fluidNames)
 {
 	if(mixTree.mt){ 								// checks to see if this leaf is another MixTree or Just a leaf
 		Vertex* leftChild = NULL;
@@ -27,15 +28,15 @@ Vertex* TreeRoot :: createDagHelp(DagGen & dag ,leaf mixTree ,std :: vector<std 
 			mixTree.mt->print(std:: cout,"");
 		}
 		if(leftChild  && rightChild) { 				//Makes sure Left and Right are not NULL
-			Vertex* mix = dag.addVertex(MIX,"Mix");	//Dag Operations
-			dag.addEdge(leftChild, mix);
-			dag.addEdge(rightChild, mix);
+			Vertex* mix = dag->addVertex(MIX,"Mix");	//Dag Operations
+			dag->addEdge(leftChild, mix);
+			dag->addEdge(rightChild, mix);
 
-			Vertex* split = dag.addVertex(SPLIT,"Split");
-			dag.addEdge(mix, split);
+			Vertex* split = dag->addVertex(SPLIT,"Split");
+			dag->addEdge(mix, split);
 
-			Vertex* waste = dag.addVertex(WASTE,"Waste");
-			dag.addEdge(split, waste);
+			Vertex* waste = dag->addVertex(WASTE,"Waste");
+			dag->addEdge(split, waste);
 
 			return split;							//Returns the tail to build on top of it.
 		}
@@ -47,11 +48,11 @@ Vertex* TreeRoot :: createDagHelp(DagGen & dag ,leaf mixTree ,std :: vector<std 
 		char buffer [50];
 		if(fluidNames.size()){								//sets fluid name if one exists
 			sprintf(buffer,"%s",fluidNames[mixTree.ln.fluid].c_str());
-			return dag.addVertex(DISPENSE,buffer);
+			return dag->addVertex(DISPENSE,buffer);
 		}
 		else {												//otherwise make a name
 			sprintf(buffer,"fluid%i", mixTree.ln.fluid);
-			return dag.addVertex(DISPENSE,buffer);
+			return dag->addVertex(DISPENSE,buffer);
 		}
 	}
 	else
@@ -60,16 +61,16 @@ Vertex* TreeRoot :: createDagHelp(DagGen & dag ,leaf mixTree ,std :: vector<std 
 }
 
 
-DagGen TreeRoot :: createDag(std :: vector<std :: string> fluidNames)
+DagGen* TreeRoot :: createDag(std :: vector<std :: string> fluidNames)
 {
 	if(!root)
 		std :: cout << "ERROR:\nMixTree Not Found. Make sure the tree root is connected to a tree.\n";
 
-	DagGen dag;
+	DagGen *dag = new DagGen();
 
 	Vertex* parent = createDagHelp(dag, leaf(root), fluidNames);
-	Vertex* out = dag.addVertex(OUTPUT,"OUTPUT Concentration");
-	dag.addEdge(parent, out);	
+	Vertex* out = dag->addVertex(OUTPUT,"OUTPUT Concentration");
+	dag->addEdge(parent, out);
 
 	return dag;
 }

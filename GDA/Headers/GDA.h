@@ -57,7 +57,7 @@ public:
 	//Using the function findSubset to find the subset from Q such that sum == T +/- 0.5
 	void findSubset(long double *p, int *Qindex, int index, int low, int high, long double sum);
 
-	static DagGen RunGDA(int argc, char* argv[]);
+	static DagGen* RunGDA(int argc, char* argv[]);
 };
 
 #endif

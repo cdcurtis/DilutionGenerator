@@ -1,0 +1,79 @@
+digraph G {
+	0 [label = "Reactant1"];
+	1 [label = "Reactant3"];
+	2 [label = "Reactant4"];
+	3 [label = "Reactant4"];
+	4 [label = "Reactant4"];
+	5 [label = "Mix1"];
+	6 [label = "Split1"];
+	7 [label = "Reactant2"];
+	8 [label = "Reactant3"];
+	9 [label = "Mix2"];
+	10 [label = "Split2"];
+	11 [label = "Reactant1"];
+	12 [label = "Reactant2"];
+	13 [label = "Mix3"];
+	14 [label = "Split3"];
+	15 [label = "Waste1"];
+	16 [label = "Mix4"];
+	17 [label = "Split4"];
+	18 [label = "Waste2"];
+	19 [label = "Mix5"];
+	20 [label = "Split5"];
+	21 [label = "Waste3"];
+	22 [label = "Mix6"];
+	23 [label = "Split6"];
+	24 [label = "Waste4"];
+	25 [label = "Mix7"];
+	26 [label = "Split7"];
+	27 [label = "Waste5"];
+	28 [label = "Mix8"];
+	29 [label = "Split8"];
+	30 [label = "Waste6"];
+	31 [label = "Mix9"];
+	32 [label = "Split9"];
+	33 [label = "Waste7"];
+	34 [label = "Mix10"];
+	35 [label = "Split10"];
+	36 [label = "Waste8"];
+	37 [label = "Output1"];
+	5 -> 6
+	7 -> 5
+	8 -> 5
+	9 -> 10
+	11 -> 9
+	12 -> 9
+	13 -> 14
+	14 -> 15
+	4 -> 13
+	6 -> 13
+	16 -> 17
+	17 -> 18
+	10 -> 16
+	14 -> 16
+	19 -> 20
+	20 -> 21
+	6 -> 19
+	17 -> 19
+	22 -> 23
+	23 -> 24
+	0 -> 22
+	3 -> 22
+	25 -> 26
+	26 -> 27
+	10 -> 25
+	20 -> 25
+	28 -> 29
+	29 -> 30
+	1 -> 28
+	2 -> 28
+	31 -> 32
+	32 -> 33
+	23 -> 31
+	26 -> 31
+	34 -> 35
+	35 -> 36
+	29 -> 34
+	32 -> 34
+	35 -> 37
+}

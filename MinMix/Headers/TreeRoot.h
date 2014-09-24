@@ -13,14 +13,14 @@ struct leaf {
 
 class TreeRoot{
 	MixTree* root;
-	Vertex* createDagHelp(DagGen & dag ,leaf mixTree ,std :: vector<std :: string> fluidNames);
+	Vertex* createDagHelp(DagGen * dag ,leaf mixTree ,std :: vector<std :: string> fluidNames);
 public:
 	TreeRoot(MixTree* r): root(r) { }
 
 	std::ostream& print (std::ostream &out) {
 		return root->print(out,"");
 	}	
-	DagGen createDag(std :: vector<std :: string> fluidNames);
+	DagGen * createDag(std :: vector<std :: string> fluidNames);
 };
 
 #endif /*__TREEROOT_H__*/

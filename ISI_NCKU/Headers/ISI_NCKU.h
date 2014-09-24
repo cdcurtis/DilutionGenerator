@@ -53,10 +53,10 @@ private:
 	void printLevelOrder(node_ISI *R);
 	VerticesISI createVertices(node_ISI *T, Vertex *vs, Vertex *vm);
 	void update_vertex_count(node_ISI *T, node_ISI *currNode, int diff, float add);
-	void createDag(DagGen &dag);
+	void createDag(DagGen *dag);
 public:
 
-	static DagGen RunNCKU(int argc, char* argv[]);
+	static DagGen* RunNCKU(int argc, char* argv[]);
 };
 
 

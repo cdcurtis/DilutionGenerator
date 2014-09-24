@@ -33,10 +33,10 @@ public:
 	Rect_Cood getHighestPrecedenceRectangle(std::vector < Rect_Cood > rectangles, Entry W);
 	Matrix CoDOS_Main(Entry T, Entry W);
 
-	Vertex* createVertex(int count, std::string str,DagGen &dag, VertexType type);
-	void Construct_Graph(Matrix M, DagGen &dag);
+	Vertex* createVertex(int count, std::string str,DagGen *dag, VertexType type);
+	void Construct_Graph(Matrix M, DagGen *dag);
 
-	static DagGen RunCoDOS(int argc, char* argv[]);
+	static DagGen* RunCoDOS(int argc, char* argv[]);
 };
 
 #endif

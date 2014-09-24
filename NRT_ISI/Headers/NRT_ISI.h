@@ -78,11 +78,11 @@ private:
 	void assignCost();
 	void selectWastePair();
 	void pruning();
-	Vertex* createVertex(int &count, string str,DagGen &dag, VertexType type);
-	void getDag(NRTISINode *R, DagGen &dag);
+	Vertex* createVertex(int &count, string str,DagGen *dag, VertexType type);
+	void getDag(NRTISINode *R, DagGen *dag);
 	void printLevelOrder(NRTISINode *R);
 public:
-	static DagGen RunNRT_ISI(int argc, char* argv[]);
+	static DagGen* RunNRT_ISI(int argc, char* argv[]);
 };
 
 

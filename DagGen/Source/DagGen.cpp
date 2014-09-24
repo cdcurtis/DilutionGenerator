@@ -229,14 +229,14 @@ void DagGen :: generateMCFLOWDag(std::string assayName, std::string fileName, in
 	bool changes = true;
 	while(changes){
 		changes =false;
-		for(int i = 0; i < vertices.size(); ++i) {
+		for(unsigned int i = 0; i < vertices.size(); ++i) {
 			if(vertices[i]->type == MIX ){
 				if(namedNodesByID.count(vertices[i]->uniqueID) == 0 ){
 					changes = true;
 					std::vector<int> parents = childrenParents.find(vertices[i]->uniqueID)->second;
 					int count = 0;
-					for(int i = 0; i < parents.size(); ++i)
-						count+= namedNodesByID.count(parents[i]);
+					for(unsigned int j = 0; j < parents.size(); ++j)
+						count+= namedNodesByID.count(parents[j]);
 					if(count == parents.size()) { //this means both parents have been declared. 
 						sprintf(buffer,"O%i",opID++);
 						namedNodesByID.insert(std::pair<int, std::string>(vertices[i]->uniqueID,buffer));
@@ -304,22 +304,19 @@ void DagGen :: generateDotyGraph(std::string fileName)
 
 	out << "digraph G {\n";
 
-	for(int i = 0; i < vertices.size(); ++i){
-		vertices[i]->print();
-		//out << "\t" << vertices[i]->uniqueID << " [label = \"" << vertices[i]->label << "\"];" << std::endl;
+	for(unsigned int i = 0; i < vertices.size(); ++i){
+		//vertices[i]->print();
+		out << "\t" << vertices[i]->uniqueID << " [label = \"" << vertices[i]->label << "\"];" << std::endl;
 
 	}
-	for(int i = 0; i<edges.size(); ++i)
+	for(unsigned int i = 0; i<edges.size(); ++i)
 	{
-		edges[i]->print();
-		//out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID << std::endl;
+		//edges[i]->print();
+		out << "\t" << vertices[edges[i]->parent]->uniqueID << " -> " << vertices[edges[i]->child]->uniqueID << std::endl;
 	}
-	std::cout<<"3"<<std::endl;
 	out << "}\n";
-	std::cout<<"4"<<std::endl;
 	if (&out!=&std::cout)  
-   		delete(&out); 
-	std::cout<<"endingDoty"<<std::endl;
+   		delete(&out);
 }
 
 void DagGen::removeEdge(int loc)

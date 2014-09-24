@@ -384,7 +384,7 @@ void NRT_ISI :: printLevelOrder(NRTISINode *R)
 		{
       			//cout<<"[CF:"<<currNode->cf<<"->ID:"<<currNode->id<<"->Need:"<<currNode->need<<"]\t";
       			//cout<<"[CF:"<<currNode->cf<<"->c:"<<currNode->cost<<"]\t";
-      			cout<<currNode->cf<<"\t";
+      			//cout<<currNode->cf<<"\t";
 			nextLevel.push(currNode->left);
 			nextLevel.push(currNode->right);
 		}
@@ -397,7 +397,7 @@ void NRT_ISI :: printLevelOrder(NRTISINode *R)
 	}
 }
 
-Vertex* NRT_ISI :: createVertex(int &count, string str,DagGen &dag, VertexType type)
+Vertex* NRT_ISI :: createVertex(int &count, string str,DagGen *dag, VertexType type)
 {
 	ostringstream oss;
 	Vertex* v;
@@ -405,11 +405,11 @@ Vertex* NRT_ISI :: createVertex(int &count, string str,DagGen &dag, VertexType t
 	oss << count;
 	str += oss.str();
 
-	v = dag.addVertex(type, str);
+	v = dag->addVertex(type, str);
 	return (v);
 }
 
-void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
+void NRT_ISI :: getDag(NRTISINode *R, DagGen *dag)
 {
 	currentLevel.push(R);	//start reading the tree received from the root
 
@@ -424,9 +424,9 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 	vertices.push(vs);
 
 	//Connect buffer and reagent to mix vertex and mix to split. This split vertex is the root of the tree.
-	dag.addEdge(vr, vm);
-	dag.addEdge(vb, vm);
-	dag.addEdge(vm, vs);
+	dag->addEdge(vr, vm);
+	dag->addEdge(vb, vm);
+	dag->addEdge(vm, vs);
 
 	while(!currentLevel.empty())
 	{
@@ -450,9 +450,9 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 			vm = createVertex(m_count, "Mix", dag, MIX);
 			vs = createVertex(s_count, "Split", dag, SPLIT);
 			//connect vb and vps to vm. connect vm to vs.
-			dag.addEdge(vb, vm);
-			dag.addEdge(vps, vm);
-			dag.addEdge(vm, vs);
+			dag->addEdge(vb, vm);
+			dag->addEdge(vps, vm);
+			dag->addEdge(vm, vs);
 			//again push the newly created split to the vertices stack.
 			vertices.push(vs);
 			//Store the split vertex id in currNode->left node's dagID variable.
@@ -467,9 +467,9 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 			vm = createVertex(m_count, "Mix", dag, MIX);
 			vs = createVertex(s_count, "Split", dag, SPLIT);
 			//connect vb and vps to vm. connect vm to vs.
-			dag.addEdge(vr, vm);
-			dag.addEdge(vps, vm);
-			dag.addEdge(vm, vs);
+			dag->addEdge(vr, vm);
+			dag->addEdge(vps, vm);
+			dag->addEdge(vm, vs);
 			//again push the newly created split to the vertices stack.
 			vertices.push(vs);
 			//Store the split vertex id in currNode->right node's dagID variable.
@@ -481,7 +481,7 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 		if(currNode->target == yes && !(currNode->left != NULL && currNode->right != NULL))
 		{
 			vo = createVertex(o_count, "Output", dag, OUTPUT);
-			dag.addEdge(vps, vo);
+			dag->addEdge(vps, vo);
 		}
 //case 1 -> if the current node is not a target and its current cost is not -1, it means it has a waste droplet, e.g., node with CF 52 in fig 3 of the paper. This logic is true because if a non-target node is being used to generate another target in pruning stage, that node's cose is marked -1, like for node with CF 56 in fig 3.
 //case 2 -> if currNode has no child, & its cost is not marked -1, it has a waste. This logic is true because, in the pruning stage, if a target leaf node is used to generate another target CF, that leaf node's cost is marked -1.
@@ -489,7 +489,7 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 		if((currNode->target == no && currNode->cost != -1) || ((currNode->left == NULL && currNode->right == NULL) && currNode->cost != -1))
 		{
 			vw = createVertex(w_count, "Waste", dag, WASTE);
-			dag.addEdge(vps, vw);
+			dag->addEdge(vps, vw);
 		}
 
 		if (currentLevel.empty()) 	//when done with one level, go to next
@@ -499,10 +499,10 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen &dag)
 }
 
 //Calls all the functions.
-DagGen NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
+DagGen* NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
 {
 	//CV1, CV2, CV3, CV4, CV5, .... -> All the target CV's to be achieved
-	DagGen dag;
+	DagGen *dag = new DagGen();
 	NRT_ISI nrt;
 
 	int cf = 0;
@@ -571,11 +571,11 @@ DagGen NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
 	//Printing all the trees in the forest in level order
 	for(stack<NRTISINode*>dummy = nrt.forest; !dummy.empty(); dummy.pop())
 	{
-		nrt.printLevelOrder(dummy.top());
+		//nrt.printLevelOrder(dummy.top());
 		nrt.getDag(dummy.top(), dag);
 	}
 
-	cout<<"All the files corresponding to the DAG are in ../output folder.\n";
+	//cout<<"All the files corresponding to the DAG are in ../output folder.\n";
 
 	for(int i=0; i<nrt.wastePair.size(); i++)
 	{
@@ -595,11 +595,11 @@ DagGen NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
 		nrt.vo = nrt.createVertex(nrt.o_count, "Output", dag, OUTPUT);
 		nrt.vw = nrt.createVertex(nrt.w_count, "Waste", dag, WASTE);
 
-		dag.addEdge(nrt.vr, nrt.vm);
-		dag.addEdge(nrt.vps, nrt.vm);
-		dag.addEdge(nrt.vm, nrt.vs);
-		dag.addEdge(nrt.vs, nrt.vo);
-		dag.addEdge(nrt.vs, nrt.vw);
+		dag->addEdge(nrt.vr, nrt.vm);
+		dag->addEdge(nrt.vps, nrt.vm);
+		dag->addEdge(nrt.vm, nrt.vs);
+		dag->addEdge(nrt.vs, nrt.vo);
+		dag->addEdge(nrt.vs, nrt.vw);
 	}
 
     return dag;

@@ -28,7 +28,7 @@ Matrix CoDOS :: ConstructRecipeMatrix(Entry T)
 	int val;
 
 	//Constructing the recipe matrix
-	for(int i = 0; i<T.size(); i++)
+	for(unsigned int i = 0; i<T.size(); i++)
 	{
 		Entry row;
 		Entry r;
@@ -45,7 +45,7 @@ Matrix CoDOS :: ConstructRecipeMatrix(Entry T)
 			row.push_back(0);
 			val--;
 		}
-		for(int j = 0; j<r.size(); j++)
+		for(unsigned int j = 0; j<r.size(); j++)
 			row.push_back(r[j]);
 
 		M.push_back(row);
@@ -59,7 +59,7 @@ std::vector < Rect_Cood > CoDOS :: getRectangle(Matrix M)
 {
 	Rect_Cood K;
 	std::vector < Rect_Cood > rectangles;
-	int i, j;
+	unsigned int i;
 	int N;
 	int x1, y1, x2, y2, x3, y3, x4, y4;
 	for(i = 0; i<M.size(); i++)
@@ -121,7 +121,7 @@ Rect_Cood CoDOS :: getHighestPrecedenceRectangle(std::vector < Rect_Cood > recta
 	int g;
 	float v;
 
-	for(int i = 0; i<rectangles.size(); i++)
+	for(unsigned int i = 0; i<rectangles.size(); i++)
 	{
 		g = 0;
 		v = 0.0;
@@ -152,7 +152,7 @@ Rect_Cood CoDOS :: getHighestPrecedenceRectangle(std::vector < Rect_Cood > recta
 		volume.push_back(v);
 	}
 
-	for(int i = 0; i<rectangles.size(); i++)
+	for(unsigned int i = 0; i<rectangles.size(); i++)
 	{
 		if(max_gain < gain[i])
 		{
@@ -226,14 +226,16 @@ Matrix CoDOS :: CoDOS_Main(Entry T, Entry W)
 	return M;
 }
 
-Vertex* CoDOS :: createVertex(int count, std::string str,DagGen *dag, VertexType type)
+Vertex* CoDOS :: createVertex(std::string str,DagGen *dag, VertexType type, int count)
 {
 	std::ostringstream oss;
 	Vertex* v;
 
-	oss << count;
-	str += oss.str();
-
+	if(count != -1)
+	{
+		oss << count;
+		str += oss.str();
+	}
 	v = dag->addVertex(type, str);
 	return (v);
 }
@@ -258,14 +260,14 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 
 				if(index[i].size() == 1)
 				{
-					Vertex* vr = createVertex(i+1, "Reactant", dag, DISPENSE);
+					Vertex* vr = createVertex("Reactant", dag, DISPENSE, i+1);
 					ver.push_back(vr->uniqueID);
 					vertices.push(vr);
 				}
 				else if(flag == true)
 				{
-					Vertex* vm = createVertex(m++, "Mix", dag, MIX);
-					vs = createVertex(s++, "Split", dag, SPLIT);
+					Vertex* vm = createVertex("Mix", dag, MIX);
+					vs = createVertex("Split", dag, SPLIT);
 					vertices.push(vs);
 					ver.push_back(vs->uniqueID);
 					dag->addEdge(vm, vs);
@@ -273,21 +275,21 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 					{
 						if(index[i][j] < NR)
 						{
-							Vertex* vr = createVertex(index[i][j]+1, "Reactant", dag, DISPENSE);
+							Vertex* vr = createVertex("Reactant", dag, DISPENSE, index[i][j]+1);
 							dag->addEdge(vr, vm);
 						}
 						else
 						{
-							Vertex* vm1 = createVertex(m++, "Mix", dag, MIX);
-							Vertex* vs1 = createVertex(s++, "Split", dag, SPLIT);
-							Vertex* vw = createVertex(w++, "Waste", dag, WASTE);
+							Vertex* vm1 = createVertex("Mix", dag, MIX);
+							Vertex* vs1 = createVertex("Split", dag, SPLIT);
+							Vertex* vw = createVertex("Waste", dag, WASTE);
 
 							dag->addEdge(vm1, vs1);
 							dag->addEdge(vs1, vw);
 							dag->addEdge(vs1, vm);
 							for(unsigned int k = 0; k<index[index[i][j]].size(); k++)
 							{
-								Vertex* vr = createVertex(index[index[i][j]][k]+1, "Reactant", dag, DISPENSE);
+								Vertex* vr = createVertex("Reactant", dag, DISPENSE, index[index[i][j]][k]+1);
 
 								dag->addEdge(vr, vm1);
 							}
@@ -320,9 +322,9 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 			{
 				Vertex* v1;
 				Vertex* v2;
-				Vertex* vm = createVertex(m++, "Mix", dag, MIX);
-				Vertex* vs = createVertex(s++, "Split", dag, SPLIT);
-				Vertex* vw = createVertex(w++, "Waste", dag, WASTE);
+				Vertex* vm = createVertex("Mix", dag, MIX);
+				Vertex* vs = createVertex("Split", dag, SPLIT);
+				Vertex* vw = createVertex("Waste", dag, WASTE);
 				dag->addEdge(vm, vs);
 				dag->addEdge(vs, vw);
 				for(std::stack< Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
@@ -338,7 +340,7 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 					level[i-1].push_back(vs->uniqueID);
 				else
 				{
-					Vertex* vo = createVertex(o++, "Output", dag, OUTPUT);
+					Vertex* vo = createVertex("Output", dag, OUTPUT);
 					dag->addEdge(vs, vo);
 				}
 				vertices.push(vs);
@@ -356,7 +358,8 @@ DagGen* CoDOS :: RunCoDOS(int argc, char* argv[])
 	Matrix M;
 	Entry T;	//T holds the target concentration which is concentration of each reactant in the target droplet, like <6,7,3>
 	Entry W;	//W holds the cost weights of reactants.
-	int val_cv = 0, tmp_val_cv, i;
+	int val_cv = 0, tmp_val_cv;
+	unsigned int i;
 
 	if(atoi(argv[1]) == 1)
 		for(i = 2; i<argc; i = i+2)

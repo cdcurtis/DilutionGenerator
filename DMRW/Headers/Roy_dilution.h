@@ -80,9 +80,9 @@ public:
 	//methods
 	DiluteRet* PerformDilution(DiluteDroplet* di,DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops);
 	VertexCounts* CreateDag(DagGen & Dag, pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
-	pair<VertexCounts*, DagGen*> CreateDag_IDMAHelper(DagGen & Dag, pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals, DagGen* M);
+	pair<VertexCounts*, DagGen*> CreateDag_IDMAHelper(DagGen * Dag, pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals, DagGen* M);
 	DagGen* CreateIDMADag(VertexCounts* VC, DagGen* M);
-	static DagGen RoyDilute_Process(int argc, char** argv);
+	static DagGen* RoyDilute_Process(int argc, char** argv);
 	static DiluteRet* RoyDilute_IDMA(DiluteDroplet * L, DiluteDroplet* R, double tol, double Ct, int n);
 	static DiluteRet* populateIDMA_M(double tolerance, double DesiredConcentrate, DagGen* M, int num_ops);
 	//TODO::move expander back here. Makes more sense

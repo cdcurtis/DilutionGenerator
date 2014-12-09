@@ -7,11 +7,11 @@
 #include "../Headers/Griffith_dilution.h"
 #include <cstdlib>
 
-Vertex2* GriffDilute::addVertex(DagGen & dag, VertexType vertexType, std:: string label, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded)
+Vertex2* GriffDilute::addVertex(DagGen * dag, VertexType vertexType, std:: string label, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded)
 {
-	int IDs = dag.getID();
+	int IDs = dag->getID();
 	Vertex2* v =  new Vertex2(vertexType,label,IDs++, dl, dh, dropsAvail, dropsNeeded);
-	dag.addVertex(vertexType, label);
+	dag->addVertex(vertexType, label);
 	vertices.push_back(v);
 	return v;
 }
@@ -464,7 +464,7 @@ string GriffDilute::findLabel(Vertex2* vertex)
 
 }
 
-VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals)
+VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals)
 {
 	bool debug = false;
 	bool debug2 = false;
@@ -532,7 +532,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre1 if"<<flush<<endl; }
 			ostringstream convert1;
 			convert1 << sampleCount;
-			string label1 = sample + convert1.str();
+			string label1 = sample;// + convert1.str();
 			pre1 = this->addVertex(dag, DISPENSE, label1, NULL, NULL, 1, 1);
 			pre1->type = DISPENSE;
 			sampleCount++;
@@ -542,7 +542,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre1 else if"<<flush<<endl; }
 			ostringstream convert2;
 			convert2 << bufferCount;
-			string label2 = buffer + convert2.str();
+			string label2 = buffer;// + convert2.str();
 			pre1 = this->addVertex(dag, DISPENSE, label2, NULL, NULL, 1, 1);
 			pre1->type = DISPENSE;
 			bufferCount++;
@@ -568,7 +568,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre2 if"<<flush<<endl; }
 			ostringstream convert1;
 			convert1 << sampleCount;
-			string label1 = sample + convert1.str();
+			string label1 = sample;// + convert1.str();
 			pre2 = this->addVertex(dag, DISPENSE, label1, NULL, NULL, 1, 1);
 			pre2->type = DISPENSE;
 			sampleCount++;
@@ -578,7 +578,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre2 else if"<<flush<<endl; }
 			ostringstream convert2;
 			convert2 << bufferCount;
-			string label2 = buffer + convert2.str();
+			string label2 = buffer;// + convert2.str();
 			pre2 = this->addVertex(dag, DISPENSE, label2, NULL, NULL, 1, 1);
 			pre2->type = DISPENSE;
 			bufferCount++;
@@ -603,14 +603,14 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 		ostringstream convertMix;
 		convertMix << mixCount;
 
-		string mixLabel = mix + convertMix.str();
+		string mixLabel = mix;// + convertMix.str();
 		Vertex2* mix = this->addVertex(dag, MIX, mixLabel, NULL, NULL, 1, 1);
 		mix->type = MIX;
 		mixCount++;
 
 		//connect incoming mix droplets to mix node, and populate dh, dl (incoming drops of mix)
-		dag.addEdge(pre1, mix);
-		dag.addEdge(pre2, mix);
+		dag->addEdge(pre1, mix);
+		dag->addEdge(pre2, mix);
 
 		if(debug){ cout<<"mix added"<<flush<<endl;}
 
@@ -620,12 +620,12 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 		//create split vertex, connect mix to split, and populate dh, dl (outgoing drops of split)
 		ostringstream convertSplit;
 		convertSplit << splitCount;
-		string splitLabel = split + convertSplit.str();
+		string splitLabel = split;// + convertSplit.str();
 		Vertex2* split = this->addVertex(dag, SPLIT, splitLabel, NULL, NULL, 1, 1);
 		split->type = SPLIT;
 		splitCount++;
 
-		dag.addEdge(mix, split);
+		dag->addEdge(mix, split);
 
 		if(debug){ cout<<"split added"<<flush<<endl;}
 
@@ -636,12 +636,12 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 		//Create output vertex, connect split dl to waste vertex
 		ostringstream convertWaste;
 		convertWaste << wasteCount;
-		string wasteLabel = waste + convertWaste.str();
+		string wasteLabel = waste;// + convertWaste.str();
 		Vertex2* waste= this->addVertex(dag, OUTPUT, wasteLabel, NULL, NULL, 1, 1);
 		waste->type = OUTPUT;
 		wasteCount++;
 		//add waste to graph via edge
-		dag.addEdge(split, waste);
+		dag->addEdge(split, waste);
 
 		for(unsigned p = 0; p < Mixes.size(); p++)
 		{
@@ -696,13 +696,13 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 
 	ostringstream convert;
 	convert << 1;
-	string outLable = "Output"+convert.str();
+	string outLable = "Output";//+convert.str();
 	Vertex2* out = this->addVertex(dag, OUTPUT, outLable, NULL, NULL, 1, 1);
 
-	dag.addEdge(fsplitIndex, out->uniqueID);
+	dag->addEdge(fsplitIndex, out->uniqueID);
 
 	if(debug2){outputVertices();}
-	if(debug2){dag.outputEdges();}
+	if(debug2){dag->outputEdges();}
 
 	VertexCounts* ret = new VertexCounts;
 	ret->bufferCount = bufferCount;
@@ -714,11 +714,11 @@ VertexCounts* GriffDilute::CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<
 	return ret;
 }
 
-void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
+void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 {
 	bool Debug = true;
 	bool Debug2 = true;
-	vector<Edge*> edges = dag.Edges();
+	vector<Edge*> edges = dag->Edges();
 	int sampleCount = VC->sampleCount;
 	int bufferCount = VC->bufferCount;
 	int mixCount = VC->mixCount;
@@ -781,7 +781,7 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 								convertP << countVal;
 								VertexType T1 = vertices.at(pID)->type;
 								//string pLabel = vertices.at(pID)->label + "." + convertP.str();
-								string pLabel = findLabel(vertices.at(pID)) +  convertP.str();
+								string pLabel = findLabel(vertices.at(pID));// +  convertP.str();
 								p = this->addVertex(dag, T1, pLabel, NULL, NULL, 1, 1);
 
 								count++;
@@ -808,7 +808,7 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 								ostringstream convertC;
 								convertC << countVal;
 								VertexType T2 = vertices.at(cID)->type;
-								string cLabel = findLabel(vertices.at(cID)) + convertC.str();
+								string cLabel = findLabel(vertices.at(cID));// + convertC.str();
 								c = this->addVertex(dag, T2, cLabel, NULL, NULL, 1, 1);
 
 								count++;
@@ -829,7 +829,7 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 							}
 
 							//create the copy edge
-							dag.addEdge(p,c);
+							dag->addEdge(p,c);
 						}
 
 						if(j == vertices.at(i)->dh->count - 2) //if this is the last iteration of the copy
@@ -852,7 +852,7 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 										if(first == false)
 										{
 											edges.erase(edges.begin()+t, edges.begin()+t+1);
-											dag.removeEdge(t);
+											dag->removeEdge(t);
 										}
 										first = false;
 									}
@@ -863,7 +863,7 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 							for(unsigned u = 0; u < lastVertices.size(); u++)
 							{
 								//connect copy vertices to associated children
-								dag.addEdge(lastVertices.at(u), lastOut.at(u));
+								dag->addEdge(lastVertices.at(u), lastOut.at(u));
 
 								//because it's a split make the new waste droplets.
 								if(vertices.at(lastID)->type == SPLIT)
@@ -872,12 +872,12 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 									int countVal = VC->wasteCount;
 									ostringstream convertWaste;
 									convertWaste << countVal;
-									string wasteLabel = "waste" + convertWaste.str();
+									string wasteLabel = "waste";// + convertWaste.str();
 									Vertex2* waste = this->addVertex(dag, OUTPUT, wasteLabel, NULL, NULL, 1, 1);
 
 									waste->type = OUTPUT;
 									count++;
-									dag.addEdge(lastVertices.at(u), waste->uniqueID);
+									dag->addEdge(lastVertices.at(u), waste->uniqueID);
 								}
 							}
 						}
@@ -890,18 +890,18 @@ void GriffDilute::expandDag(DagGen & dag, VertexCounts* VC)
 	return;
 }
 
-DagGen GriffDilute::RunGriffith(int argc, char ** argv)
+DagGen* GriffDilute::RunGriffith(int argc, char ** argv)
 {
-	int num_ops = atoi(argv[0]);
-	double DesiredConcentrate = atof(argv[1]);
-	double tolerance = atof(argv[2]);
+	int num_ops = atoi(argv[1]);
+	double DesiredConcentrate = atof(argv[2]);
+	double tolerance = atof(argv[3]);
 
 	DiluteDroplet* db = new DiluteDroplet;
 	db->Concentration = Rational(0,pow(2,num_ops));
 	DiluteDroplet* di = new DiluteDroplet;
 	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
 
-	DagGen dag;
+	DagGen* dag = new DagGen();
 	GriffDilute GD;
 
 	pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals;
@@ -921,19 +921,19 @@ DagGen GriffDilute::RunGriffith(int argc, char ** argv)
 	cout<<" //////////after expand Dag\\\\\\\\\ "<<flush<<endl;
 
 	cout<<" //////////before generate DropletDag\\\\\\\\\ "<<flush<<endl;
-	dag.generateDropletDag("DropletDagT.cpp");
+//	dag.generateDropletDag("DropletDagT.cpp");
 	cout<<" //////////after generate DropletDag\\\\\\\\\ "<<flush<<endl;
 
 	cout<<" //////////before generate DotyGraph\\\\\\\\\ "<<flush<<endl;
-	dag.generateDotyGraph("Test.dot");
+	//dag.generateDotyGraph("Test.dot");
 	cout<<" //////////after generate DotyGrpah\\\\\\\\\ "<<flush<<endl;
 
 	cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;
 	int base = valid.base;
 	vector<double> endConcentration = valid.endConcentration;
-	bool value = dag.isValidSingleReactantDilution(endConcentration, base);
-	cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;
-
+	//bool value = dag->isValidSingleReactantDilution(endConcentration, base);
+	//cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;
+/*
 	if(value)
 	{
 		cout<<"Validity test passed"<<flush<<endl;
@@ -942,6 +942,6 @@ DagGen GriffDilute::RunGriffith(int argc, char ** argv)
 	{
 		cout<<"validity test not passed"<<flush<<endl;
 	}
-
+*/
 	return dag;
 }

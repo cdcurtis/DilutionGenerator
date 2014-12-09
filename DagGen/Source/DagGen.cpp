@@ -260,7 +260,7 @@ void DagGen :: generateMCFLOWDag(std::string assayName, std::string fileName, in
 	}
 }
 
-void DagGen :: generateDropletDag(std::string fileName, int volume, int time )
+void DagGen :: generateDropletDag(std::string fileName, int volume, int Mtime , int Stime )
 {
 	//if single output name output and waste
 	//if  multi out name diff.
@@ -280,9 +280,9 @@ void DagGen :: generateDropletDag(std::string fileName, int volume, int time )
         if (vertices[i]->type == DISPENSE) // Id, Type, FluidName, Volume, Name
             out << vertices[i]->uniqueID << ", DISPENSE, "  << vertices[i]->label/*vertices[i]->portName*/ <<  ", " << volume << ", " << vertices[i]->label << ")\n";
         else if (vertices[i]->type == MIX) // Id, Type, NumDropsBefore, Time (s), Name
-            out << vertices[i]->uniqueID << ", MIX, " << 2 <<  ", " << time << ", " << vertices[i]->label << ")\n";
+            out << vertices[i]->uniqueID << ", MIX, " << 2 <<  ", " << Mtime << ", " << vertices[i]->label << ")\n";
         else if (vertices[i]->type == SPLIT) // Id, Type, NumDropsAfter, Time (s), Name
-            out << vertices[i]->uniqueID << ", SPLIT, " << 2 <<  ", " << time << ", " << vertices[i]->label << ")\n";
+            out << vertices[i]->uniqueID << ", SPLIT, " << 2 <<  ", " << Stime << ", " << vertices[i]->label << ")\n";
         else if (vertices[i]->type == OUTPUT || vertices[i]->type == WASTE) // Id, Type, SinkName, Name
             out << vertices[i]->uniqueID << ", OUTPUT, " << "OUTPUT"/*vertices[i]->portName*/ << ", " << vertices[i]->label << ")\n";
         else // Id, Type, Name

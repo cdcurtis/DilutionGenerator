@@ -12,10 +12,10 @@ using namespace std;
 
 DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops)
 {
-	return NULL;
+
 	bool Debug = false;
 	bool Debug2 = false;
-	bool Debug3 = false;
+	bool Debug3 = true;
 
 	if(Debug){cout << "desired concentration is:" << DesiredConcentrate << endl;}
 	if(Debug3)
@@ -282,7 +282,7 @@ DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, doubl
 	return ret;
 } // end perform dilution
 
-pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals, DagGen* M)
+pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals, DagGen* M)
 {
 	bool Debug = false;
 	bool Debug2 = false;
@@ -419,8 +419,8 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair<
 		mix->type = MIX;
 		mixCount++;
 
-		dag.addEdge(pre1, mix);
-		dag.addEdge(pre2, mix);
+		dag->addEdge(pre1, mix);
+		dag->addEdge(pre2, mix);
 		if(Debug)
 		{
 			cout<<"edge added1.1: "<<pre1->uniqueID<<", "<<mix->uniqueID<<flush<<endl;
@@ -440,7 +440,7 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair<
 		split->type = SPLIT;
 		splitCount++;
 
-		dag.addEdge(mix, split);
+		dag->addEdge(mix, split);
 		if(Debug)
 		{
 			cout<<"edge added2.1: "<<mix->uniqueID<<", "<<split->uniqueID<<flush<<endl;
@@ -517,7 +517,7 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair<
 	Vertex2 * out = this->addVertex(dag, OUTPUT, outLabel, NULL, NULL, 1, 1);
 
 	//this->addEdge(fsplitIndex, out->uniqueID);
-	dag.addEdge(fsplitIndex, out->uniqueID);
+	dag->addEdge(fsplitIndex, out->uniqueID);
 	if(Debug)
 	{
 		cout<<"edge added3.1: "<<fsplitIndex<<", "<<out->uniqueID<<flush<<endl;
@@ -526,8 +526,8 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair<
 	out->dh = NULL;
 	out->dl = NULL;
 
-	if(Debug){dag.outputVertices();}
-	if(Debug){dag.outputEdges();}
+	if(Debug){dag->outputVertices();}
+	if(Debug){dag->outputEdges();}
 
 	VertexCounts* VC = new VertexCounts;
 	VC->bufferCount = bufferCount;
@@ -538,7 +538,7 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen & dag, pair<
 
 	if(Debug2){cout<<"temp outputVertices = "<<flush<<endl;}
 
-	M = (new DagGen(dag));
+	M = (new DagGen(*dag));
 
 	if(Debug2){M->outputVertices();}
 
@@ -713,20 +713,20 @@ DagGen* RoyDilute::CreateIDMADag(VertexCounts* VC, DagGen* M)
 	return M;
 }
 
-DagGen RoyDilute::RoyDilute_Process(int argc, char** argv)
+DagGen* RoyDilute::RoyDilute_Process(int argc, char** argv)
 {
 	bool Debug = true;
 	RoyDilute RD;
-	DagGen dag;
+	DagGen* dag = new DagGen();
 
-	int num_ops = atoi(argv[0]);
-	double DesiredConcentrate = atof(argv[1]);
-	double tolerance = atof(argv[2]);
+	int num_ops = atoi(argv[1]);
+	double DesiredConcentrate = atof(argv[2]);
+	double tolerance = atof(argv[3]);
 
 	int numMS = 0;
 	int numW = 0;
-	DiluteDroplet* db;
-	DiluteDroplet* di;
+	DiluteDroplet* db = new DiluteDroplet();
+	DiluteDroplet* di = new DiluteDroplet();
 
 	
 	pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals;
@@ -744,36 +744,36 @@ DagGen RoyDilute::RoyDilute_Process(int argc, char** argv)
 	if(Debug){cout<<"/////////after create dag\\\\\\\\\\"<<flush<<endl;}
 
 
-	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
-	if(Debug){dag.generateDropletDag("DMRWafterCreateT.cpp");}
-	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){dag->generateDropletDag("DMRWafterCreateT.cpp");}
+//	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
 
-	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
-	if(Debug){dag.generateDotyGraph("DMRWafterCreate.dot");}
-	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){dag->generateDotyGraph("DMRWafterCreate.dot");}
+//	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
 
 	if(Debug){cout<<"/////////before dag expander\\\\\\\\\\"<<flush<<endl;}
 	RD.expander(dag, VC);
 	if(Debug){cout<<"/////////after dag expander\\\\\\\\\\"<<flush<<endl;}
 
-	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
-	dag.generateDropletDag("DMRWafterExpandT.cpp");
-	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+//	dag.generateDropletDag("DMRWafterExpandT.cpp");
+//	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
 
-	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
-	dag.generateDotyGraph("DMRWafterExpand.dot");
-	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
+//	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
+//	dag.generateDotyGraph("DMRWafterExpand.dot");
+//	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
 
-	numW = dag.calcNumWaste();
-	numMS = dag.calcNumMixSplits();
+	numW = dag->calcNumWaste();
+	numMS = dag->calcNumMixSplits();
 
 	pair<int, int> ret = make_pair(numW, numMS);
 
 
-	if(Debug){cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;}
-	int base = valid->base;
-	vector<double> endConcentration = valid->endConcentration;
-	bool value = dag.isValidSingleReactantDilution(endConcentration, base);
+	//if(Debug){cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;}
+	//int base = valid->base;
+	//vector<double> endConcentration = valid->endConcentration;
+	/*bool value = dag.isValidSingleReactantDilution(endConcentration, base);
 	if(Debug){cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;}
 
 	if(value)
@@ -783,9 +783,9 @@ DagGen RoyDilute::RoyDilute_Process(int argc, char** argv)
 	else
 	{
 		cout<<"validity test not passed"<<flush<<endl;
-	}
+	}*/
 
-	VC->H->~DagGen();
+	//VC->H->~DagGen();
 	return dag;
 }
 

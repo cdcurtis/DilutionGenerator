@@ -13,72 +13,70 @@
 #include "../Headers/WeightedGraph.h"
 #include "../Headers/MTC.h"
 
-DagGen MTC::RunMTC(int argc, char** argv)
+DagGen* MTC::RunMTC(int argc, char** argv)
 {
-	std::string filename = argv[0];
+	MTC mtc;
+	std::string filename = argv[1];
+	std::string basedirectory = "C:\\Users\\Chris\\Documents\\DilutionGenerator\\DilutionGenerator\\";
 
-	MTCPhase1(argc, argv);
+//	mtc.MTCPhase1(argc, argv);
 
-	std:: string runTravelingSales = "LKH " + filename +".par";
-	system(runTravelingSales.c_str());
+//	std:: string runTravelingSales = basedirectory + "MTC\\lkh.exe " + filename +".par";
+//	system(runTravelingSales.c_str());
 
 	std::vector<std::string> phase2;
 
-	phase2.push_back(filename + "Tour.txt");
-	phase2.push_back(filename + ".MTC");
+	phase2.push_back(basedirectory + filename + "Tour.txt");
+	phase2.push_back(basedirectory + filename + ".MTC");
 
-	MTCPhase2(phase2);
+	return mtc.MTCPhase2(phase2);
+	return NULL;
 }
 
 void MTC::MTCPhase1(int argc, char ** argv)
 {
-		std::stringstream ss;
-		ss << argv[argc-1];
+	std::string fileName = argv[1];
+	int SizeOfGraph = atoi(argv[2]);
+   	int conCount=1;
+	BrujinGraph n(SizeOfGraph);
 
-		std::string fileName;
-		ss >> fileName;
-		std::cout<<"FileName:" << fileName<<std::endl;
-		std::cout<< "Starting MTC Phase1 for File: "<<fileName<<std::endl;
-		int SizeOfGraph;
-		ss >> SizeOfGraph;
-
-
-
-		BrujinGraph n(SizeOfGraph);
-	   	WeightedGraph WG(&n);
-	   	WG.addVertex(n.allNodes[0]);
-
-	   	int concentrations= -1;
-	   	int conCount=1;
-		while(ss>>concentrations){
-			++conCount;
-	   		WG.addVertex(n.allNodes[concentrations]);
-	   	}
-
-	    WG.calculateEdges();
-	    if(!WG.isComplete())
-	    	std::cout<<"ERROR: Graph could not be completed.\n";
-	    LKHFileMaker atsp (fileName);
-	    atsp.makeATSPParameterFile(10);
-	    atsp.makeATSPProblemFile(conCount);
+	//n.print(std::cout);
+   	WeightedGraph WG(&n);
+   	WG.addVertex(n.allNodes[0]);
+   	for(int i = 3; i<argc; ++i){
+		WG.addVertex(n.allNodes[atoi(argv[i])]);
+		++conCount;
+   	}
+	std::cout<<"FileName:" << fileName<<std::endl;
+	std::cout<< "Starting MTC Phase1 for File: "<<fileName<<std::endl;
 
 
-	    WG.printMatrix(atsp.pFileStream);
-	    atsp.pFileStream<<"EOF";
-	    atsp.pFileStream.close();
 
+    WG.calculateEdges();
+    if(!WG.isComplete())
+    	std::cout<<"ERROR: Graph could not be completed.\n";
 
-	    WG.printMTC(fileName+".MTC");
+   //	WG.printDotyGraph("WeightedGraph.dot");
+  // 	WG.printMatrix(std::cout);
 
-	    std::cout<< "Finished ATSP Prep on: "<<fileName<<std::endl;
-	    return ;
+    LKHFileMaker atsp (fileName);
+    atsp.makeATSPParameterFile(10);
+    atsp.makeATSPProblemFile(conCount);
+
+    WG.printMatrix(atsp.pFileStream);
+    atsp.pFileStream<<"EOF";
+    atsp.pFileStream.close();
+
+    WG.printMTC(fileName+".MTC");
+    std::cout<< "Finished ATSP Prep on: "<<fileName<<std::endl;
+    return ;
 }
 
-DagGen MTC::MTCPhase2(std::vector<std::string> argv)
+DagGen* MTC::MTCPhase2(std::vector<std::string> argv)
 {
 	if(argv.size() < 2) {
 		std::cout<< "ERROR: please make sure that the input is <TourFile> <MTCFile>"<<std::endl;
-			return DagGen();
+			return NULL;
 		}
 		int mixSplits = -1;
 		BrujinGraph bruGraph;
@@ -94,29 +92,34 @@ DagGen MTC::MTCPhase2(std::vector<std::string> argv)
 		std::vector<int> tourOrder = parseTourFile(tourFile, mixSplits);
 		parseMTCFile (MTCFile, bruGraph, weiGraph);
 
+		for(unsigned int i = 0; i < tourOrder.size(); ++i)
+			std::cout<< tourOrder[i]<<std::endl;
+
 		tourOrder = reorderTour(tourOrder);
+		for(unsigned int i = 0; i < tourOrder.size(); ++i)
+					std::cout<< tourOrder[i]<<std::endl;
 		int cycledWeight = weiGraph.vertices[tourOrder[tourOrder.size()-1]-1].edges[0].weight;
 		mixSplits -= cycledWeight;
 
-		DagGen dag = CreateDag(tourOrder, weiGraph);
+		DagGen* dag = new DagGen( CreateDag(tourOrder, weiGraph));
 		//dag.generateDotyGraph(filename + ".dot");
 		//dag.generateJSON(filename + ".json");
-		dag.DagName() = filename;
-		dag.generateDropletDag(filename+".txt");
+		dag->DagName() = filename;
+//		dag.generateDropletDag(filename+".txt");
 
 		std::vector<double> testValidate;
-		for(int i = 0 ; i <weiGraph.vertices.size(); ++i)
+		for(unsigned int i = 0 ; i <weiGraph.vertices.size(); ++i)
 		{
 			if(weiGraph.vertices[i].v->name != 0){
 				testValidate.push_back((double)weiGraph.vertices[i].v->name/(double)weiGraph.g->allNodes.size());
 			}
 		}
-		if(dag.isValidSingleReactantDilution(testValidate, weiGraph.g->allNodes.size()))
-			std::cout<< "PASSED\n";
-		else
-			std::cout<<"FAILED\n";
+		//if(dag->isValidSingleReactantDilution(testValidate, weiGraph.g->allNodes.size()))
+			//std::cout<< "PASSED\n";
+		//else
+			//std::cout<<"FAILED\n";
 
-		dag.generateDropletDag();
+//		dag->generateDropletDag();
 		//dag.generateMCFLOWDag();
 
 		return dag;
@@ -224,6 +227,7 @@ DagGen MTC::CreateDag(std::vector<int> DagOrder, WeightedGraph wg)
 
 void MTC::parseMTCFile(std::string fileName, BrujinGraph& bg, WeightedGraph& wg)
 {
+	std::cout<<"Parsing MTC"<<std::endl;
 	BrujinGraph *bruGraph = NULL;
 	WeightedGraph *weiGraph = NULL;
 	std::ifstream infile;
@@ -235,6 +239,7 @@ void MTC::parseMTCFile(std::string fileName, BrujinGraph& bg, WeightedGraph& wg)
 	std::string fileLine;
 	bool addVertices = false;
 	while(!infile.eof()){
+
 		getline(infile, fileLine);
 		if(!addVertices){
 			if(fileLine =="SIZE") {
@@ -247,8 +252,10 @@ void MTC::parseMTCFile(std::string fileName, BrujinGraph& bg, WeightedGraph& wg)
 				weiGraph = new WeightedGraph(bruGraph);
 			}
 		}
-		else if(fileLine !="")
+		else if(fileLine !=""){
 			weiGraph->addVertex(bruGraph->allNodes[toInt(fileLine)]);
+			std:: cout<<toInt(fileLine)<< " ";
+		}
 	}
 	weiGraph->calculateEdges();
 	if(weiGraph->isComplete())

@@ -1,5 +1,5 @@
 #include "../Headers/Gorma.h"
-
+#include <cstdio>
 
 //This function is called from Build_CMT to find the preceding pairs of a CV
 void Gorma :: FindPrecedingPairs(PrecedingPair *PP, CV* pcv)
@@ -583,9 +583,9 @@ void Gorma :: createVertex(int &count, string str,DagGen *dag, GormaNode* tmp, s
 	ostringstream oss;
 	Vertex* v;
 
-	oss << count;
-	str += oss.str();
-	count++;
+	//oss << count;
+	//str += oss.str();
+	//count++;
 	v = dag->addVertex(type, str);
 	tmp->dag_uid.push(v->uniqueID);
 	vertices.push(v);
@@ -706,6 +706,8 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen *dag)
 
 DagGen* Gorma:: RunGorma(int argc, char * argv [])
 {
+	printf("Starting Dag\n");
+
 	if(argc == 0 || argv == NULL )
 		return NULL;
 
@@ -726,8 +728,11 @@ DagGen* Gorma:: RunGorma(int argc, char * argv [])
 		//cout<<"\n#################################Best tree##############################\n";
 		//gorma.PrintTreePostOrder(root, 0);
 		//gorma.printLevelOrder(root);
-	//	printf("Attempting to Convert to Dag\n");
+		printf("Attempting to Convert to Dag\n");
+
 		gorma.convertDataStructure(root, t_cv, dag);
+
+		printf("Finished converting Dag\n");
 
 		//Use the below command to convert the .dot file into nice picture
 		//dot -Tps Example.dot -o navin.ps

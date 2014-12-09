@@ -73,9 +73,9 @@ public:
 	DagGen():dagName(""), IDs(0) {}
 	~DagGen()
 	{
-		for(int i =0; i<vertices.size(); ++i)
+		for(unsigned int i =0; i<vertices.size(); ++i)
 			delete vertices[i];
-		for(int i =0; i< edges.size(); ++i)
+		for(unsigned int i =0; i< edges.size(); ++i)
 			delete edges[i];
 	}
 	
@@ -93,7 +93,7 @@ public:
 	void generateDotyGraph(std :: string = "");
 
 //  Microfluidic Architectures 
-	void generateDropletDag(std :: string fileName = "", int volume = 10, int time = 5);
+	void generateDropletDag(std :: string fileName = "", int volume = 10, int Mtime = 3, int Stime =2);
 	void generateMCFLOWDag(std :: string assayName = "Assay", std :: string fileName = "", int volume = 10, int inputTime = 0, int opTime = 5);
 	
 	//	getters/setters

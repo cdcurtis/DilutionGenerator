@@ -117,12 +117,12 @@ public:
 		}
 	}
 
-	Vertex2* addVertex(DagGen & dag, VertexType, std:: string, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded); //ID
+	Vertex2* addVertex(DagGen * dag, VertexType, std:: string, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded); //ID
 	// void outputVertices(); //ID
 	// void outputEdges(DagGen & dag); //ID
 	static bool CompareuID(DiluteDroplet* A, DiluteDroplet* B); //RD
 	int findVertex(int vertexID); //ID
-	void assignVertCounts(DagGen & dag); //RD
+	void assignVertCounts(DagGen * dag); //RD
 	int findCounter(VertexCounts* VC, Vertex* vertex); //ID
 	string findLabel(Vertex* vertex); //ID
 	VertexCounts* findVertexCounts(DagGen*); //ID
@@ -150,10 +150,10 @@ public:
 	// vector<pair<DiluteDroplet*, DiluteDroplet*> > GetMixSet(); //RD not impl.
 
 	//Functionality
-	VertexCounts* CreateDagRoy(DagGen & Dag, pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
-	void expander(DagGen & dag, VertexCounts* VC); //RD
-	void edgeCorrection(DagGen& dag, vector< pair <Vertex2*, Vertex2*> > allAddedPairs); //RD
-	void addWaste(DagGen & dag); //RD
+	VertexCounts* CreateDagRoy(DagGen * Dag, pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
+	void expander(DagGen * dag, VertexCounts* VC); //RD
+	void edgeCorrection(DagGen* dag, vector< pair <Vertex2*, Vertex2*> > allAddedPairs); //RD
+	void addWaste(DagGen * dag); //RD
 
 
 

@@ -20,11 +20,11 @@ bool Dilute::CompareuID(DiluteDroplet* A, DiluteDroplet* B)
 }
 
 
-Vertex2* Dilute::addVertex(DagGen & dag, VertexType vertexType, std:: string label, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded)
+Vertex2* Dilute::addVertex(DagGen * dag, VertexType vertexType, std:: string label, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded)
 {
-	int IDs = dag.getID();
+	int IDs = dag->getID();
 	Vertex2* v =  new Vertex2(vertexType,label,IDs++, dl, dh, dropsAvail, dropsNeeded);
-	dag.addVertex(vertexType, label);
+	dag->addVertex(vertexType, label);
 	vertices.push_back(v);
 	return v;
 }
@@ -47,10 +47,10 @@ int Dilute::findVertex(int vertexID)
 }
 
 
- void Dilute::assignVertCounts(DagGen & dag)
+ void Dilute::assignVertCounts(DagGen * dag)
 {
 	//should modify to find all outgoing edges, then ndrops needed = sum(values from each)
-	vector<Edge*> edges = dag.Edges();
+	vector<Edge*> edges = dag->Edges();
 	bool Debug = false;
 
 	if(Debug)
@@ -79,7 +79,7 @@ int Dilute::findVertex(int vertexID)
 
 			if(Debug){cout<<"split, count < 2"<<flush<<endl;}
 			int value = 0;
-			vector<Edge*> curOutgoing = dag.findOutgoingEdges(cur->uniqueID);
+			vector<Edge*> curOutgoing = dag->findOutgoingEdges(cur->uniqueID);
 			if(Debug){cout<<"cur outgoing size is: "<<curOutgoing.size()<<flush<<endl;}
 			for(unsigned j = 0; j < curOutgoing.size(); j++)
 			{
@@ -475,7 +475,7 @@ void Dilute::calcNumDropsFin(pair <vector<MixOp*>, vector<DiluteDroplet*> > Dilu
 	D.clear();
 }
 
-VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals)
+VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals)
 {
 
 	bool Debugger = true;
@@ -650,8 +650,8 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 
 
 		if(Debugger){cout<<"before add edges, pre1 = "<<pre1->label<<", pre2 = "<<pre2->label<<", mix is: "<<mix->label<<flush<<endl;}
-		dag.addEdge(pre1, mix);
-		dag.addEdge(pre2, mix);
+		dag->addEdge(pre1, mix);
+		dag->addEdge(pre2, mix);
 
 		if(Debugger){ cout<<"mix added"<<flush<<endl;}
 
@@ -666,7 +666,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 		split->type = SPLIT;
 		splitCount++;
 
-		dag.addEdge(mix, split);
+		dag->addEdge(mix, split);
 		if(Debugger){cout<<"split added"<<flush<<endl; }
 
 		split->dh = cur->Mixes->DropletsPostMix.first;
@@ -745,15 +745,15 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	string outLabel = "Output"+convert.str();
 	Vertex2 * out = addVertex(dag, OUTPUT, outLabel, NULL, NULL, 1, 1);
 
-	dag.addEdge(fsplitIndex, out->uniqueID);
+	dag->addEdge(fsplitIndex, out->uniqueID);
 	out->dh = NULL;
 	out->dl = NULL;
 
 	if(Debug2)
 	{
 		cout<<"dag outptuVertices after createDag"<<flush<<endl;
-		dag.outputVertices();	
-		dag.outputEdges();
+		dag->outputVertices();
+		dag->outputEdges();
 	}
 
 	VertexCounts* ret = new VertexCounts;
@@ -763,7 +763,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	ret->splitCount = splitCount;
 	ret->wasteCount = wasteCount;
 
-	DagGen* copy = new DagGen(dag);
+	DagGen* copy = new DagGen(*dag);
 	if(Debug2)
 	{
 		cout<<"copy outputVertices = "<<flush<<endl;
@@ -775,7 +775,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	return ret;
 }
 
- void Dilute::expander(DagGen & dag, VertexCounts* VC)
+ void Dilute::expander(DagGen * dag, VertexCounts* VC)
 {
 	bool Debug = false;
 	bool Debug2 = false;
@@ -788,14 +788,14 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	int mixCount = VC->mixCount;
 	int splitCount = VC->splitCount;
 	vector< pair <Vertex2*, Vertex2*> > allAddedPairs;
-	vector<Edge*> edges = dag.Edges();
+	vector<Edge*> edges = dag->Edges();
 
 
 	if(Debug)
 	{
 		cout<<"dag before call assignVertCounts"<<flush<<endl;
-		dag.outputVertices();
-		dag.outputEdges();
+		dag->outputVertices();
+		dag->outputEdges();
 	}
 	assignVertCounts(dag);
 
@@ -909,7 +909,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 									//connect edge from copy dispense to newly added copy of vertex check
 									if(vertexAdded.at(v).first->type != DISPENSE)
 									{
-										dag.addEdge(pre2, pre1); //was previously pre2, vertexAdded.at(v).first
+										dag->addEdge(pre2, pre1); //was previously pre2, vertexAdded.at(v).first
 										if(Debug3){cout<<"dispense added("<<pre2->label<<", with edge: ("<<pre2->label<<", "<<vertexAdded.at(v).first->label<<")"<<flush<<endl;}
 									}
 									else
@@ -946,7 +946,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 									if(vertexAdded.at(c).second->uniqueID == check->uniqueID)
 									{
 										if(Debug3){cout<<"this1 mofo edge added: ("<<curParentVertex->label<<", "<<vertexAdded.at(c).first->label<<")"<<flush<<endl;}
-										dag.addEdge(curParentVertex, vertexAdded.at(c).first);//connecting actual and not copy
+										dag->addEdge(curParentVertex, vertexAdded.at(c).first);//connecting actual and not copy
 									}
 								if(Debug){cout<<"pushed to curCopies >= than case: "<<vertices.at(curParents.at(j)->parent)->label<<flush<<endl;}
 								}
@@ -1006,7 +1006,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 										for(unsigned e = 0; e < copyOut.size(); e++)
 										{
 											if(Debug){cout<<"pure copy added ("<<pre1->label<<"with edge ("<<vertexAdded.at(v).first->label<<", "<<pre1->label<<")"<<flush<<endl;}
-											dag.addEdge(vertexAdded.at(v).first, pre1); //add edge from vertex to copy of queue.pop
+											dag->addEdge(vertexAdded.at(v).first, pre1); //add edge from vertex to copy of queue.pop
 											curCopies.push(curParentVertex);
 
 											if(Debug){cout<<"pushed to curCopies < case is: "<<curParentVertex->label<<flush<<endl;}
@@ -1042,13 +1042,13 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	return;
 }
 
- void Dilute::edgeCorrection(DagGen & dag, vector< pair <Vertex2*, Vertex2*> > allAddedPairs)
+ void Dilute::edgeCorrection(DagGen * dag, vector< pair <Vertex2*, Vertex2*> > allAddedPairs)
 {
 	bool Debug = false;
 	if(Debug)
 	{
-		dag.outputVertices();
-		dag.outputEdges();
+		dag->outputVertices();
+		dag->outputEdges();
 	}
 
 	/*vector<Edge*> temp = dag.findOutgoingEdges(32);
@@ -1082,7 +1082,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 			}
 			if(Debug){cout<<"copies Mix size is:"<<copies.size()<<flush<<endl;}
 
-			vector<Edge*> outgoing = dag.findOutgoingEdges(vertices.at(i)->uniqueID);
+			vector<Edge*> outgoing = dag->findOutgoingEdges(vertices.at(i)->uniqueID);
 			if(outgoing.size() > 1) //if a mix has more than one outgoing edge, move extras to copies
 			{
 				if(Debug){cout<<"type mix, outgoing > 1"<<flush<<endl;}
@@ -1091,7 +1091,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 					if(Debug){cout<<"vertex is: "<<vertices.at(i)->label<<flush<<endl;}					//exit(1);
 					for(unsigned l = 0; l < copies.size(); l++)
 					{
-						vector<Edge*> outgoing2 = dag.findOutgoingEdges(copies.at(l)->uniqueID);
+						vector<Edge*> outgoing2 = dag->findOutgoingEdges(copies.at(l)->uniqueID);
 						if(Debug){cout<<"copy is: "<<copies.at(l)->label<<flush<<endl;}
 						if(outgoing2.size() > 1)
 						{
@@ -1129,10 +1129,10 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 			}
 			if(Debug){cout<<"copies SPLIT size is: "<<copies.size()<<flush<<endl;}
 			if(Debug){cout<<"vertices at i is: "<<vertices.at(i)->uniqueID<<","<<vertices.at(i)->label<<flush<<endl;}
-			vector<Edge*> outgoing = dag.findOutgoingEdges(vertices.at(i)->uniqueID);
+			vector<Edge*> outgoing = dag->findOutgoingEdges(vertices.at(i)->uniqueID);
 			if(Debug){cout<<"outgoing size is: "<<outgoing.size()<<flush<<endl;}
 			if(Debug){cout<<"outgoing size is: "<<outgoing.size()<<flush<<endl;}
-			vector<Edge*> temp = dag.findOutgoingEdges(vertices.at(i)->uniqueID);
+			vector<Edge*> temp = dag->findOutgoingEdges(vertices.at(i)->uniqueID);
 			if(Debug)
 			{
 				for(unsigned iter = 0; iter < temp.size(); iter++)
@@ -1150,7 +1150,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 					//exit(1);
 					for(unsigned l = 0; l < copies.size(); l++)
 					{
-						vector<Edge*> outgoing2 = dag.findOutgoingEdges(copies.at(l)->uniqueID);
+						vector<Edge*> outgoing2 = dag->findOutgoingEdges(copies.at(l)->uniqueID);
 						if(Debug){cout<<"copy is: "<<copies.at(l)->uniqueID<<flush<<endl;}
 						if(outgoing2.size() > 2)
 						{
@@ -1177,10 +1177,10 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 	}
 }
 
- void Dilute::addWaste(DagGen & dag)
+ void Dilute::addWaste(DagGen * dag)
 {
 	bool Debug = false;
-	vector<Edge*> edges = dag.Edges();
+	vector<Edge*> edges = dag->Edges();
 	int wasteCount = 1;
 	for(unsigned i = 0; i < vertices.size(); i++)
 	{
@@ -1210,7 +1210,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen & dag, pair< vector<MixOp*>, vector<Di
 				label = label + count.str();
 				Vertex2* waste = addVertex(dag, OUTPUT, label, NULL, NULL, 1, 1);
 				wasteCount++;
-				dag.addEdge(vertices.at(i)->uniqueID, waste->uniqueID);
+				dag->addEdge(vertices.at(i)->uniqueID, waste->uniqueID);
 			}
 			else //numchild == 2
 			{

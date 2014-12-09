@@ -35,7 +35,7 @@ public:
 			delete vertices[i];
 	}
 
-	Vertex2* addVertex(DagGen & dag, VertexType, std:: string, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded);
+	Vertex2* addVertex(DagGen * dag, VertexType, std:: string, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded);
 	Rational GetConcentrate(DiluteDroplet* node);
 	void SetConcentrate(DiluteDroplet* node, double ConcNum, double ConcDenom);
 	Rational GetDesiredConcentrate(DiluteDroplet* node); //returns c from variable list
@@ -60,10 +60,10 @@ public:
 	//methods
 	Rational FindRange(DiluteDroplet* input, DiluteDroplet* buffer);
 	DiluteRet PerformDilution(DiluteDroplet* di, DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops);
-	VertexCounts* CreateDag(DagGen & dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
+	VertexCounts* CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
 	void calcNumDropsFin(pair <vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
-	void expandDag(DagGen & dag, VertexCounts* VC);
-	static DagGen RunGriffith(int argc, char ** argv);
+	void expandDag(DagGen * dag, VertexCounts* VC);
+	static DagGen* RunGriffith(int argc, char ** argv);
 
 	//memory management
 	void DeleteM(vector<MixOp*> M);

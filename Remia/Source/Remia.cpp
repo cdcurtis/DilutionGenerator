@@ -184,9 +184,9 @@ Vertex* Remia :: createVertex(int &count, string str,DagGen *dag, VertexType typ
 	ostringstream oss;
 	Vertex* v;
 
-	oss << count;
-	str += oss.str();
-	count++;
+	//oss << count;
+	//str += oss.str();
+	//count++;
 	v = dag->addVertex(type, str);
 	return (v);
 }

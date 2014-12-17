@@ -24,7 +24,7 @@ int main (int argc, char* argv [])
 {
 	cout<< "Welcome to my world!" <<endl;
 
-	DagGen *dag;
+	DagGen * dag = NULL;
 /*
 	/*Test 3 7,7,5,5,3,3,2 blood,water,plasma,mercury,sodium,pancakes,oil*
 	char * a[] = {"blah", "Test", "3", "1,1,1", "Water,Blood, Water"};
@@ -53,22 +53,28 @@ cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 
 
 	/*numerator denominator 121 256*/ //partially broken
-	char * a[] = {"blah", "121", "256"};
-
-	dag = Gorma::RunGorma(argc, a);
-	dag->DagName()="Gorma";
-	dag->generateDotyGraph();
-	delete dag;
-
-	/*Single input and multi input*/
-	//dag = Wara::RunWara(argc,argv);
-	//dag->generateDotyGraph("Wara.dot");
+	//char * a[] = {"blah", "121", "256"};
+	//Gorma g;
+	//g.RunGorma(dag,argc, a);
+	//dag.DagName()="Gorma";
+	//dag.generateDotyGraph("test.dot");
 	//delete dag;
 
-	//TODO:: Find discover the input for GDA.
-	/*dag = GDA::RunGDA(argc, argv);
+	/*Single input and multi input*/
+	/*Wara w;
+	char * a[] = {"blah", "43", "67", "123", "256"};
+	dag = new DagGen();
+	w.Run_Wara(dag,argc,a);
+*/
+
+	//w.RunWara(dag, argc,a);
+	dag->generateDotyGraph("Wara.dot");
+	//delete dag;
+
+	char * a[] = {"blah", "0", "1", ".5", "5"};
+	dag = GDA::RunGDA(argc, argv);
 	dag->generateDotyGraph("GDA.dot");
-	delete dag;*/
+	delete dag;
 
 	/*2 45 23 67 93*/
 	//dag = CoDOS::RunCoDOS(argc,argv);
@@ -82,7 +88,7 @@ cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 	//dag->generateDotyGraph("NRT_ISI.dot");
 	//delete dag;
 
-	//TODO:: Find discover the input for NCKU.
+	//TODO:: Find discover the input for NCKU. REWRITE NCKU
 //	dag = ISI_NCKU::RunNCKU(argc,argv);
 	//dag->generateDotyGraph("NCKU.dot");
 	//delete dag;

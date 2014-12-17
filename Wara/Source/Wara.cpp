@@ -3,14 +3,11 @@
 
 Wara :: Wara()
 {
-	found = false;
-	uid=-1;//cdcurtis
-
 	b = "buffer"; r = "reactant"; w = "waste"; m = "mix"; s = "split"; o = "output";
 	b_count = 1; r_count = 1; w_count = 1; m_count = 1; s_count = 1; o_count = 1;
 }
 
-bool Wara :: checkIfUniqueNode(priority_queue<node*, vector<node*>, comparator> Q, node *n)
+bool Wara :: checkIfUniqueNode(priority_queue<W_node*, vector<W_node*>, W_comparator> Q, W_node *n)
 {
 	while(!Q.empty())
 	{
@@ -23,7 +20,7 @@ bool Wara :: checkIfUniqueNode(priority_queue<node*, vector<node*>, comparator> 
 	return false;
 }
 
-bool Wara :: checkIfUniqueNodeByValue(priority_queue<node*, vector<node*>, comparator> Q, node *n)
+bool Wara :: checkIfUniqueNodeByValue(priority_queue<W_node*, vector<W_node*>, W_comparator> Q, W_node *n)
 {
 	while(!Q.empty())
 	{
@@ -36,7 +33,7 @@ bool Wara :: checkIfUniqueNodeByValue(priority_queue<node*, vector<node*>, compa
 	return false;
 }
 
-bool Wara :: checkIfUniqueNodeInStack(stack< node * > Q, node *n)
+bool Wara :: checkIfUniqueNodeInStack(stack< W_node * > Q, W_node *n)
 {
 	while(!Q.empty())
 	{
@@ -47,22 +44,22 @@ bool Wara :: checkIfUniqueNodeInStack(stack< node * > Q, node *n)
 	return false;
 }
 
-void Wara :: generate_stack(node *T, priority_queue<node*, vector<node*>, comparator>& sk)
+void Wara :: generate_stack(W_node *T, priority_queue<W_node*, vector<W_node*>, W_comparator>& sk)
 {
 	if(T != NULL)
 	{
-		if(T->status == reusable)
+		if(T->status == W_reusable)
 		{
 			if(!checkIfUniqueNode(sk, T))
 				sk.push(T);
 		}
 		if(T->left) generate_stack(T->left, sk);
 		if(T->right) generate_stack(T->right, sk);
-		
+
 	}
 }
 
-node* Wara :: Find_parent(node *T, node *p, node *m)
+W_node* Wara :: Find_parent(W_node *T, W_node *p, W_node *m)
 {
 	if(found)
 		return p;
@@ -75,15 +72,15 @@ node* Wara :: Find_parent(node *T, node *p, node *m)
 
 	if(T->left != NULL)
 	{
-		node *tmp = Find_parent(T->left, T, m);
-		if(tmp != NULL) 
+		W_node *tmp = Find_parent(T->left, T, m);
+		if(tmp != NULL)
 			return tmp;
 	}
 
-	if(T->right != NULL) 
-	{	
-		node *tmp = Find_parent(T->right, T, m);
-		if(tmp != NULL) 
+	if(T->right != NULL)
+	{
+		W_node *tmp = Find_parent(T->right, T, m);
+		if(tmp != NULL)
 			return tmp;
 	}
 
@@ -92,9 +89,9 @@ node* Wara :: Find_parent(node *T, node *p, node *m)
 
 void Wara :: Maximal_Droplet_Sharing()
 {
-	stack <node *> node_stack;
-	priority_queue<node*, vector<node*>, comparator> tmp_node_stack;
-	node *T;
+	stack <W_node *> node_stack;
+	priority_queue<W_node*, vector<W_node*>, W_comparator> tmp_node_stack;
+	W_node *T;
 
 	for(int i=0; i<SMT.size(); i++)
 	{
@@ -108,10 +105,10 @@ void Wara :: Maximal_Droplet_Sharing()
 		tmp_node_stack.pop();
 	}
 
-	node *n;	//node to hold the top node from node_stack
-	node *m;	// node to hold the nodes from dummy stack one at a time
-	node *parent_n;	//node to hold the parent of the node of n in picture
-	node *parent_m;	//node to hold the parent of the node of m in picture
+	W_node *n;	//node to hold the top node from node_stack
+	W_node *m;	// node to hold the nodes from dummy stack one at a time
+	W_node *parent_n;	//node to hold the parent of the node of n in picture
+	W_node *parent_m;	//node to hold the parent of the node of m in picture
 
 	while(!node_stack.empty())
 	{
@@ -121,12 +118,12 @@ void Wara :: Maximal_Droplet_Sharing()
 		n = node_stack.top();
 
 		node_stack.pop();
-		for (stack<node *> dummy = node_stack; !dummy.empty(); dummy.pop())
+		for (stack<W_node *> dummy = node_stack; !dummy.empty(); dummy.pop())
 		{
 			m = dummy.top();
 
 			if(n->cv->val == m->cv->val)
-			{	
+			{
 				found = false;
 				for(int i=0; i<SMT.size(); i++)
 				{
@@ -143,30 +140,30 @@ void Wara :: Maximal_Droplet_Sharing()
 					parent_n = Find_parent(T, NULL, n);
 					if(found == true)
 						break;
-				}				
+				}
 
 				if(parent_m != NULL)
 				{
 					parent_m->right = n;
-					n->status = reused;
+					n->status = W_reused;
 				}
 				else if(parent_n != NULL)
 				{
 					parent_n->right = m;
-					m->status = reused;
+					m->status = W_reused;
 				}
 				else
 				{
-					vector < node* > tmpSMT;
-					n->status = both_output;
+					vector < W_node* > tmpSMT;
+					n->status = W_both_output;
 					for(int i = 0; i<SMT.size(); i++)
 						if(SMT[i] != m)
 							tmpSMT.push_back(SMT[i]);
 					SMT = tmpSMT;
 				}
 
-				priority_queue<node*, vector<node*>, comparator> tmp_node_stack;
-				stack <node *> temp_stack;
+				priority_queue<W_node*, vector<W_node*>, W_comparator> tmp_node_stack;
+				stack <W_node *> temp_stack;
 				//Refresh the stack
 				for(int i=0; i<SMT.size(); i++)
 				{
@@ -188,10 +185,10 @@ void Wara :: Maximal_Droplet_Sharing()
 	}
 }
 
-bool Wara :: NotInSubtree(node *xy, node *z)
+bool Wara :: NotInSubtree(W_node *xy, W_node *z)
 {
-	stack < node * > tmp1;
-	stack < node * > tmp2;
+	stack < W_node * > tmp1;
+	stack < W_node * > tmp2;
 	tmp1.push(xy);
 	while(!tmp1.empty())
 	{
@@ -215,19 +212,19 @@ bool Wara :: NotInSubtree(node *xy, node *z)
 	return false;
 }
 
-void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
+void Wara :: GetRCPs(vector < W_node* > G, RCP &rcp)
 {
-	priority_queue<node*, vector<node*>, comparator> Q;	//Q for Reusable nodes
-	priority_queue<node*, vector<node*>, comparator> RQ;	//RQ holds a copy of Q
-	priority_queue<node*, vector<node*>, comparator> NRQ;	//NRQ for Non-Reusable nodes
-	priority_queue<node*, vector<node*>, comparator> tmpQ1;
-	priority_queue<node*, vector<node*>, comparator> tmpQ2;
+	priority_queue<W_node*, vector<W_node*>, W_comparator> Q;	//Q for Reusable nodes
+	priority_queue<W_node*, vector<W_node*>, W_comparator> RQ;	//RQ holds a copy of Q
+	priority_queue<W_node*, vector<W_node*>, W_comparator> NRQ;	//NRQ for Non-Reusable nodes
+	priority_queue<W_node*, vector<W_node*>, W_comparator> tmpQ1;
+	priority_queue<W_node*, vector<W_node*>, W_comparator> tmpQ2;
 
-	node *x;
-	node *y;
-	node *z;
-	node *parent_x;
-	node *parent_y;
+	W_node *x;
+	W_node *y;
+	W_node *z;
+	W_node *parent_x;
+	W_node *parent_y;
 
 	long double z_val;
 
@@ -236,7 +233,7 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 		x = G[i];
 		while(x != NULL)
 		{
-			if(x->status == reusable)
+			if(x->status == W_reusable)
 				if(!checkIfUniqueNode(Q, x))
 					Q.push(x);
 			x = x->right;
@@ -250,12 +247,12 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 		x = G[i];
 		while(x != NULL)
 		{
-			if(x->left != NULL && x->left->status == non_reusable)
+			if(x->left != NULL && x->left->status == W_non_reusable)
 			{
 				if(!checkIfUniqueNodeByValue(NRQ, x->left))
 					NRQ.push(x->left);
 			}
-			else if(x->status == non_reusable)
+			else if(x->status == W_non_reusable)
 			{
 				if(!checkIfUniqueNodeByValue(NRQ, x))
 					NRQ.push(x);
@@ -271,7 +268,7 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 
 		if(!Q.empty())
 			tmpQ1 = Q;
-		else 
+		else
 			break;
 
 		found = false;
@@ -283,7 +280,7 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 		}
 
 		while(!tmpQ1.empty())
-		{	
+		{
 			y = tmpQ1.top();
 			tmpQ1.pop();
 
@@ -300,7 +297,7 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 			z_val = ((long double)x->cv->num + (long double)y->cv->num)/(2*(long double)x->cv->deno);
 
 			while(!tmpQ2.empty())
-			{			
+			{
 				z = tmpQ2.top();
 				tmpQ2.pop();
 
@@ -331,7 +328,7 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 		}
 
 		while(!tmpQ1.empty())
-		{	
+		{
 			y = tmpQ1.top();
 			tmpQ1.pop();
 
@@ -340,12 +337,12 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 			z_val = ((long double)x->cv->num + (long double)y->cv->num)/(2*(long double)x->cv->deno);
 
 			while(!tmpQ2.empty())
-			{	
+			{
 				z = tmpQ2.top();
 				tmpQ2.pop();
 
 				if(z->cv->val == z_val && parent_x != z && !NotInSubtree(x,z))
-				{	
+				{
 					rcp.push_back(make_pair(x,y));
 					break;
 				}
@@ -356,22 +353,22 @@ void Wara :: GetRCPs(vector < node* > G, RCP &rcp)
 
 }
 
-int Wara :: ERU(vector < node* > G)
+int Wara :: ERU(vector < W_node* > G)
 {
 	long double total_pcv = 0;
-	priority_queue<node*, vector<node*>, comparator> Q;
-	node *T;
+	priority_queue<W_node*, vector<W_node*>, W_comparator> Q;
+	W_node *T;
 	for(int i=0; i<G.size(); i++)
 	{
 		T = G[i];
 		while(T != NULL)
-		{	
-			if(T->left != NULL && T->left->status == non_reusable)
+		{
+			if(T->left != NULL && T->left->status == W_non_reusable)
 			{
 				if(!checkIfUniqueNode(Q, T->left))
 					Q.push(T->left);
 			}
-			else if(T->status == non_reusable)
+			else if(T->status == W_non_reusable)
 			{
 				if(!checkIfUniqueNode(Q, T))
 					Q.push(T);
@@ -386,18 +383,18 @@ int Wara :: ERU(vector < node* > G)
 		Q.pop();
 	}
 	return(ceil(total_pcv));
-	
+
 }
 
 void Wara :: SetACs(RCP &rcp)
 {
 	for(RCP::iterator it = rcp.begin(); it != rcp.end(); ++it)
 	{
-		node* x = it->first;
-		node* y = it->second;
-		if(x->status == reusable)
+		W_node* x = it->first;
+		W_node* y = it->second;
+		if(x->status == W_reusable)
 			x->ac++;
-		if(y->status == reusable)
+		if(y->status == W_reusable)
 			y->ac++;
 	}
 }
@@ -406,11 +403,11 @@ void Wara :: ResetACs(RCP &rcp)
 {
 	for(RCP::iterator it = rcp.begin(); it != rcp.end(); ++it)
 	{
-		node* x = it->first;
-		node* y = it->second;
-		if(x->status == reusable)
+		W_node* x = it->first;
+		W_node* y = it->second;
+		if(x->status == W_reusable)
 			x->ac = 0;
-		if(y->status == reusable)
+		if(y->status == W_reusable)
 			y->ac = 0;
 	}
 }
@@ -426,12 +423,12 @@ void Wara :: GetUniqueness(RCP &rcp, vector < int >& uniq)
 	}
 }
 
-int Wara :: GetGain(vector < node* > G, node *x, node *y, int eru)
+int Wara :: GetGain(vector < W_node* > G, W_node *x, W_node *y, int eru)
 {
-	priority_queue<node*, vector<node*>, comparator> Q;	//Q for Reusable nodes
-	node *tmp;
-	node *z;
-	node *tx, *ty;
+	priority_queue<W_node*, vector<W_node*>, W_comparator> Q;	//Q for Reusable nodes
+	W_node *tmp;
+	W_node *z;
+	W_node *tx, *ty;
 	long double z_val;
 	int tmp_eru;
 
@@ -440,7 +437,7 @@ int Wara :: GetGain(vector < node* > G, node *x, node *y, int eru)
 		tmp = G[i];
 		while(tmp != NULL)
 		{
-			if(tmp->status == reusable)
+			if(tmp->status == W_reusable)
 				if(!checkIfUniqueNode(Q, tmp))
 					Q.push(tmp);
 			tmp = tmp->right;
@@ -450,7 +447,7 @@ int Wara :: GetGain(vector < node* > G, node *x, node *y, int eru)
 	z_val = ((long double)x->cv->num + (long double)y->cv->num)/(2*(long double)x->cv->deno);
 
 	while(!Q.empty())
-	{		
+	{
 		z = Q.top();
 		Q.pop();
 
@@ -458,22 +455,22 @@ int Wara :: GetGain(vector < node* > G, node *x, node *y, int eru)
 		ty = NULL;
 
 		if(z->cv->val == z_val)
-		{	
+		{
 			tx = z->left;
 			ty = z->right;
 
 			z->left = x;
-			if(y->status == reusable)
+			if(y->status == W_reusable)
 				z->right = y;
 			else
-			{		
-				node *tmp_y = new node();
+			{
+				W_node *tmp_y = new W_node();
 				tmp_y->id = uid++;
-				tmp_y->cv = new CV(y->cv->num,y->cv->deno,y->cv->val);
+				tmp_y->cv = new W_CV(y->cv->num,y->cv->deno,y->cv->val);
 				tmp_y->status = y->status;
 				tmp_y->ac = y->ac;
-				tmp_y->left = new node();
-				tmp_y->right = new node();
+				tmp_y->left = new W_node();
+				tmp_y->right = new W_node();
 				tmp_y->left = y->left;
 				tmp_y->right = y->right;
 
@@ -497,7 +494,7 @@ int Wara :: GetGain(vector < node* > G, node *x, node *y, int eru)
 	return(eru - tmp_eru);
 }
 
-void Wara :: Droplet_Replacement(vector < node* >& SMT)
+void Wara :: Droplet_Replacement(vector < W_node* >& SMT)
 {
 
 	int eru, tmp_gain, i;
@@ -506,12 +503,12 @@ void Wara :: Droplet_Replacement(vector < node* >& SMT)
 	long double z_val;
 
 	while(1)
-	{	
+	{
 		RCP rcp;
 		vector < int > uniq;
 		vector < int > gain;
-		priority_queue<node*, vector<node*>, comparator> Q;	//Q for Reusable nodes
-		node *x, *y, *z, *tmp;
+		priority_queue<W_node*, vector<W_node*>, W_comparator> Q;	//Q for Reusable nodes
+		W_node *x, *y, *z, *tmp;
 
 		max_gain = 0;
 		min_uniq = numeric_limits<int>::max();
@@ -524,7 +521,7 @@ void Wara :: Droplet_Replacement(vector < node* >& SMT)
 		GetRCPs(SMT, rcp);
 
 		if(rcp.empty())
-			break;	
+			break;
 
 		SetACs(rcp);
 
@@ -546,13 +543,13 @@ void Wara :: Droplet_Replacement(vector < node* >& SMT)
 			tmp = SMT[j];
 			while(tmp != NULL)
 			{
-				if(tmp->status == reusable)
+				if(tmp->status == W_reusable)
 					if(!checkIfUniqueNode(Q, tmp))
 						Q.push(tmp);
 				tmp = tmp->right;
 			}
 		}
-	
+
 		for(RCP::iterator it = rcp.begin(); it != rcp.end(); ++it)
 		{
 			if(gain[i] > max_gain)
@@ -579,31 +576,31 @@ void Wara :: Droplet_Replacement(vector < node* >& SMT)
 			z_val = ((long double)x->cv->num + (long double)y->cv->num)/(2*(long double)x->cv->deno);
 
 			while(!Q.empty())
-			{		
+			{
 				z = Q.top();
 				Q.pop();
 
 				if(z->cv->val == z_val)
 				{
 					z->left = x;
-					x->status = reused;
-					if(y->status == reusable)
+					x->status = W_reused;
+					if(y->status == W_reusable)
 					{
 						z->right = y;
-						y->status = reused;
+						y->status = W_reused;
 					}
 					else
-					{		
-						node *tmp_y = new node();
+					{
+						W_node *tmp_y = new W_node();
 						tmp_y->id = uid++;
-						tmp_y->cv = new CV(y->cv->num,y->cv->deno,y->cv->val);
+						tmp_y->cv = new W_CV(y->cv->num,y->cv->deno,y->cv->val);
 						tmp_y->status = y->status;
 						tmp_y->ac = y->ac;
-						tmp_y->left = new node();
-						tmp_y->right = new node();
+						tmp_y->left = new W_node();
+						tmp_y->right = new W_node();
 						tmp_y->left = y->left;
 						tmp_y->right = y->right;
-	
+
 						z->right = tmp_y;
 					}
 					break;
@@ -621,17 +618,15 @@ Vertex* Wara :: createVertex(int &count, string str, DagGen *dag, VertexType typ
 {
 	ostringstream oss;
 	Vertex* v;
-	if(str == "output")
-	{
-		oss << count;
-		str += oss.str();
-	    count++;
-	}
+
+	oss << count;
+	str += oss.str();
+	count++;
 	v = dag->addVertex(type, str);
 	return (v);
 }
 
-void Wara :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices, node *root)
+void Wara :: convertDataStructureForPCV(W_node *T, DagGen *dag, stack< Vertex *>& vertices, W_node *root)
 {
 	Vertex* vr;
 	Vertex* vm;
@@ -657,10 +652,9 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& 
 		//Connect the buffer vertex to the Mix vertex.
 		dag->addEdge(vb, vm);
 		found = false;
-		node *parent = Find_parent(root, NULL, T);
+		W_node *parent = Find_parent(root, NULL, T);
 		for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
 		{
-			vr = NULL; //cdcurtis
 			if(parent->dag_uid.top() == dummy.top()->uniqueID)
 			{
 				vr = dummy.top();
@@ -676,7 +670,7 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& 
 		vertices.push(vs);
 		T->dag_uid.push(vs->uniqueID);
 
-		if((T->left == NULL && T->right != NULL) || (T->left != NULL && T->right == NULL) || (T->status != both_output && T->left == NULL && T->right == NULL))
+		if((T->left == NULL && T->right != NULL) || (T->left != NULL && T->right == NULL) || (T->status != W_both_output && T->left == NULL && T->right == NULL))
 		{
 			//Create a Waste vertex
 			vw = createVertex(w_count, w, dag, WASTE);
@@ -689,7 +683,7 @@ void Wara :: convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& 
 	convertDataStructureForPCV(T->right, dag, vertices, root);
 }
 
-Vertex* Wara :: getCorrespondingVertex(node *T, stack< Vertex *>& vertices, VertexType type)
+Vertex* Wara :: getCorrespondingVertex(W_node *T, stack< Vertex *>& vertices, VertexType type)
 {
 	for(stack < int > dump = T->dag_uid; !dump.empty(); dump.pop())
 	{
@@ -699,12 +693,11 @@ Vertex* Wara :: getCorrespondingVertex(node *T, stack< Vertex *>& vertices, Vert
 				return dummy.top();
 		}
 	}
-	return NULL;
 }
 
-void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, stack< Vertex *>& vertices, vector < CV* > PCV)
+void Wara :: convertDataStructureForMixingTree(stack < W_node* > Q, DagGen *dag, stack< Vertex *>& vertices, vector < W_CV* > PCV)
 {
-	node *x;
+	W_node *x;
 
 	Vertex* vr;
 	Vertex* vm;
@@ -715,7 +708,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, s
 	Vertex* v1;
 	Vertex* v2;
 
-	stack < node* > tmpQ = Q;
+	stack < W_node* > tmpQ = Q;
 
 	while(!Q.empty())
 	{
@@ -736,9 +729,9 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, s
 		//Connect the Mix vertex to the Split vertex.
 		dag->addEdge(vm, vs);
 
-		if(x->target == yes)
+		if(x->target == W_yes)
 		{
-			if(x->status == both_output)
+			if(x->status == W_both_output)
 			{
 				Vertex *vo1 = createVertex(o_count, o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT1 vertex.
@@ -756,7 +749,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, s
 			}
 		}
 
-		if(x->status == reusable)
+		if(x->status == W_reusable)
 		{
 			//Create a Waste vertex
 			vw = createVertex(w_count, w, dag, WASTE);
@@ -785,7 +778,7 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, s
 		//Connect the reactant vertex to the Mix vertex.
 		dag->addEdge(v1, vm);
 
-		if(x->right->status == non_reusable)
+		if(x->right->status == W_non_reusable)
 		{
 			//Get the right Vertex of the vertex being handled
 			for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
@@ -808,126 +801,29 @@ void Wara :: convertDataStructureForMixingTree(stack < node* > Q, DagGen *dag, s
 
 }
 
-DagGen * Wara :: RunWara(int argc, char* argv[])
-{//numerator1, numerator2, numerator3, numerator4, numerator5, ....., denominator -> All the target CV's should be represented in the numerator/denominator format with common denominator. E.g., {1/1024, 506/1024, 1023/1024} can be passed as {1, 506, 1023, 1024}
-
-	DagGen * dag = new DagGen();
-	Wara wara;
-	Remia remia;
-	vector < node* > F;	//Forest
-	vector < CV* > PCV;	//Vector to hold all the PCV's.
+void Wara :: Run_Wara(DagGen *dag, int argc, char* argv[])
+{
+	if (dag == NULL)
+		dag = new DagGen();
+	W_Remia remia;
+	vector < W_node* > F;	//Forest
+	vector < W_CV* > PCV;	//Vector to hold all the PCV's.
 
 	int num, deno;
-	node *T;
-	stack< node * > tree_unique_nodes;
+	W_node *T;
+	stack< W_node * > tree_unique_nodes;
 
 	deno = atoi(argv[argc-1]);
 	for(int i = 1; i<argc-1; i++)
 	{
 		num = atoi(argv[i]);
-		CV* t_cv = new CV(num,deno,(long double)num/(long double)deno);	//prime concentration value
+		W_CV* t_cv = new W_CV(num,deno,(long double)num/(long double)deno);	//prime concentration value
 		PCV.push_back(t_cv);
 	}
 
 	for(int i=0; i<PCV.size();i++)
 	{
-		node *root = new node();
-		root = remia.BuildMixingTree(PCV[i]);
-		wara.SMT.push_back(root);
-	}
-
-
-	wara.Maximal_Droplet_Sharing();
-
-	wara.Droplet_Replacement(wara.SMT);
-
-	remia.BuilEDTforest(wara.SMT, F);
-
-	cout<<"Mixing Tree and forest built successfully\n";
-
-	wara.uid = remia.UID;	//Continue the UID from where remia left
-
-	stack< Vertex *> vertices;
-	for(int i=0; i<F.size();i++)
-	{
-		T = F[i];
-		wara.convertDataStructureForPCV(T, dag, vertices, T);
-	}
-
-	for(int i=0; i<wara.SMT.size();i++)
-	{
-		if(wara.SMT[i]->left == NULL && wara.SMT[i]->right == NULL)
-		{
-			Vertex *vs;
-			for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
-			{
-				if(wara.SMT[i]->dag_uid.top() == dummy.top()->uniqueID)
-				{
-					vs = dummy.top();
-					break;
-				}
-			}
-			if(wara.SMT[i]->status == both_output)
-			{
-				Vertex *vo1 = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
-				//Connect the Split vertex to the OUTPUT1 vertex.
-				dag->addEdge(vs, vo1);
-
-				Vertex *vo2 = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
-				//Connect the Split vertex to the OUTPUT2 vertex.
-				dag->addEdge(vs, vo2);
-			}
-			else
-			{
-				Vertex *vo = wara.createVertex(wara.o_count, wara.o, dag, OUTPUT);
-				//Connect the Split vertex to the OUTPUT vertex.
-				dag->addEdge(vs, vo);
-			}
-		}
-		else
-		{
-			T = wara.SMT[i];
-			while(T != NULL)
-			{
-				if(!wara.checkIfUniqueNodeInStack(tree_unique_nodes, T))
-					tree_unique_nodes.push(T);
-				T = T->right;
-			}
-			tree_unique_nodes.pop();
-		}
-	}
-
-	wara.convertDataStructureForMixingTree(tree_unique_nodes, dag, vertices, PCV);
-
-   // 	dag.generateJSON("../output/Example.json");
-	//dag.generateDropletDag("../output/DropletDag.cpp");
-	//dag.generateDotyGraph("../output/Example.dot");
-	return dag;
-}
-
-vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen *dag, vector < int > argv)
-{
-	Remia remia;
-	vector < node* > F;	//Forest
-	vector < CV* > PCV;	//Vector to hold all the PCV's.
-
-	int num, deno;
-	node *T;
-	stack< node * > tree_unique_nodes;
-
-	deno = argv[argv.size()-1];
-	lb = argv[0];
-	ub = argv[argv.size()-2];
-	for(int i = 0; i<argv.size()-1; i++)
-	{
-		num = argv[i];
-		CV* t_cv = new CV(num,deno,(long double)num/(long double)deno);	//prime concentration value
-		PCV.push_back(t_cv);
-	}
-
-	for(unsigned int i=0; i<PCV.size();i++)
-	{
-		node *root = new node();
+		W_node *root = new W_node();
 		root = remia.BuildMixingTree(PCV[i]);
 		SMT.push_back(root);
 	}
@@ -939,16 +835,18 @@ vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen *dag, vector < int > argv
 
 	remia.BuilEDTforest(SMT, F);
 
+	cout<<"Mixing Tree and forest built successfully\n";
+
 	uid = remia.UID;	//Continue the UID from where remia left
 
 	stack< Vertex *> vertices;
-	for(unsigned int i=0; i<F.size();i++)
+	for(int i=0; i<F.size();i++)
 	{
 		T = F[i];
 		convertDataStructureForPCV(T, dag, vertices, T);
 	}
 
-	for(unsigned int i=0; i<SMT.size();i++)
+	for(int i=0; i<SMT.size();i++)
 	{
 		if(SMT[i]->left == NULL && SMT[i]->right == NULL)
 		{
@@ -961,25 +859,21 @@ vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen *dag, vector < int > argv
 					break;
 				}
 			}
-			if(SMT[i]->status == both_output)
+			if(SMT[i]->status == W_both_output)
 			{
-				if(SMT[i]->cv->num == lb)
-				{
-					lb_vertices.push_back(vs);
-					lb_vertices.push_back(vs);
-				}
-				else if(SMT[i]->cv->num == ub)
-				{
-					ub_vertices.push_back(vs);
-					ub_vertices.push_back(vs);
-				}
+				Vertex *vo1 = createVertex(o_count, o, dag, OUTPUT);
+				//Connect the Split vertex to the OUTPUT1 vertex.
+				dag->addEdge(vs, vo1);
+
+				Vertex *vo2 = createVertex(o_count, o, dag, OUTPUT);
+				//Connect the Split vertex to the OUTPUT2 vertex.
+				dag->addEdge(vs, vo2);
 			}
 			else
 			{
-				if(SMT[i]->cv->num == lb)
-					lb_vertices.push_back(vs);
-				else if(SMT[i]->cv->num == ub)
-					ub_vertices.push_back(vs);
+				Vertex *vo = createVertex(o_count, o, dag, OUTPUT);
+				//Connect the Split vertex to the OUTPUT vertex.
+				dag->addEdge(vs, vo);
 			}
 		}
 		else
@@ -997,10 +891,10 @@ vector < vector < Vertex* > > Wara :: WARA_MAIN(DagGen *dag, vector < int > argv
 
 	convertDataStructureForMixingTree(tree_unique_nodes, dag, vertices, PCV);
 
-	vector < vector < Vertex* > > boundary_vertices;
-	boundary_vertices.push_back(lb_vertices);
-	boundary_vertices.push_back(ub_vertices);
+    //	dag->generateJSON("../output/Example.json");
+	//dag->generateDropletDag("../output/Dropletdag->cpp");
+	//dag->generateDotyGraph("Example.doty");
 
-	return boundary_vertices;
+	cout<<"Your Dag files are in ../output folder\n\n";
 }
 

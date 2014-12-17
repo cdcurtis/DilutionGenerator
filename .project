@@ -24,4 +24,10 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>TestPathing</name>
+			<value>file:/C:/Users/Chris/Documents/DilutionGenerator/DilutionGenerator/SharedData</value>
+		</variable>
+	</variableList>
 </projectDescription>

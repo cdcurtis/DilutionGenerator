@@ -24,7 +24,7 @@ int main (int argc, char* argv [])
 {
 	cout<< "Welcome to my world!" <<endl;
 
-	DagGen * dag = NULL;
+	DagGen * dag = new DagGen();
 /*
 	/*Test 3 7,7,5,5,3,3,2 blood,water,plasma,mercury,sodium,pancakes,oil*
 	char * a[] = {"blah", "Test", "3", "1,1,1", "Water,Blood, Water"};
@@ -68,35 +68,39 @@ cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 */
 
 	//w.RunWara(dag, argc,a);
-	dag->generateDotyGraph("Wara.dot");
+	//dag->generateDotyGraph("Wara.dot");
 	//delete dag;
 
-	char * a[] = {"blah", "0", "1", ".5", "5"};
-	dag = GDA::RunGDA(argc, argv);
-	dag->generateDotyGraph("GDA.dot");
-	delete dag;
+	//char * a[] = {"blah", "0", "1", ".5", "5"};
+	//GDA::RunGDA(5, a,dag);
+	//dag->generateDotyGraph("GDA.dot");
+	//delete dag;
 
 	/*2 45 23 67 93*/
-	//dag = CoDOS::RunCoDOS(argc,argv);
-	//dag->DagName()="CoDos5React";
-	//dag->generateDotyGraph("CoDOS.dot");
-	//dag->generateDropletDag("CoDos5React2_45_23_67_93.txt");
-	//delete dag;
+	/*char * a[] = {"blah", "2", "7","7", "5", "5", "3","3","2" };
+	dag = CoDOS::RunCoDOS(9, a);
+	dag->DagName()="CoDos5React";
+	dag->generateDotyGraph("CoDOS.dot");
+	dag->generateDropletDag("CoDos5React2_45_23_67_93.txt");
+	delete dag;*/
 
 	/*45 23 67 93*/
-	//dag = NRT_ISI::RunNRT_ISI(argc,argv);
-	//dag->generateDotyGraph("NRT_ISI.dot");
-	//delete dag;
+	/*char * a[] = {"blah", "1", "5", "9" };
+	dag = NRT_ISI::RunNRT_ISI(4,a);
+	dag->generateDotyGraph("NRT_ISI.dot");
+	delete dag;*/
 
-	//TODO:: Find discover the input for NCKU. REWRITE NCKU
-//	dag = ISI_NCKU::RunNCKU(argc,argv);
-	//dag->generateDotyGraph("NCKU.dot");
-	//delete dag;
+	ISI_NCKU ncku;
+	char * a[] = {"blah", "11", "10", "6", "5" };
+	ncku.RUN_NCKU(dag,5,a);
+	dag->generateDotyGraph("NCKU.dot");
+	delete dag;
 
 	//numops desiredconcentratin tolerance
 	/*10 0.1015625 .0078125*/
+	//char * a[] = {"blah", "10", "0.1015625", ".0078125" };
 	//dag->DagName()="griffith";
-	//dag = GriffDilute::RunGriffith(argc, argv);
+	//dag = GriffDilute::RunGriffith(4, a);
 	//dag->generateDotyGraph("griffith.dot");
 	//dag->generateDropletDag("griffith.txt");
 	//delete dag;
@@ -105,9 +109,11 @@ cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 	//dag->generateDotyGraph("roy.dot");
 	//delete dag;
 
-	//dag = MTC::RunMTC(argc,argv);
-	//dag->generateDotyGraph("MTC.dot");
-	//delete dag;
+	/*char * a[] = {"blah", "test", "16", "10", "12", "13", "14" };
+	MTC::RunMTC(7,a, dag);
+	cout << dag->isEmpty()<<endl;
+	dag->generateDotyGraph("MTC.dot");
+	//delete dag;*/
 
 	cout<<"Terminating"<<endl;
 	return 0;

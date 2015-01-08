@@ -27,20 +27,26 @@ void GDA :: findSubset(long double *p, int *Qindex, int index, int low, int high
 	findSubset(p,Qindex,index,low+1,high,sum);
 }
 
-DagGen* GDA :: RunGDA(int argc, char* argv[])
+void GDA :: RunGDA(int argc, char* argv[], DagGen *dag)
 {
 	//(<b1, b2, b3, ..., bn>, Ca, d)
 	//where <b1, b2, b3, ..., bn> are the CF's of the related inputs <A1, A2, A3, ..., An> & n>=2 & each b is a positive real number such that 0<b<=1
 	//Ca is the desired CF of the biofluid & Ca is a positive real number such that 0<=Ca<=1
 	//d is an integer that detrmines the accuracy level of Ca.
-
-	DagGen* dag = new DagGen();
-	GDA gda;
-	unsigned int i,j;
+	int i,j;
 	char *stopstring;
+
+	//DagGen* dag = new DagGen();
+	GDA gda;
+//cout << argc<<endl;
 	//Getting the input parameters <b1, b2, b3, ..., bn>, Ca, & d
-	for(i=1; i<argc-2; i++)
-		gda.b.push_back(strtold(argv[i], &stopstring));
+	for(i=1; i<argc-2; i++) {
+//cout<< i<< endl;
+		cout<<gda.b.size()<<endl;
+		long double t = strtold(argv[i], &stopstring);
+		gda.b.push_back(t);
+	}
+
 	gda.Ca = strtold(argv[i++], &stopstring);
 	gda.d = atoi(argv[i]);
 
@@ -226,12 +232,12 @@ DagGen* GDA :: RunGDA(int argc, char* argv[])
 		cout<<"\n";
 	}
 
-/*	cout<<"Your Dag files are in ../output folder\n";
+	cout<<"Your Dag files are in ../output folder\n";
 
-    	dag.generateJSON("../output/Example.json");
-	dag.generateDropletDag("../output/DropletDag.cpp");
-	dag.generateDotyGraph("../output/Example.dot");*/
+  //  	dag.generateJSON("../output/Example.json");
+	//dag.generateDropletDag("../output/DropletDag.cpp");
+	dag->generateDotyGraph("Example.dot");
 
-	return dag;
+	return;
 
 }

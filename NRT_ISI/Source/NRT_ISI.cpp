@@ -501,6 +501,7 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen *dag)
 //Calls all the functions.
 DagGen* NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
 {
+	//SUM of CVs must equal a multiple of 2
 	//CV1, CV2, CV3, CV4, CV5, .... -> All the target CV's to be achieved
 	DagGen *dag = new DagGen();
 	NRT_ISI nrt;

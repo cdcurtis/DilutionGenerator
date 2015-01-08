@@ -13,24 +13,24 @@
 #include "../Headers/WeightedGraph.h"
 #include "../Headers/MTC.h"
 
-DagGen* MTC::RunMTC(int argc, char** argv)
+void MTC::RunMTC(int argc, char** argv, DagGen * dag, bool printWasteResults)
 {
 	MTC mtc;
 	std::string filename = argv[1];
 	std::string basedirectory = "C:\\Users\\Chris\\Documents\\DilutionGenerator\\DilutionGenerator\\";
 
-//	mtc.MTCPhase1(argc, argv);
+	mtc.MTCPhase1(argc, argv);
 
-//	std:: string runTravelingSales = basedirectory + "MTC\\lkh.exe " + filename +".par";
-//	system(runTravelingSales.c_str());
+	std:: string runTravelingSales = basedirectory + "MTC\\lkh.exe " + filename +".par";
+	system(runTravelingSales.c_str());
+
 
 	std::vector<std::string> phase2;
 
 	phase2.push_back(basedirectory + filename + "Tour.txt");
 	phase2.push_back(basedirectory + filename + ".MTC");
 
-	return mtc.MTCPhase2(phase2);
-	return NULL;
+	mtc.MTCPhase2(phase2, dag, printWasteResults);
 }
 
 void MTC::MTCPhase1(int argc, char ** argv)
@@ -38,82 +38,84 @@ void MTC::MTCPhase1(int argc, char ** argv)
 	std::string fileName = argv[1];
 	int SizeOfGraph = atoi(argv[2]);
    	int conCount=1;
-	BrujinGraph n(SizeOfGraph);
+   	_brujinGragh = BrujinGraph(SizeOfGraph);
 
 	//n.print(std::cout);
-   	WeightedGraph WG(&n);
-   	WG.addVertex(n.allNodes[0]);
+   	_weightedGraph = WeightedGraph(&_brujinGragh);
+   	_weightedGraph.addVertex(_brujinGragh.allNodes.at(0));
+
    	for(int i = 3; i<argc; ++i){
-		WG.addVertex(n.allNodes[atoi(argv[i])]);
+   		_weightedGraph.addVertex(_brujinGragh.allNodes.at(atoi(argv[i])));
 		++conCount;
    	}
-	std::cout<<"FileName:" << fileName<<std::endl;
-	std::cout<< "Starting MTC Phase1 for File: "<<fileName<<std::endl;
+	//std::cout<<"FileName:" << fileName<<std::endl;
+	//std::cout<< "Starting MTC Phase1 for File: "<<fileName<<std::endl;
 
 
 
-    WG.calculateEdges();
-    if(!WG.isComplete())
+	_weightedGraph.calculateEdges();
+    if(!_weightedGraph.isComplete())
     	std::cout<<"ERROR: Graph could not be completed.\n";
 
-   //	WG.printDotyGraph("WeightedGraph.dot");
-  // 	WG.printMatrix(std::cout);
+   // _weightedGraph.printDotyGraph("WeightedGraph.dot");
+    //_weightedGraph.printMatrix(std::cout);
 
     LKHFileMaker atsp (fileName);
     atsp.makeATSPParameterFile(10);
     atsp.makeATSPProblemFile(conCount);
 
-    WG.printMatrix(atsp.pFileStream);
+    _weightedGraph.printMatrix(atsp.pFileStream);
     atsp.pFileStream<<"EOF";
     atsp.pFileStream.close();
 
-    WG.printMTC(fileName+".MTC");
-    std::cout<< "Finished ATSP Prep on: "<<fileName<<std::endl;
+    _weightedGraph.printMTC(fileName+".MTC");
+    //std::cout<< "Finished ATSP Prep on: "<<fileName<<std::endl;
     return ;
 }
 
-DagGen* MTC::MTCPhase2(std::vector<std::string> argv)
+void MTC::MTCPhase2(std::vector<std::string> argv, DagGen* dag, bool printWasteResults)
 {
 	if(argv.size() < 2) {
 		std::cout<< "ERROR: please make sure that the input is <TourFile> <MTCFile>"<<std::endl;
-			return NULL;
+			return;
 		}
 		int mixSplits = -1;
-		BrujinGraph bruGraph;
-		WeightedGraph weiGraph;
+		//BrujinGraph bruGraph;
+		//WeightedGraph weiGraph;
 
 		std::string tourFile = argv[0];
-		std::string MTCFile  = argv[1];
+		//std::string MTCFile  = argv[1];
 
-		std::string filename = MTCFile.substr(0, MTCFile.find("."));
-		std::cout<< "Starting MTC Phase2 for File: "<<filename<<std::endl;
+	//	std::string filename = MTCFile.substr(0, MTCFile.find("."));
+		//std::cout<< "Starting MTC Phase2 for File: "<<filename<<std::endl;
 
-		std::cout<<"RESULTS:" <<std::endl;
+		//std::cout<<"RESULTS:" <<std::endl;
 		std::vector<int> tourOrder = parseTourFile(tourFile, mixSplits);
-		parseMTCFile (MTCFile, bruGraph, weiGraph);
+	//	parseMTCFile (MTCFile, _brujinGragh, _weightedGraph);
 
-		for(unsigned int i = 0; i < tourOrder.size(); ++i)
-			std::cout<< tourOrder[i]<<std::endl;
+		//for(unsigned int i = 0; i < tourOrder.size(); ++i)
+		//	std::cout<< tourOrder[i]<<std::endl;
 
 		tourOrder = reorderTour(tourOrder);
-		for(unsigned int i = 0; i < tourOrder.size(); ++i)
-					std::cout<< tourOrder[i]<<std::endl;
-		int cycledWeight = weiGraph.vertices[tourOrder[tourOrder.size()-1]-1].edges[0].weight;
+	//	for(unsigned int i = 0; i < tourOrder.size(); ++i)
+	//		std::cout<< tourOrder[i]<<std::endl;
+
+		int cycledWeight = _weightedGraph.vertices[tourOrder[tourOrder.size()-1]-1].edges[0].weight;
 		mixSplits -= cycledWeight;
 
-		DagGen* dag = new DagGen( CreateDag(tourOrder, weiGraph));
+		CreateDag(tourOrder, _weightedGraph, dag, printWasteResults);
 		//dag.generateDotyGraph(filename + ".dot");
 		//dag.generateJSON(filename + ".json");
-		dag->DagName() = filename;
+		dag->DagName() = "foo";
 //		dag.generateDropletDag(filename+".txt");
 
-		std::vector<double> testValidate;
-		for(unsigned int i = 0 ; i <weiGraph.vertices.size(); ++i)
+		/*std::vector<double> testValidate;
+		for(unsigned int i = 0 ; i <_weightedGraph.vertices.size(); ++i)
 		{
-			if(weiGraph.vertices[i].v->name != 0){
-				testValidate.push_back((double)weiGraph.vertices[i].v->name/(double)weiGraph.g->allNodes.size());
+			if(_weightedGraph.vertices[i].v->name != 0){
+				testValidate.push_back((double)_weightedGraph.vertices[i].v->name/(double)_weightedGraph.g->allNodes.size());
 			}
-		}
+		}*/
 		//if(dag->isValidSingleReactantDilution(testValidate, weiGraph.g->allNodes.size()))
 			//std::cout<< "PASSED\n";
 		//else
@@ -122,7 +124,7 @@ DagGen* MTC::MTCPhase2(std::vector<std::string> argv)
 //		dag->generateDropletDag();
 		//dag.generateMCFLOWDag();
 
-		return dag;
+		return;
 }
 
 
@@ -133,13 +135,13 @@ std::vector<int> MTC::getNamedNodes (std::vector<int> DagOrder, WeightedGraph wg
 		ret.push_back(wg.vertices[DagOrder[i]-1].v->name);
 	return ret;
 }
-DagGen MTC::fillDagGen(std::vector<HamiltonianPath> paths, int size)
+void MTC::fillDagGen(std::vector<HamiltonianPath> paths, int size, DagGen * ret, bool printResults)
 { 	int bufferCount = 1;
 	int reactantCount = 1;
 	int wasteCount=0;
 	int mixSplitCount =0;
 	char buffer [25];
-	DagGen ret;
+
 	Vertex* saved = NULL;
 	for(int i = 0 ; i < paths.size(); ++i){
 		for (HamiltonianNode* temp = paths[i].head; temp->next != NULL; temp = temp->next)
@@ -150,63 +152,65 @@ DagGen MTC::fillDagGen(std::vector<HamiltonianPath> paths, int size)
 				d1 = saved;
 			else if(temp->name){
 				sprintf(buffer,"reactantDrop%i", reactantCount++);
-				d1 = ret.addVertex(DISPENSE, buffer );
+				d1 = ret->addVertex(DISPENSE, buffer );
 			}
 			else{
 				sprintf(buffer,"bufferDrop%i", bufferCount++);
-				d1 = ret.addVertex(DISPENSE, buffer);
+				d1 = ret->addVertex(DISPENSE, buffer);
 			}
 
 			Vertex* d2 = NULL;
 			if(temp->next->edgeType){
 				sprintf(buffer,"reactantDrop%i", reactantCount++);
-				d2 = ret.addVertex(DISPENSE, buffer);
+				d2 = ret->addVertex(DISPENSE, buffer);
 			}
 			else{
 				sprintf(buffer,"bufferDrop%i", bufferCount++);
-				d2 = ret.addVertex(DISPENSE, buffer);
+				d2 = ret->addVertex(DISPENSE, buffer);
 			}
 
 			Vertex* m = NULL;
 			sprintf(buffer,"Mixed%i",temp->next->name);
-			m = ret.addVertex(MIX, buffer);
+			m = ret->addVertex(MIX, buffer);
 
 			Vertex* s = NULL;
 			sprintf(buffer,"Split%i", temp->next->name);
-			s = ret.addVertex(SPLIT, buffer);
+			s = ret->addVertex(SPLIT, buffer);
 
 			Vertex* w = NULL;
 			if(temp->next->next == NULL) {
 				sprintf(buffer,"Output%i", temp->next->name);
-				w = ret.addVertex(OUTPUT, buffer);
+				w = ret->addVertex(OUTPUT, buffer);
 				saved = s;
 			}
 			else {
 				sprintf(buffer,"Waste%i", temp->next->name);
-				w = ret.addVertex(WASTE, buffer);
+				w = ret->addVertex(WASTE, buffer);
 				wasteCount++;
 				saved = s;
 			}
 			mixSplitCount++;
 
-			ret.addEdge(d1,m);
-			ret.addEdge(d2,m);
-			ret.addEdge(m,s);
-			ret.addEdge(s,w);
+			ret->addEdge(d1,m);
+			ret->addEdge(d2,m);
+			ret->addEdge(m,s);
+			ret->addEdge(s,w);
 		}
 	}
 	sprintf(buffer,"Waste%s", saved->label.c_str());
-	Vertex* w = ret.addVertex(WASTE, buffer);
+	Vertex* w = ret->addVertex(WASTE, buffer);
 	wasteCount++;
-	ret.addEdge(saved,w);
-	std::cout << "MixSplits: " <<   mixSplitCount << std::endl;
-	std::cout << "Waste: " << wasteCount << std::endl;
-	std::cout << "Samples: " << reactantCount-1 << std::endl;
-	std::cout << "buffer: " << bufferCount-1 << std::endl;
-	return ret;
+	ret->addEdge(saved,w);
+
+	if(printResults){
+		std::cout << "MixSplits: " <<   mixSplitCount << std::endl;
+		std::cout << "Waste: " << wasteCount << std::endl;
+		std::cout << "Samples: " << reactantCount-1 << std::endl;
+		std::cout << "buffer: " << bufferCount-1 << std::endl;
+	}
 }
 
-DagGen MTC::CreateDag(std::vector<int> DagOrder, WeightedGraph wg)
+void MTC::CreateDag(std::vector<int> DagOrder, WeightedGraph wg, DagGen* dag, bool printWasteResults)
 {
 	std::vector<int> namedNodes = getNamedNodes(DagOrder, wg);
 
@@ -214,7 +218,7 @@ DagGen MTC::CreateDag(std::vector<int> DagOrder, WeightedGraph wg)
 	for(int i = 0; i< namedNodes.size()-1; ++i){
 		paths.push_back(wg.shortestPath(wg.g->allNodes[namedNodes[i]], wg.g->allNodes[namedNodes[i+1]]));
 	}
-	return fillDagGen(paths,wg.g->allNodes.size());
+	fillDagGen(paths,wg.g->allNodes.size(), dag, printWasteResults);
 }
 
 /* Name: parseMTCFile
@@ -228,8 +232,8 @@ DagGen MTC::CreateDag(std::vector<int> DagOrder, WeightedGraph wg)
 void MTC::parseMTCFile(std::string fileName, BrujinGraph& bg, WeightedGraph& wg)
 {
 	std::cout<<"Parsing MTC"<<std::endl;
-	BrujinGraph *bruGraph = NULL;
-	WeightedGraph *weiGraph = NULL;
+	//BrujinGraph *bruGraph = NULL;
+	//WeightedGraph *weiGraph = NULL;
 	std::ifstream infile;
 	infile.open(fileName.c_str());
 	if(!infile){
@@ -244,24 +248,24 @@ void MTC::parseMTCFile(std::string fileName, BrujinGraph& bg, WeightedGraph& wg)
 		if(!addVertices){
 			if(fileLine =="SIZE") {
 				getline(infile, fileLine);
-				bruGraph = new BrujinGraph(toInt(fileLine));
-				bg = *bruGraph;
+		//		bruGraph = new BrujinGraph(toInt(fileLine));
+		//		bg = *bruGraph;
 			}
 			else if (fileLine =="Verticies"){
-				addVertices = true;
-				weiGraph = new WeightedGraph(bruGraph);
+			;//	addVertices = true;
+			//	weiGraph = new WeightedGraph(bruGraph);
 			}
 		}
 		else if(fileLine !=""){
-			weiGraph->addVertex(bruGraph->allNodes[toInt(fileLine)]);
-			std:: cout<<toInt(fileLine)<< " ";
+			//weiGraph->addVertex(bruGraph->allNodes[toInt(fileLine)]);
+			//std:: cout<<toInt(fileLine)<< " ";
 		}
 	}
-	weiGraph->calculateEdges();
-	if(weiGraph->isComplete())
-		wg = *weiGraph;
-	else
-		wg = NULL;
+//	weiGraph->calculateEdges();
+//	if(weiGraph->isComplete())
+//		wg = *weiGraph;
+//	else
+//		wg = NULL;
 	infile.close();
 }
 

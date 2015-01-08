@@ -48,22 +48,25 @@ struct LKHFileMaker{
 
 class MTC
 {
+	BrujinGraph _brujinGragh;
+	WeightedGraph _weightedGraph;
+
 	MTC() {}
 
 	void MTCPhase1(int, char**);
-	DagGen* MTCPhase2(std::vector<std::string>);
+	void MTCPhase2(std::vector<std::string>, DagGen *, bool );
 
 	int toInt(std::string);
 	int getTourLength(std::string);
 	std::vector<int> parseTourFile(std::string, int &);
 	void parseMTCFile(std::string, BrujinGraph&, WeightedGraph&);
 	std::vector<int> reorderTour(std::vector<int>);
-	DagGen CreateDag(std::vector<int>, WeightedGraph);
+	void CreateDag(std::vector<int>, WeightedGraph, DagGen*, bool);
 	std::vector<int> getNamedNodes (std::vector<int>, WeightedGraph);
-	DagGen fillDagGen(std::vector<HamiltonianPath>, int);
+	void fillDagGen(std::vector<HamiltonianPath>, int, DagGen*, bool);
 
 public:
-	static DagGen* RunMTC(int, char**);
+	static void RunMTC(int, char**, DagGen*, bool printWasteResults = false );
 };
 
 #endif /* MTC_H_ */

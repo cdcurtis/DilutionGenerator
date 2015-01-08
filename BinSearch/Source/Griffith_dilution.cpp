@@ -270,6 +270,12 @@ DiluteRet GriffDilute::PerformDilution(DiluteDroplet* di, DiluteDroplet* db, dou
 	if(Debug){cout<<"endConcentration is: "<<RattoFloat(AllAvailDroplets.back()->Concentration)<<flush<<endl;}
 	int base = FloatToRat(RattoFloat(AllAvailDroplets.back()->Concentration), num_ops).denom;
 	ret.base = base;
+	for(int i =0 ; i< 	ret.DilutionVals.first.size(); ++i) {
+		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPreMix.first->Concentration) <<endl;
+		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPreMix.second->Concentration) << endl;
+		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPostMix.first->Concentration) <<endl;
+		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPostMix.second->Concentration) << endl;
+	}
 	return ret;
 }
 

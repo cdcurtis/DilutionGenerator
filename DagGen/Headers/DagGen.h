@@ -88,6 +88,7 @@ public:
 	void addEdge (int , int );
 	void addEdge (Vertex* , Vertex* );
 	void removeEdge(int);
+	void removeAssociatedEdges(int nodeID);
 	
 	void generateJSON(std :: string = "");
 	void generateDotyGraph(std :: string = "");

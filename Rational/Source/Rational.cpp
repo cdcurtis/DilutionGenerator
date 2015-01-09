@@ -1,16 +1,6 @@
 /*
  * Rational.cc
  *
- *  Created on: Jan 7, 2014
- *      Author: Kenneth O'Neal
- */
-
-
-
-
-/*
- * Rational.cc
- *
  *  Created on: May 6, 2013
  *      Author: Kenneth O'Neal
  */

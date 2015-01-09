@@ -11,6 +11,7 @@
  //all generated droplet dags and associated source will go to ../out/filename
  //all executables will remain in source folder
 #include "../Headers/common.h"
+#include "../../DagGen/Headers/DagGen.h"
 
 using namespace std;
 
@@ -763,14 +764,15 @@ VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<Di
 	ret->splitCount = splitCount;
 	ret->wasteCount = wasteCount;
 
-	DagGen* copy = new DagGen(*dag);
-	if(Debug2)
-	{
-		cout<<"copy outputVertices = "<<flush<<endl;
-		copy->outputVertices();
-		copy->outputEdges();
-	}
-	ret->H = copy;
+//	DagGen* copy = new DagGen(*dag);
+//	if(Debug2)
+//	{
+//		cout<<"copy outputVertices = "<<flush<<endl;
+//		copy->outputVertices();
+//		copy->outputEdges();
+//	}
+	//TODO CDCURTIS CHANGE
+	ret->H = dag;
 	//need this copy?
 	return ret;
 }

@@ -10,6 +10,7 @@
 #ifndef GRIFFITH_DILUTION_H_
 #define GRIFFITH_DILUTION_H_
 
+using namespace std;
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -18,9 +19,9 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+#include "../../RoyCommon/Headers/common.h"
 #include "../../Rational/Headers/Rational.h"
 #include "../../DagGen/Headers/DagGen.h"
-#include "../../RoyCommon/Headers/common.h"
 
 bool CompareByuID(DiluteDroplet* A, DiluteDroplet* B);
 
@@ -52,7 +53,7 @@ public:
 
 	//output/input
 	void outputVertices();
-	void outputEdges(DagGen & dag);
+	void outputEdges(DagGen * dag);
 	void outputAvailableDroplets(vector<DiluteDroplet*> AvailableDroplets);
 	void outputMixSplits(vector<MixOp*> Mixes);
 	void clearDropletCounts(vector<DiluteDroplet*> AvailableDroplets);
@@ -63,7 +64,8 @@ public:
 	VertexCounts* CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
 	void calcNumDropsFin(pair <vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
 	void expandDag(DagGen * dag, VertexCounts* VC);
-	static DagGen* RunGriffith(int argc, char ** argv);
+	static void GriffithDilute_Process(DiluteDroplet* db, DiluteDroplet* di, int num_ops, double DesiredConcentrate, double tolerance, DagGen*);
+	static void RunGriffith(int argc, char** argv, DagGen *);
 
 	//memory management
 	void DeleteM(vector<MixOp*> M);

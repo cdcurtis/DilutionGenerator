@@ -92,11 +92,7 @@ struct DiluteRet
 	void deleteDiluteDroplets()
 	{
 		while(!DilutionVals.second.empty()) delete DilutionVals.second.back(), DilutionVals.second.pop_back();
-		/*for(unsigned i = 0; i < DilutionVals.second.size(); i++)
-		{
-			delete DilutionVals.second[i];
-		}
-		return;*/
+
 	}
 };
 

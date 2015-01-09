@@ -17,6 +17,7 @@
 #include "ISI_NCKU/Headers/ISI_NCKU.h"
 #include "BinSearch/Headers/Griffith_dilution.h"
 #include "DMRW/Headers/Roy_dilution.h"
+#include "IDMA/Headers/IDMA.h"
 #include "MTC/Headers/MTC.h"
 
 
@@ -90,24 +91,34 @@ cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 	dag->generateDotyGraph("NRT_ISI.dot");
 	delete dag;*/
 
-	ISI_NCKU ncku;
+/*	ISI_NCKU ncku;
 	char * a[] = {"blah", "11", "10", "6", "5" };
 	ncku.RUN_NCKU(dag,5,a);
 	dag->generateDotyGraph("NCKU.dot");
+	delete dag;*/
+
+	/*char * a[] = {"blah", "10", "0.0078125", "0.1015625" };
+	IDMA::RunIDMA(4,a, dag);
+	cout<<dag->isEmpty();
+
+	dag->generateDotyGraph("IDMA.dot");
+
 	delete dag;
+*/
 
 	//numops desiredconcentratin tolerance
 	/*10 0.1015625 .0078125*/
-	//char * a[] = {"blah", "10", "0.1015625", ".0078125" };
-	//dag->DagName()="griffith";
-	//dag = GriffDilute::RunGriffith(4, a);
-	//dag->generateDotyGraph("griffith.dot");
-	//dag->generateDropletDag("griffith.txt");
-	//delete dag;
+//	char * a[] = {"blah", "10","0.00048828125", "0.1240234375"};
+//	dag->DagName()="griffith";
+//	GriffDilute::RunGriffith(4, a, dag);
+//	dag->generateDotyGraph("griffith.dot");
+//	//dag->generateDropletDag("griffith.txt");
+//	delete dag;
 
-	//dag = RoyDilute::RoyDilute_Process(argc,argv);
-	//dag->generateDotyGraph("roy.dot");
-	//delete dag;
+//	char * a[] = {"blah", "10",".0078125", "0.1015625"};
+//	RoyDilute::RunDMRW(4,a,dag);
+//	dag->generateDotyGraph("roy.dot");
+//	delete dag;
 
 	/*char * a[] = {"blah", "test", "16", "10", "12", "13", "14" };
 	MTC::RunMTC(7,a, dag);

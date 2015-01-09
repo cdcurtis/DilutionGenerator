@@ -325,6 +325,21 @@ void DagGen::removeEdge(int loc)
 	return;
 }
 
+void DagGen::removeAssociatedEdges(int nodeID)
+{
+	bool Debug = false;
+	for(unsigned i = 0; i < edges.size(); i++)
+	{
+		if(edges.at(i)->parent == nodeID or edges.at(i)->child == nodeID)
+		{
+			if(Debug){std::cout<<"edge deleted in removeAssociated is: "<<edges.at(i)->parent<<","<< edges.at(i)->child<<std::flush<<std::endl;}
+			delete (edges[i]);
+			edges.erase(edges.begin()+i, edges.begin()+i+1);
+		}
+	}
+	return;
+}
+
 std::vector<Vertex*> & DagGen :: Vertices()
 {
 	return this->vertices;

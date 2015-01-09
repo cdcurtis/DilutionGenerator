@@ -5,7 +5,7 @@
  *      Author: Kenneth O'Neal
  */
 #include "../Headers/Griffith_dilution.h"
-#include <cstdlib>
+#include "../../DagGen/Headers/DagGen.h"
 
 Vertex2* GriffDilute::addVertex(DagGen * dag, VertexType vertexType, std:: string label, DiluteDroplet* dh, DiluteDroplet* dl, int dropsAvail, int dropsNeeded)
 {
@@ -25,9 +25,9 @@ void GriffDilute::outputVertices()
 	return;
 }
 
-void GriffDilute::outputEdges(DagGen & dag)
+void GriffDilute::outputEdges(DagGen * dag)
 {
-	vector<Edge*> edges = dag.Edges();
+	vector<Edge*> edges = dag->Edges();
 	for(unsigned i = 0; i < edges.size(); i++)
 	{
 		cout<<"edge "<<i<<": parent="<<edges.at(i)->parent<<", child = "<<edges.at(i)->child<<endl;
@@ -139,7 +139,7 @@ DiluteDroplet* GriffDilute::CreateDroplet(Rational Concentration) {
 DiluteRet GriffDilute::PerformDilution(DiluteDroplet* di, DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops)
 {
 	bool Debug = false;
-	bool Debug2 = false;
+	bool Debug2 = true;
 	int id = 0;
 	vector< MixOp*> Mixes;
 
@@ -270,12 +270,6 @@ DiluteRet GriffDilute::PerformDilution(DiluteDroplet* di, DiluteDroplet* db, dou
 	if(Debug){cout<<"endConcentration is: "<<RattoFloat(AllAvailDroplets.back()->Concentration)<<flush<<endl;}
 	int base = FloatToRat(RattoFloat(AllAvailDroplets.back()->Concentration), num_ops).denom;
 	ret.base = base;
-	for(int i =0 ; i< 	ret.DilutionVals.first.size(); ++i) {
-		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPreMix.first->Concentration) <<endl;
-		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPreMix.second->Concentration) << endl;
-		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPostMix.first->Concentration) <<endl;
-		cout << RattoFloat(ret.DilutionVals.first.at(i)->DropletsPostMix.second->Concentration) << endl;
-	}
 	return ret;
 }
 
@@ -538,7 +532,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre1 if"<<flush<<endl; }
 			ostringstream convert1;
 			convert1 << sampleCount;
-			string label1 = sample;// + convert1.str();
+			string label1 = sample + convert1.str();
 			pre1 = this->addVertex(dag, DISPENSE, label1, NULL, NULL, 1, 1);
 			pre1->type = DISPENSE;
 			sampleCount++;
@@ -548,7 +542,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre1 else if"<<flush<<endl; }
 			ostringstream convert2;
 			convert2 << bufferCount;
-			string label2 = buffer;// + convert2.str();
+			string label2 = buffer + convert2.str();
 			pre1 = this->addVertex(dag, DISPENSE, label2, NULL, NULL, 1, 1);
 			pre1->type = DISPENSE;
 			bufferCount++;
@@ -574,7 +568,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre2 if"<<flush<<endl; }
 			ostringstream convert1;
 			convert1 << sampleCount;
-			string label1 = sample;// + convert1.str();
+			string label1 = sample + convert1.str();
 			pre2 = this->addVertex(dag, DISPENSE, label1, NULL, NULL, 1, 1);
 			pre2->type = DISPENSE;
 			sampleCount++;
@@ -584,7 +578,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 			if(debug){cout<<"pre2 else if"<<flush<<endl; }
 			ostringstream convert2;
 			convert2 << bufferCount;
-			string label2 = buffer;// + convert2.str();
+			string label2 = buffer + convert2.str();
 			pre2 = this->addVertex(dag, DISPENSE, label2, NULL, NULL, 1, 1);
 			pre2->type = DISPENSE;
 			bufferCount++;
@@ -609,7 +603,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 		ostringstream convertMix;
 		convertMix << mixCount;
 
-		string mixLabel = mix;// + convertMix.str();
+		string mixLabel = mix + convertMix.str();
 		Vertex2* mix = this->addVertex(dag, MIX, mixLabel, NULL, NULL, 1, 1);
 		mix->type = MIX;
 		mixCount++;
@@ -626,7 +620,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 		//create split vertex, connect mix to split, and populate dh, dl (outgoing drops of split)
 		ostringstream convertSplit;
 		convertSplit << splitCount;
-		string splitLabel = split;// + convertSplit.str();
+		string splitLabel = split + convertSplit.str();
 		Vertex2* split = this->addVertex(dag, SPLIT, splitLabel, NULL, NULL, 1, 1);
 		split->type = SPLIT;
 		splitCount++;
@@ -642,7 +636,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 		//Create output vertex, connect split dl to waste vertex
 		ostringstream convertWaste;
 		convertWaste << wasteCount;
-		string wasteLabel = waste;// + convertWaste.str();
+		string wasteLabel = waste + convertWaste.str();
 		Vertex2* waste= this->addVertex(dag, OUTPUT, wasteLabel, NULL, NULL, 1, 1);
 		waste->type = OUTPUT;
 		wasteCount++;
@@ -702,7 +696,7 @@ VertexCounts* GriffDilute::CreateDag(DagGen * dag, pair< vector<MixOp*>, vector<
 
 	ostringstream convert;
 	convert << 1;
-	string outLable = "Output";//+convert.str();
+	string outLable = "Output"+convert.str();
 	Vertex2* out = this->addVertex(dag, OUTPUT, outLable, NULL, NULL, 1, 1);
 
 	dag->addEdge(fsplitIndex, out->uniqueID);
@@ -787,7 +781,7 @@ void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 								convertP << countVal;
 								VertexType T1 = vertices.at(pID)->type;
 								//string pLabel = vertices.at(pID)->label + "." + convertP.str();
-								string pLabel = findLabel(vertices.at(pID));// +  convertP.str();
+								string pLabel = findLabel(vertices.at(pID)) +  convertP.str();
 								p = this->addVertex(dag, T1, pLabel, NULL, NULL, 1, 1);
 
 								count++;
@@ -814,7 +808,7 @@ void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 								ostringstream convertC;
 								convertC << countVal;
 								VertexType T2 = vertices.at(cID)->type;
-								string cLabel = findLabel(vertices.at(cID));// + convertC.str();
+								string cLabel = findLabel(vertices.at(cID)) + convertC.str();
 								c = this->addVertex(dag, T2, cLabel, NULL, NULL, 1, 1);
 
 								count++;
@@ -829,7 +823,7 @@ void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 									lastVertices.push_back(pusher.first);
 								}
 							}
-							else //child was found, so just estblish location
+							else //child was found, so just establish location
 							{
 								c = vertices.at(cloc);
 							}
@@ -878,7 +872,7 @@ void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 									int countVal = VC->wasteCount;
 									ostringstream convertWaste;
 									convertWaste << countVal;
-									string wasteLabel = "waste";// + convertWaste.str();
+									string wasteLabel = "waste" + convertWaste.str();
 									Vertex2* waste = this->addVertex(dag, OUTPUT, wasteLabel, NULL, NULL, 1, 1);
 
 									waste->type = OUTPUT;
@@ -896,58 +890,70 @@ void GriffDilute::expandDag(DagGen * dag, VertexCounts* VC)
 	return;
 }
 
-DagGen* GriffDilute::RunGriffith(int argc, char ** argv)
+void GriffDilute::GriffithDilute_Process(DiluteDroplet* db, DiluteDroplet* di, int num_ops, double DesiredConcentrate, double tolerance, DagGen* dag)
 {
-	int num_ops = atoi(argv[1]);
-	double DesiredConcentrate = atof(argv[2]);
-	double tolerance = atof(argv[3]);
-
-	DiluteDroplet* db = new DiluteDroplet;
-	db->Concentration = Rational(0,pow(2,num_ops));
-	DiluteDroplet* di = new DiluteDroplet;
-	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
-
-	DagGen* dag = new DagGen();
 	GriffDilute GD;
 
 	pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals;
 	DiluteRet valid;
 
-	cout<<" /////////before PerformDilution\\\\\\\\\ "<<flush<<endl;
+	//cout<<" /////////before PerformDilution\\\\\\\\\ "<<flush<<endl;
 	valid = GD.PerformDilution(di, db, tolerance, DesiredConcentrate, num_ops);
 	DilutionVals = valid.DilutionVals;
-	cout<<" /////////after PerformDilution \\\\\\\\\\ "<<flush<<endl;
+	//cout<<" /////////after PerformDilution \\\\\\\\\\ "<<flush<<endl;
 
-	cout<<" //////////before CreateDag \\\\\\\\\ "<<flush<<endl;
+
+
+	//cout<<" //////////before CreateDag \\\\\\\\\ "<<flush<<endl;
 	VertexCounts* VC = GD.CreateDag(dag, DilutionVals);
-	cout<<" //////////after CreateDag\\\\\\\\\ "<<flush<<endl;
+	//cout<<" //////////after CreateDag\\\\\\\\\ "<<flush<<endl;
 
-	cout<<" //////////before expand Dag\\\\\\\\\ "<<flush<<endl;
+	//cout<<" //////////before expand Dag\\\\\\\\\ "<<flush<<endl;
 	GD.expandDag(dag, VC);
-	cout<<" //////////after expand Dag\\\\\\\\\ "<<flush<<endl;
+	//cout<<" //////////after expand Dag\\\\\\\\\ "<<flush<<endl;
 
-	cout<<" //////////before generate DropletDag\\\\\\\\\ "<<flush<<endl;
-//	dag.generateDropletDag("DropletDagT.cpp");
-	cout<<" //////////after generate DropletDag\\\\\\\\\ "<<flush<<endl;
+//	cout<<" //////////before generate DropletDag\\\\\\\\\ "<<flush<<endl;
+//	dag->generateDropletDag("DropletDagT.cpp");
+	//cout<<" //////////after generate DropletDag\\\\\\\\\ "<<flush<<endl;
 
-	cout<<" //////////before generate DotyGraph\\\\\\\\\ "<<flush<<endl;
-	//dag.generateDotyGraph("Test.dot");
-	cout<<" //////////after generate DotyGrpah\\\\\\\\\ "<<flush<<endl;
+//	cout<<" //////////before generate DotyGraph\\\\\\\\\ "<<flush<<endl;
+	//dag->generateDotyGraph("Test.dot");
+	//cout<<" //////////after generate DotyGrpah\\\\\\\\\ "<<flush<<endl;
 
-	cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;
-	int base = valid.base;
-	vector<double> endConcentration = valid.endConcentration;
-	//bool value = dag->isValidSingleReactantDilution(endConcentration, base);
-	//cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;
-/*
-	if(value)
-	{
-		cout<<"Validity test passed"<<flush<<endl;
+	//cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;
+//	int base = valid.base;
+//	vector<double> endConcentration = valid.endConcentration;
+//	bool value = dag->isValidSingleReactantDilution(endConcentration, base);
+//	cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;
+
+//	if(value)
+//	{
+//		cout<<"Validity test passed"<<flush<<endl;
+//	}
+//	else
+//	{
+//		cout<<"validity test not passed"<<flush<<endl;
+//	}
+
+	return;
+}
+
+void GriffDilute:: RunGriffith(int argc, char** argv, DagGen *dag)
+{
+	if(argc<4){
+		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;
+		std::exit(-1);
 	}
-	else
-	{
-		cout<<"validity test not passed"<<flush<<endl;
-	}
-*/
-	return dag;
+
+	int num_ops = atoi(argv[1]);
+	DiluteDroplet* db = new DiluteDroplet;
+	db->Concentration = Rational(0,pow(2,num_ops));
+	DiluteDroplet* di = new DiluteDroplet;
+	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
+
+	double tolerance = atof(argv[2]);
+	double DesiredConcentrate = atof(argv[3]);
+
+	GriffDilute::GriffithDilute_Process(db, di, num_ops, DesiredConcentrate, tolerance, dag);
+
 }

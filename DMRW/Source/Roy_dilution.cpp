@@ -5,28 +5,26 @@
  *      Author: Kenneth O'Neal
  */
 #include "../Headers/Roy_dilution.h"
-#include "../../Rational/Headers/Rational.h"
-#include <cstdlib>
+#include "../../DagGen/Headers/DagGen.h"
 
 using namespace std;
 
 DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops)
 {
-
 	bool Debug = false;
 	bool Debug2 = false;
-	bool Debug3 = true;
+	bool Debug3 = false;
 
 	if(Debug){cout << "desired concentration is:" << DesiredConcentrate << endl;}
 	if(Debug3)
 	{
 		cout<<" the input droplets are di: "<<di->uID<<", ";
-		di->Concentration.display(); 
+		di->Concentration.display();
 		cout<<"and db: "<<db->uID<<", ";
 		db->Concentration.display();
 	}
 	if(Debug3){cout<<"PD0.0"<<flush<<endl;}
-	
+
 	int id = 0; //id represents the value assigned as nodeid. Iterate after each dilutedroplet creation
 	vector<MixOp*> Mix_Splits;
 	int denominator = pow(2, num_ops);
@@ -135,7 +133,7 @@ DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, doubl
 	//return Mix_Splits;
 
 	if(Debug3){cout<<"PD4.0"<<flush<<endl;}
-	while (error >= tolerance) 
+	while (error >= tolerance)
 	{
 		//x is resulting numerator of mix action
 		if (x < CtConc.numer) //CtConc represents the target concentration. x is numerator of result of the two
@@ -290,7 +288,7 @@ pair<VertexCounts*, DagGen*> RoyDilute::CreateDag_IDMAHelper(DagGen * dag, pair<
 	vector<DiluteDroplet*> AvailableDroplets = DilutionVals.second;
 
 	std::sort(AvailableDroplets.begin(), AvailableDroplets.end(), Dilute::CompareuID);
-	
+
 	//given counts and given sequence of mixes I can produce the correct sequence of nodes
 	//optimality of node and edge generation is not considered here as ordering will be handled by the scheduling
 	//phase of the synthesis process.
@@ -592,10 +590,10 @@ DagGen* RoyDilute::CreateIDMADag(VertexCounts* VC, DagGen* M)
 				else
 				{
 					if(Debug){cout<<"1.3"<<flush<<endl;}
-					
-					//is an additional sample, remove vertex, connect all outgoing edges' to first sample.	
+
+					//is an additional sample, remove vertex, connect all outgoing edges' to first sample.
 					parentEdges = M->findOutgoingEdges(vertex->uniqueID);
-					
+
 					if(Debug){cout<<"1.4"<<flush<<endl;}
 					for(unsigned j = 0; j < parentEdges.size(); j++)
 					{
@@ -635,7 +633,7 @@ DagGen* RoyDilute::CreateIDMADag(VertexCounts* VC, DagGen* M)
 					if(Debug){cout<<"1.8"<<flush<<endl;}
 				}
 				if(Debug){cout<<"1.9"<<flush<<endl;}
-				
+
 			}
 			else if(vertex->label.find(b) != std::string::npos)
 			{
@@ -644,12 +642,12 @@ DagGen* RoyDilute::CreateIDMADag(VertexCounts* VC, DagGen* M)
 				{
 					if(Debug){cout<<"2.2"<<flush<<endl;}
 					Buffer1 = vertex;
-					continue; //is first buffer, do nothing. 
+					continue; //is first buffer, do nothing.
 				}
 				else
 				{
 					if(Debug){cout<<"2.3"<<flush<<endl;}
-					//is an additional sample, remove vertex, connect all outgoing edges' to first sample.	
+					//is an additional sample, remove vertex, connect all outgoing edges' to first sample.
 					parentEdges = M->findOutgoingEdges(vertex->uniqueID);
 					if(Debug){cout<<"2.4"<<flush<<endl;}
 					for(unsigned j = 0; j < parentEdges.size(); j++)
@@ -709,30 +707,22 @@ DagGen* RoyDilute::CreateIDMADag(VertexCounts* VC, DagGen* M)
 	if(Debug2){M->outputVertices();}
 	if(Debug2){M->outputEdges();}
 	if(Debug){cout<<"5.1"<<flush<<endl;}
-	
+
 	return M;
 }
 
-DagGen* RoyDilute::RoyDilute_Process(int argc, char** argv)
+pair< int, int > RoyDilute::RoyDilute_Process(DiluteDroplet* db, DiluteDroplet* di, int num_ops, double DesiredConcentrate, double tolerance, DagGen* dag)
 {
-	bool Debug = true;
+	bool Debug = false;
 	RoyDilute RD;
-	DagGen* dag = new DagGen();
-
-	int num_ops = atoi(argv[1]);
-	double DesiredConcentrate = atof(argv[2]);
-	double tolerance = atof(argv[3]);
 
 	int numMS = 0;
 	int numW = 0;
-	DiluteDroplet* db = new DiluteDroplet();
-	DiluteDroplet* di = new DiluteDroplet();
 
-	
 	pair<vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals;
 	DiluteRet* valid;
 
-	cout<<"The Desired concentrate is: "<<DesiredConcentrate<<flush<<endl;
+	//cout<<"The Desired concentrate is: "<<DesiredConcentrate<<flush<<endl;
 
 	if(Debug){cout<<" /////////Before PerformDilution\\\\\\\\\\ "<<flush<<endl;}
 	valid = RD.PerformDilution(di,db, tolerance, DesiredConcentrate, num_ops);
@@ -744,36 +734,37 @@ DagGen* RoyDilute::RoyDilute_Process(int argc, char** argv)
 	if(Debug){cout<<"/////////after create dag\\\\\\\\\\"<<flush<<endl;}
 
 
-//	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
-//	if(Debug){dag->generateDropletDag("DMRWafterCreateT.cpp");}
-//	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){dag->generateDropletDag("DMRWafterCreateT.cpp");}
+	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
 
-//	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
-//	if(Debug){dag->generateDotyGraph("DMRWafterCreate.dot");}
-//	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){dag->generateDotyGraph("DMRWafterCreate.dot");}
+	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
 
 	if(Debug){cout<<"/////////before dag expander\\\\\\\\\\"<<flush<<endl;}
 	RD.expander(dag, VC);
 	if(Debug){cout<<"/////////after dag expander\\\\\\\\\\"<<flush<<endl;}
 
-//	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
-//	dag.generateDropletDag("DMRWafterExpandT.cpp");
-//	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){cout<<" /////////before generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
+//	dag->generateDropletDag("DMRWafterExpandT.cpp");
+	if(Debug){cout<<" /////////after generate DropletDag\\\\\\\\\\ "<<flush<<endl;}
 
-//	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
-//	dag.generateDotyGraph("DMRWafterExpand.dot");
-//	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
+	if(Debug){cout<<" /////////before generate DotyGraph\\\\\\\\\\ "<<flush<<endl;}
+	//dag->generateDotyGraph("DMRWafterExpand.dot");
+	if(Debug){cout<<" /////////after generate DotyGrpah\\\\\\\\\\ "<<flush<<endl;}
 
 	numW = dag->calcNumWaste();
 	numMS = dag->calcNumMixSplits();
 
 	pair<int, int> ret = make_pair(numW, numMS);
 
+if(Debug){
+	if(Debug){cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;}
 
-	//if(Debug){cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;}
-	//int base = valid->base;
-	//vector<double> endConcentration = valid->endConcentration;
-	/*bool value = dag.isValidSingleReactantDilution(endConcentration, base);
+	int base = valid->base;
+	vector<double> endConcentration = valid->endConcentration;
+	bool value = dag->isValidSingleReactantDilution(endConcentration, base);
 	if(Debug){cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;}
 
 	if(value)
@@ -783,19 +774,20 @@ DagGen* RoyDilute::RoyDilute_Process(int argc, char** argv)
 	else
 	{
 		cout<<"validity test not passed"<<flush<<endl;
-	}*/
-
+	}
+}
 	//VC->H->~DagGen();
-	return dag;
+	return ret;
 }
 
 DiluteRet* RoyDilute::RoyDilute_IDMA(DiluteDroplet * L, DiluteDroplet* R, double tol, double Ct, int n)
 {
+
 	bool Debug = true;
 	RoyDilute RD;
 	DagGen dag;
 
-	DiluteDroplet* db = L; 
+	DiluteDroplet* db = L;
 	DiluteDroplet* di = R;
 	int num_ops = n;
 
@@ -846,4 +838,23 @@ DiluteRet* RoyDilute::populateIDMA_M(double tol, double DesiredConc, DagGen* M, 
 	return valid;
 }
 
+
+void RoyDilute:: RunDMRW(int argc, char** argv, DagGen* dag)
+{
+	/*<NumOps>, <tolerance> <DesiredConcentration> */
+	if(argc<4){
+		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;
+		std::exit(-1);
+	}
+
+	int num_ops = atoi(argv[1]);
+	DiluteDroplet* db = new DiluteDroplet;
+	db->Concentration = Rational(0,pow(2,num_ops));
+	DiluteDroplet* di = new DiluteDroplet;
+	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
+
+	double tolerance = atof(argv[2]);
+	double DesiredConcentrate = atof(argv[3]);
+	RoyDilute::RoyDilute_Process(db, di, num_ops, DesiredConcentrate, tolerance, dag);
+}
 

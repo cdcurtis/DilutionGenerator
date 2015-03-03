@@ -71,6 +71,7 @@ class DagGen {
 	std::map<int, std :: vector<int> > createDependencyMap();
 public:
 	DagGen():dagName(""), IDs(0) {}
+	DagGen(std::string);
 	~DagGen()
 	{
 		for(unsigned int i =0; i<vertices.size(); ++i)
@@ -92,6 +93,7 @@ public:
 	
 	void generateJSON(std :: string = "");
 	void generateDotyGraph(std :: string = "");
+	void WriteToFile(std::string = "");
 
 //  Microfluidic Architectures 
 	void generateDropletDag(std :: string fileName = "", int volume = 10, int Mtime = 3, int Stime =2);

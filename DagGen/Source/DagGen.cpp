@@ -2,8 +2,85 @@
 //#include "../Headers/Fraction.h"
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 #include <vector>
 #include <map>
+
+using namespace std;
+
+void ParseVertex(string var, VertexType& type, string & label, string& portName, int & ID)
+{
+	int comma = var.find(',');
+	if(comma == -1){
+		cerr<< "Could not parse Edege correctly: " <<var <<endl;
+		return;
+	}
+	type = (VertexType)atoi(var.substr(0,comma).c_str());
+	var = var.substr(comma+1);
+	comma = var.find(',');
+	label =  var.substr(0,comma);
+
+	var = var.substr(comma+1);
+	comma = var.find(',');
+	portName =  var.substr(0,comma);
+
+	ID  = atoi (var.substr(comma+1).c_str());
+}
+void ParseEdge(string var, int & parent, int & child)
+{
+	int comma = var.find(',');
+	if(comma == -1){
+		cerr<< "Could not parse Edege correctly: " <<var <<endl;
+		return;
+	}
+	parent = atoi(var.substr(0,comma).c_str());
+	child  = atoi (var.substr(comma+1).c_str());
+}
+DagGen:: DagGen(string filename)
+{
+	string line;
+	bool parsingVertices=false;
+	bool parsingEdges = false;
+	ifstream dagFile ( filename.c_str());
+	if(dagFile.is_open())
+	{
+		getline(dagFile, line);
+		dagName = line;
+		while(getline(dagFile, line))
+		{
+			if(parsingVertices)
+			{
+				VertexType vType;
+				int ID;
+				string label;
+				string portName;
+
+				ParseVertex(line, vType, label, portName, ID);
+				vertices.push_back(new Vertex(vType, label,portName,ID));
+			}
+			else if(parsingEdges)
+			{
+				int parent;
+				int child;
+
+				ParseEdge(line, parent,child);
+				edges.push_back(new Edge(parent,child));
+
+			}
+			if(line=="VERTICES"){
+				parsingEdges =false;
+				parsingVertices = true;
+				}
+			else if(line == "EDGES"){
+				parsingVertices = false;
+				parsingEdges = true;
+				}
+		}
+		dagFile.close();
+	}
+	else
+	cerr<<"Unable to open file" << filename<<endl;
+}
 
 
 Vertex * DagGen :: getVertex(int id)
@@ -316,6 +393,24 @@ void DagGen :: generateDotyGraph(std::string fileName)
 	}
 	out << "}\n";
 	if (&out!=&std::cout)  
+   		delete(&out);
+}
+void DagGen:: WriteToFile(string fileName)
+{
+	if(this->isEmpty())
+		return;
+	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout;
+
+	out<<dagName<<endl;
+
+	out<<"VERTICES" <<endl;
+	for(unsigned int i =0 ; i< vertices.size();++i)
+		out<< (int)vertices[i]->type << "," << vertices[i]->label<<"," <<vertices[i]->portName<< "," << vertices[i]->uniqueID <<endl;
+
+	out<<"EDGES" <<endl;
+	for(unsigned int i =0 ; i< edges.size();++i)
+		out<< edges[i]->parent << "," << edges[i]->child<<endl;
+	if (&out!=&std::cout)
    		delete(&out);
 }
 

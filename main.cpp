@@ -25,32 +25,39 @@ int main (int argc, char* argv [])
 {
 	cout<< "Welcome to my world!" <<endl;
 
-	DagGen * dag = new DagGen();
-/*
-	/*Test 3 7,7,5,5,3,3,2 blood,water,plasma,mercury,sodium,pancakes,oil*
-	char * a[] = {"blah", "Test", "3", "1,1,1", "Water,Blood, Water"};
-	dag  = MinMix::RunMinMix(argc, a);
+	DagGen * dag;// = new DagGen("Remia62_256.dag");
+
+	//dag->generateDotyGraph("test.dot");
+	//dag->generateDotyGraph();
+	//cout << dag->Vertices().size() <<endl;
+	/*Test 3 7,7,5,5,3,3,2 blood,water,plasma,mercury,sodium,pancakes,oil*/
+	/*char * a[] = {"blah", "Test", "3", "1,1,1", "Water,Blood,Water"};
+	dag  = MinMix::RunMinMix(5, a);
 
 	if (dag != NULL)
-	dag->generateDotyGraph("test.doty");
+//	dag->generateDotyGraph();
+	dag->WriteToFile();
 	delete dag;
 */
 
 	/*numerator denominator   121 256*/
-	/*char * a[] = {"blah", "121", "256"};
+	char * a[] = {"blah", "121", "256"};
 	char buffer[50];
 
 	for(int i = 1; i< 256; ++i){
 	sprintf(buffer,"%i",i);
 	a[1]=buffer;
-cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
+	cout<<"Running:" << a[1]<<"/" <<a[2]<<endl;
 	dag = Remia::RunRemia(argc, a);
-	dag->DagName()="Remia";
-	sprintf(buffer,"Remia%i.doty",i);
-	dag->generateDotyGraph(buffer);
+
+	sprintf(buffer,"Remia%i_256",i);
+	dag->DagName()=buffer;
+	string fileName = buffer; fileName += ".dag";
+	dag->WriteToFile(fileName);
+	//dag->generateDotyGraph(buffer);
 	//dag->generateDropletDag("Remia191_1024.txt");
 	delete dag;
-	}*/
+	}
 
 
 	/*numerator denominator 121 256*/ //partially broken

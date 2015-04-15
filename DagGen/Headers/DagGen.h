@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-enum VertexType {DISPENSE, MIX, SPLIT, WASTE, OUTPUT};
+enum VertexType {DISPENSE, DETECT, MIX, SPLIT, STORE, HEAT, WASTE, OUTPUT};
 
 struct ValidationNodeSingleReactant{
 	double concentration;

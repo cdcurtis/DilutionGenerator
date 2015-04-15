@@ -38,6 +38,7 @@ void ParseEdge(string var, int & parent, int & child)
 }
 DagGen:: DagGen(string filename)
 {
+	IDs=-1;
 	string line;
 	bool parsingVertices=false;
 	bool parsingEdges = false;
@@ -48,7 +49,17 @@ DagGen:: DagGen(string filename)
 		dagName = line;
 		while(getline(dagFile, line))
 		{
-			if(parsingVertices)
+			cout<< line<<endl;
+
+			if(line=="VERTICES"){
+				parsingEdges =false;
+				parsingVertices = true;
+				}
+			else if(line == "EDGES"){
+				parsingVertices = false;
+				parsingEdges = true;
+				}
+			else if(parsingVertices)
 			{
 				VertexType vType;
 				int ID;
@@ -67,14 +78,7 @@ DagGen:: DagGen(string filename)
 				edges.push_back(new Edge(parent,child));
 
 			}
-			if(line=="VERTICES"){
-				parsingEdges =false;
-				parsingVertices = true;
-				}
-			else if(line == "EDGES"){
-				parsingVertices = false;
-				parsingEdges = true;
-				}
+
 		}
 		dagFile.close();
 	}

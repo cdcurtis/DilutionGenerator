@@ -66,7 +66,7 @@ DagGen * MinMix :: RunMinMix(int argc, char* argv[])
 	//create the mixTree
 	TreeRoot mixTree = mixM.runMinMix();
 
-	mixTree.print(std::cout);
+	//mixTree.print(std::cout);
 	DagGen *dag = mixTree.createDag(concentration.listOfFluids());
 
 	//dag.generateDropletDag();

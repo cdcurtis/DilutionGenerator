@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <cstdio>
 #include <math.h>
 #include <vector>
 #include "../Headers/ConcentrationMixMatrix.h"
@@ -11,24 +12,32 @@
 #include "../../DagGen/Headers/DagGen.h"
 
 
-DagGen * MinMix :: RunMinMix(int argc, char* argv[])
+DagGen * MinMix :: RunMinMix(std::vector<std::string> parameters)
 {
 	MinMix minMix;
-	std :: cout<<"Starting\n";
-	if(argc < 3) {
-		std :: cout <<"ERROR: Invalid Number of Arguments.\n See README for InputFormat.\n";
-		return NULL;
-	}
 //-----------------------<INPUTS>------------------------
 // <fileName> <option>(0), <#parts4ratio>, ...
 // <fileName> <option>(1), <#parts4ratio>, <fluidName>, ...
 // <fileName> <option>(2), <CSV #parts4ratio>
 // <fileName> <option>(3), <CSV #parts4ratio>, <CSV fluidNames>
-
 	std :: vector<int> ratio;
 	std :: vector<std :: string> fluids;
-	std :: string fileName = argv[1];
-	int option = atoi(argv[2]);
+
+	unsigned int i=0;
+	while (i<parameters.size() && is_number(parameters[i]))
+		ratio.push_back(atoi(parameters[i++].c_str()));
+
+	while (i<parameters.size())
+		fluids.push_back(parameters[i++]);
+
+	while( fluids.size() < ratio.size()) {
+		char reagent[15];
+		sprintf(reagent, "Reagent%i", fluids.size());
+		fluids.push_back(reagent);
+	}
+
+//	std :: string fileName = argv[1];
+/*	int option = atoi(argv[2]);
 
 	for(int i = 3; i < argc ; ++i){
 		switch(option){
@@ -50,7 +59,8 @@ DagGen * MinMix :: RunMinMix(int argc, char* argv[])
 			std :: cout << "ERROR: Not a valid Option\n";
 			return NULL;
 		}
-	}
+	}*/
+
 	Concentration concentration;
 
 	//Set up the Concentration
@@ -59,6 +69,7 @@ DagGen * MinMix :: RunMinMix(int argc, char* argv[])
 		int t = ratio [i];
 		concentration.insert(t,i);
 	}
+
 	//Create the mix matrix used for
 
 	ConcentrationMixMatrix mixM(concentration);
@@ -69,15 +80,6 @@ DagGen * MinMix :: RunMinMix(int argc, char* argv[])
 	//mixTree.print(std::cout);
 	DagGen *dag = mixTree.createDag(concentration.listOfFluids());
 
-	//dag.generateDropletDag();
-	//dag.generateDotyGraph(fileName + ".dot");
-		//dag.generateDropletDag(fileName + ".txt");
-
-	//dag->generateDotyGraph();
-	//dag.generateDropletDag();
-
-	std :: cout<<"MEMORY: " << numAllocator<< std :: endl;
-	std:: cout<<"returning...\n";
 	return dag;
 }
 

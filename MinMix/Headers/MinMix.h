@@ -13,13 +13,13 @@
 class MinMix
 {
 public:
-	static DagGen* RunMinMix(int, char *[]);
+	static DagGen* RunMinMix(std::vector<std::string> parameter);
 
 private:
 	MinMix() { }
 	std :: vector<int> convertRatio(std :: string);
 	std :: vector<std :: string> convertFluidList( std :: string fluidNames);
-	bool is_number(const std::string& s);
+	static bool is_number(const std::string& s);
 
 };
 

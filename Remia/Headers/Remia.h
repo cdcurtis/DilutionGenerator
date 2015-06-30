@@ -60,7 +60,7 @@ public:
 	void convertDataStructureForPCV(node *T, DagGen *dag, stack< Vertex *>& vertices);
 	void convertDataStructureForMixingTree(node *T, DagGen *dag, stack< Vertex *>& vertices, CV* pcv);
 
-	static DagGen* RunRemia(int argc, char* argv[]);
+	static DagGen* RunRemia(std::vector<std::string> parameters);
 
 };
 

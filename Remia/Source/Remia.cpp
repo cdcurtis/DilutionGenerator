@@ -390,11 +390,11 @@ void Remia :: convertDataStructureForMixingTree(node *T, DagGen *dag, stack< Ver
 
 }
 
-DagGen* Remia :: RunRemia(int argc, char* argv[])
+DagGen* Remia :: RunRemia(std::vector<std::string> parameters)
 {
 	DagGen* dag = new DagGen();
 	Remia r;
-	if(argc == 0 || argv == NULL )
+	if(parameters.empty())
 		return NULL;
 
 	node *root = new node();
@@ -402,8 +402,8 @@ DagGen* Remia :: RunRemia(int argc, char* argv[])
 	int num, deno;
 	node *T;
 
-	num = atoi(argv[1]);
-	deno = atoi(argv[2]);
+	num = atoi(parameters[0].c_str());
+	deno = atoi(parameters[1].c_str());
 	
 	CV* t_cv = new CV(num,deno,(float)num/(float)deno);	//prime concentration value
 

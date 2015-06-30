@@ -45,6 +45,7 @@ ConcentrationMixMatrix :: ConcentrationMixMatrix (Concentration c)
 		fluidReference.push_back(c.conNodes()[i].fluid);
 		mixMatrix.push_back(ConvertToBinary(c.conNodes()[i].ratio,numBits));
 	}
+	//this->print();
 }
 
 void combineNodes(vector<MixTree*> & saveList, vector<LeafNode> &combineThis)

@@ -279,6 +279,9 @@ void DagGen :: generateJSON( std::string fileName)
 }
 
 void DagGen :: generateMCFLOWDag(std::string assayName, std::string fileName, int volume, int inputTime, int opTime) {
+	if(fileName != "")
+		fileName= fileName + ".txt";
+
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
 	
 	char buffer[10];
@@ -343,6 +346,8 @@ void DagGen :: generateMCFLOWDag(std::string assayName, std::string fileName, in
 
 void DagGen :: generateDropletDag(std::string fileName, int volume, int Mtime , int Stime )
 {
+	if(fileName != "")
+		fileName= fileName + ".txt";
 	//if single output name output and waste
 	//if  multi out name diff.
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
@@ -379,6 +384,8 @@ void DagGen :: generateDropletDag(std::string fileName, int volume, int Mtime , 
 
 void DagGen :: generateDotyGraph(std::string fileName)
 {
+	if(fileName != "")
+		fileName= fileName + ".dot";
 	if(this->isEmpty())
 		return;
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout; 
@@ -403,6 +410,8 @@ void DagGen:: WriteToFile(string fileName)
 {
 	if(this->isEmpty())
 		return;
+	if(fileName != "")
+		fileName= fileName + ".txt";
 	std:: ostream& out = (fileName != "") ? *(new std::ofstream(fileName.c_str())) : std::cout;
 
 	out<<dagName<<endl;

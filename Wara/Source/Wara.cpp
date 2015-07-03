@@ -801,10 +801,11 @@ void Wara :: convertDataStructureForMixingTree(stack < W_node* > Q, DagGen *dag,
 
 }
 
-void Wara :: Run_Wara(DagGen *dag, int argc, char* argv[])
+void Wara :: Run_Wara(DagGen *dag, std::vector<std::string> parameters)
 {
 	if (dag == NULL)
 		dag = new DagGen();
+	Wara w;
 	W_Remia remia;
 	vector < W_node* > F;	//Forest
 	vector < W_CV* > PCV;	//Vector to hold all the PCV's.
@@ -813,10 +814,10 @@ void Wara :: Run_Wara(DagGen *dag, int argc, char* argv[])
 	W_node *T;
 	stack< W_node * > tree_unique_nodes;
 
-	deno = atoi(argv[argc-1]);
-	for(int i = 1; i<argc-1; i++)
+	deno = atoi(parameters[parameters.size()-1].c_str());
+	for(unsigned int i = 1; i<parameters.size(); i++)
 	{
-		num = atoi(argv[i]);
+		num = atoi(parameters[i].c_str());
 		W_CV* t_cv = new W_CV(num,deno,(long double)num/(long double)deno);	//prime concentration value
 		PCV.push_back(t_cv);
 	}
@@ -825,63 +826,63 @@ void Wara :: Run_Wara(DagGen *dag, int argc, char* argv[])
 	{
 		W_node *root = new W_node();
 		root = remia.BuildMixingTree(PCV[i]);
-		SMT.push_back(root);
+		w.SMT.push_back(root);
 	}
 
 
-	Maximal_Droplet_Sharing();
+	w.Maximal_Droplet_Sharing();
 
-	Droplet_Replacement(SMT);
+	w.Droplet_Replacement(w.SMT);
 
-	remia.BuilEDTforest(SMT, F);
+	remia.BuilEDTforest(w.SMT, F);
 
 	cout<<"Mixing Tree and forest built successfully\n";
 
-	uid = remia.UID;	//Continue the UID from where remia left
+	w.uid = remia.UID;	//Continue the UID from where remia left
 
 	stack< Vertex *> vertices;
 	for(int i=0; i<F.size();i++)
 	{
 		T = F[i];
-		convertDataStructureForPCV(T, dag, vertices, T);
+		w.convertDataStructureForPCV(T, dag, vertices, T);
 	}
 
-	for(int i=0; i<SMT.size();i++)
+	for(int i=0; i<w.SMT.size();i++)
 	{
-		if(SMT[i]->left == NULL && SMT[i]->right == NULL)
+		if(w.SMT[i]->left == NULL && w.SMT[i]->right == NULL)
 		{
 			Vertex *vs;
 			for(stack <Vertex *> dummy = vertices; !dummy.empty(); dummy.pop())
 			{
-				if(SMT[i]->dag_uid.top() == dummy.top()->uniqueID)
+				if(w.SMT[i]->dag_uid.top() == dummy.top()->uniqueID)
 				{
 					vs = dummy.top();
 					break;
 				}
 			}
-			if(SMT[i]->status == W_both_output)
+			if(w.SMT[i]->status == W_both_output)
 			{
-				Vertex *vo1 = createVertex(o_count, o, dag, OUTPUT);
+				Vertex *vo1 = w.createVertex(w.o_count, w.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT1 vertex.
 				dag->addEdge(vs, vo1);
 
-				Vertex *vo2 = createVertex(o_count, o, dag, OUTPUT);
+				Vertex *vo2 = w.createVertex(w.o_count, w.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT2 vertex.
 				dag->addEdge(vs, vo2);
 			}
 			else
 			{
-				Vertex *vo = createVertex(o_count, o, dag, OUTPUT);
+				Vertex *vo = w.createVertex(w.o_count, w.o, dag, OUTPUT);
 				//Connect the Split vertex to the OUTPUT vertex.
 				dag->addEdge(vs, vo);
 			}
 		}
 		else
 		{
-			T = SMT[i];
+			T = w.SMT[i];
 			while(T != NULL)
 			{
-				if(!checkIfUniqueNodeInStack(tree_unique_nodes, T))
+				if(!w.checkIfUniqueNodeInStack(tree_unique_nodes, T))
 					tree_unique_nodes.push(T);
 				T = T->right;
 			}
@@ -889,7 +890,7 @@ void Wara :: Run_Wara(DagGen *dag, int argc, char* argv[])
 		}
 	}
 
-	convertDataStructureForMixingTree(tree_unique_nodes, dag, vertices, PCV);
+	w.convertDataStructureForMixingTree(tree_unique_nodes, dag, vertices, PCV);
 
     //	dag->generateJSON("../output/Example.json");
 	//dag->generateDropletDag("../output/Dropletdag->cpp");

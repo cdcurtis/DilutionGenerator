@@ -938,21 +938,21 @@ void GriffDilute::GriffithDilute_Process(DiluteDroplet* db, DiluteDroplet* di, i
 	return;
 }
 
-void GriffDilute:: RunGriffith(int argc, char** argv, DagGen *dag)
+void GriffDilute:: RunGriffith(vector<string> parameters, DagGen *dag)
 {
-	if(argc<4){
+/*	if(pa<4){
 		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;
 		std::exit(-1);
-	}
+	}*/
 
-	int num_ops = atoi(argv[1]);
+	int num_ops = atoi(parameters[0].c_str());
 	DiluteDroplet* db = new DiluteDroplet;
 	db->Concentration = Rational(0,pow(2,num_ops));
 	DiluteDroplet* di = new DiluteDroplet;
 	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
 
-	double tolerance = atof(argv[2]);
-	double DesiredConcentrate = atof(argv[3]);
+	double tolerance = atof(parameters[1].c_str());
+	double DesiredConcentrate = atof(parameters[2].c_str());
 
 	GriffDilute::GriffithDilute_Process(db, di, num_ops, DesiredConcentrate, tolerance, dag);
 

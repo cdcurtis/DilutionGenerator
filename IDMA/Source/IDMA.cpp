@@ -1355,16 +1355,18 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 	return ret;
 }
 
- void IDMA:: RunIDMA(int argc, char ** argv, DagGen * dag)
+ void IDMA:: RunIDMA(vector<string> parameters, DagGen * dag)
 {
+	 if(dag == NULL)
+		 dag = new DagGen();
 	/*numOps, tolerance, DesiredConcentrate*/
-	if(argc<4){
+	/*if(argc<4){
 		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;
 		std::exit(-1);
-	}
-	int numOps = atoi(argv[1]);
-	double tolerance = atof(argv[2]);
-	double DesiredConcentrate = atof(argv[3]);
+	}*/
+	int numOps = atoi(parameters[0].c_str());
+	double tolerance = atof(parameters[1].c_str());
+	double DesiredConcentrate = atof(parameters[2].c_str());
 
 	IDMA::IDMA_Process(numOps,DesiredConcentrate,tolerance,dag);
 }

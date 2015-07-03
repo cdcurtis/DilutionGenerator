@@ -839,22 +839,22 @@ DiluteRet* RoyDilute::populateIDMA_M(double tol, double DesiredConc, DagGen* M, 
 }
 
 
-void RoyDilute:: RunDMRW(int argc, char** argv, DagGen* dag)
+void RoyDilute:: RunDMRW(vector<string> parameters, DagGen* dag)
 {
 	/*<NumOps>, <tolerance> <DesiredConcentration> */
-	if(argc<4){
+	/*if(argc<4){
 		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;
 		std::exit(-1);
-	}
+	}*/
 
-	int num_ops = atoi(argv[1]);
+	int num_ops = atoi(parameters[0].c_str());
 	DiluteDroplet* db = new DiluteDroplet;
 	db->Concentration = Rational(0,pow(2,num_ops));
 	DiluteDroplet* di = new DiluteDroplet;
 	di->Concentration = Rational(pow(2,num_ops),pow(2,num_ops));
 
-	double tolerance = atof(argv[2]);
-	double DesiredConcentrate = atof(argv[3]);
+	double tolerance = atof(parameters[1].c_str());
+	double DesiredConcentrate = atof(parameters[2].c_str());
 	RoyDilute::RoyDilute_Process(db, di, num_ops, DesiredConcentrate, tolerance, dag);
 }
 

@@ -63,7 +63,7 @@ public:
 	static pair< int, int > IDMA_Process(int num_ops, double DesiredConcetrate, double tolerance, DagGen *); //will be the decision logic for determingin which dilution algorithm's results to use
 	static void IDMA_Wrapper(DiluteDroplet* db, DiluteDroplet* di, int num_ops, double DesiredConcentrate, double tolerance);
 
-	static void RunIDMA(int argc, char **, DagGen *);
+	static void RunIDMA(vector<string>, DagGen *);
 
 
 

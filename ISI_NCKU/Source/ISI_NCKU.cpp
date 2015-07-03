@@ -371,6 +371,8 @@ void ISI_NCKU :: createDag(DagGen *dag)
 
 void ISI_NCKU :: RUN_NCKU(DagGen *dag, int argc, char* argv[])
 {
+	if(dag ==NULL)
+		dag = new DagGen();
 	//Extracting the values of 'a', 'd', 'n' & 'count' from argv[]
 	a = atoi(argv[1]);
 	d = atoi(argv[2]);

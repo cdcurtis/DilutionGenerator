@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include "UserHelpStrings.h"
 #include "DagGen/Headers/DagGen.h"
 #include "MinMix/Headers/MinMix.h"
@@ -22,7 +23,7 @@
 #include "MTC/Headers/MTC.h"
 
 
-enum DilutionAlgorithms {MINMIX, REMIA , ALGORITHM_NOT_FOUND};
+enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, GRIFFITH, DMRW, MTC, ALGORITHM_NOT_FOUND};
 enum OutputTypes {DOTY, DIGITAL, FLOW, FLATFILE, JSON, OUTPUT_ALL, OUPUT_NOT_FOUND};
 
 inline bool IsInteger(const std::string & s)
@@ -34,7 +35,20 @@ inline bool IsInteger(const std::string & s)
 
 	return (*p == 0) ;
 }
+inline bool IsDouble(const std:: string & s)
+{
+	char *endptr = NULL;
+	float long_value;
+
+	errno = 0;  // clear errno
+	long_value = strtof(s.c_str(), &endptr);  // try to convert input as base 10
+	if (errno == ERANGE || *endptr != '\0')
+		return false;
+
+	return true;
+}
 inline bool IsDivisibleofPower(int n, int powerOf){
+	if(n==0) return false;
 	while (n % powerOf == 0) {
 		n /= powerOf;
 	}
@@ -48,8 +62,8 @@ void RunMenuSystem(DagGen * = NULL);
 const int OUTPUT_TYPE_POSITION = 1;
 const int FILE_NAME_POSITION = 2;
 const int ALGORITHM_NAME = 3;
-const int ALGORITHM_ARGS_START = 4
-		;
+const int ALGORITHM_ARGS_START = 4;
+
 int main (int argc, char* argv [])
 {
 	cout<< "Welcome to my world!" <<endl;
@@ -63,87 +77,20 @@ int main (int argc, char* argv [])
 	}
 
 
-	/*numerator denominator 121 256*/ //partially broken
-	/*char * a[] = {"blah", "121", "256"};
-	DagGen dag;// = new DagGen();
-	Gorma g;
-	g.RunGorma(dag,3, a);
-	dag.DagName()="Gorma";
-	dag.generateDotyGraph("test.dot");
-	 */
-
-	/*Single input and multi input*/
-	/*Wara w;
-	char * a[] = {"blah", "27", "59", "223", "256"};
-	dag = new DagGen();
-	w.Run_Wara(dag,5,a);
-	dag->generateDropletDag("Wara27_59_223.txt");
-	delete dag;*/
-
-	/*char * a[] = {"blah", "0", "1", ".5", "5"};
-	GDA::RunGDA(5, a,dag);
-	dag->generateDotyGraph("GDA.dot");
-	delete dag;
-	 */
-	/*2 45 23 67 93*/
-	/*char * a[] = {"blah", "2", "7","7", "5", "5", "3","3","2" };
-	dag = CoDOS::RunCoDOS(9, a);
-	dag->DagName()="CoDos5React";
-	dag->generateDotyGraph("CoDOS.dot");
-	dag->generateDropletDag("CoDos5React2_45_23_67_93.txt");
-	delete dag;*/
-
-	/*45 23 67 93*/
-	/*char * a[] = {"blah", "3", "6", "9" };
-	dag = NRT_ISI::RunNRT_ISI(4,a);
-	dag->generateDotyGraph("NRT_ISI.dot");
-	delete dag;
-	 */
-	/*ISI_NCKU ncku;
-	char * a[] = {"blah", "11", "10", "6", "5" };
-	ncku.RUN_NCKU(dag,5,a);
-	dag->generateDropletDag("NCKU.txt");
-	delete dag;*/
-
-	/*char * a[] = {"blah", "10", "0.0078125", "0.1015625" };
-	IDMA::RunIDMA(4,a, dag);
-	cout<<dag->isEmpty();
-
-	dag->generateDotyGraph("IDMA.dot");
-
-	delete dag;
-	 */
-
-	//numops desiredconcentratin tolerance
-	/*10 0.1015625 .0078125*/
-	//	char * a[] = {"blah", "10","0.00048828125", "0.1240234375"};
-	//	dag->DagName()="griffith";
-	//	GriffDilute::RunGriffith(4, a, dag);
-	//	dag->generateDotyGraph("griffith.dot");
-	//	//dag->generateDropletDag("griffith.txt");
-	//	delete dag;
-
-	//	char * a[] = {"blah", "10",".0078125", "0.1015625"};
-	//	RoyDilute::RunDMRW(4,a,dag);
-	//	dag->generateDotyGraph("roy.dot");
-	//	delete dag;
-
-	/*	char * a[] = {"blah", "test", "16", "10", "12", "13", "14" };
-	MTC::RunMTC(7,a, dag);
-	cout << dag->isEmpty()<<endl;
-	dag->generateDotyGraph("MTC.dot");
-	//delete dag;
-	 */
 	cout<<"Terminating"<<endl;
 	return 0;
 }
+
+
 /*
  * Each Concentration Value must be an integer.
  * all values must be declared before the Names are declared
  */
-bool ValidateParameters(DilutionAlgorithms algorithm, vector<string> parameters, string& ErrorMessage)
+bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & parameters, string& ErrorMessage)
 {
-	unsigned int i = 0;
+	//unsigned int i = 0;
+	unsigned int sum =0;
+	char buffer[10];
 	if(parameters.size() == 0){
 		cerr<<"There are no parameters for the alogorithm."<<endl;
 		return false;
@@ -154,32 +101,87 @@ bool ValidateParameters(DilutionAlgorithms algorithm, vector<string> parameters,
 		 * Each Concentration Value must be an integer. All values must be
 		 * declared before the names are declared.
 		 */
-		for(; i< parameters.size(); ++i)
+		for(unsigned int i = 0; i< parameters.size(); ++i)
 			if(!IsInteger(parameters[i]))
 				break;
-		for(;i<parameters.size(); ++i)
+		for(unsigned int i = 0; i<parameters.size(); ++i)
 			if(IsInteger(parameters[i])){
 				ErrorMessage = "Concentration values mixed with concetration names.";
 				return false;
 			}
 		break;
 	case REMIA:
+	case WARA:
+	case GORMA:
 		/*
 		 * Each Concentration Value must be an integer. Numerator must be smaller
 		 * than denominator. Denominator must be a power of 2
 		 */
-		for(; i< parameters.size(); ++i)
+		for(unsigned int i = 0; i< parameters.size(); ++i)
 			if(!IsInteger(parameters[i])){
 				ErrorMessage = "Parameter " + parameters[i] + " is not an integer.";
 				return false;
 			}
-		if(atoi(parameters[0].c_str()) >= atoi(parameters[1].c_str())){
-			ErrorMessage = "Numerator can not be greater or equal to denominator.";
-			return false;
-		}
-		if(!IsDivisibleofPower(atoi(parameters[1].c_str()), 2)){
+		for(unsigned int i = 0; i<parameters.size()-1; ++i)
+			if(atoi(parameters[i].c_str()) >= atoi(parameters[parameters.size()-1].c_str())){
+				ErrorMessage = "Numerator can not be greater or equal to denominator.";
+				return false;
+			}
+		if(!IsDivisibleofPower(atoi(parameters[parameters.size()-1].c_str()), 2)){
 			ErrorMessage = "Denominator is not power of 2.";
 			return false;
+		}
+		break;
+	case GDA:
+		break;
+	case CODOS:
+		if(IsInteger(parameters[0])){
+			for(unsigned int i = 0 ; i < parameters.size(); ++i) {
+				if(!IsInteger(parameters[i])){
+					ErrorMessage = parameters[i] + " is not an integer";
+					return false;
+				}
+				sum += atoi (parameters[i].c_str());
+			}
+		}
+		else {
+			for(unsigned int i = 1; i < parameters.size(); i+=2) {
+
+				if(!IsInteger(parameters[i])){
+					ErrorMessage = "\"" + parameters[i] + "\" is not an integer";
+					return false;
+				}
+				sum += atoi (parameters[i].c_str());
+				if(!IsDouble(parameters[i+1])){
+					ErrorMessage = parameters[i] + " is not an Price(double).";
+					return false;
+				}
+			}
+		}
+		if(!IsDivisibleofPower(sum, 2)){
+			ErrorMessage = "Sum of concentration values are not a power of two.";
+			return false;
+		}
+		break;
+	case NRT_ISI:
+	case ISINCKU:
+		break;
+	case IDMA:/*numOps, tolerance, DesiredConcentrate*/
+	case GRIFFITH:
+	case DMRW:
+		if(parameters.size()<3){
+			ErrorMessage = "Incorrect number of parameters.";
+			return false;
+		}
+		if(!IsInteger(parameters[0])) {
+			ErrorMessage = "NumOps is not an integer.";
+			return false;
+		}
+		for( unsigned int i= 1; i < parameters.size(); ++i) {
+			if(!IsDouble(parameters[i])){
+				ErrorMessage = parameters[i] + " is not a double.";
+				return false;
+			}
 		}
 		break;
 	default:
@@ -203,6 +205,26 @@ DilutionAlgorithms GetDilutionAlgorithm(string s)
 		return MINMIX;
 	if(s.find("REMIA") != string::npos || s.find("Remia") != string::npos)
 		return REMIA;
+	if(s.find("GORMA") != string::npos || s.find("Gorma") != string::npos)
+		return GORMA;
+	if(s.find("WARA") != string::npos || s.find("Wara") != string::npos)
+		return WARA;
+	if(s.find("GDA") != string::npos)
+		return GDA;
+	if(s.find("CODOS") != string::npos || s.find("codos") != string::npos)
+		return CODOS;
+	if(s.find("NRT_ISI") !=  string::npos || s.find("NRTISI") != string::npos)
+		return NRT_ISI;
+	if (s.find("ISINCKU") != string::npos || s.find("ISINCKU") != string::npos)
+		return ISINCKU;
+	if(s.find("IDMA") != string::npos || s.find("idma") != string::npos)
+		return  IDMA;
+	if(s.find("GRIFFITH") != string::npos || s.find("griffith") != string::npos)
+		return GRIFFITH;
+	if(s.find("DMRW") != string::npos || s.find("dmrw") != string::npos)
+		return DMRW;
+	if(s.find("MTC") != string::npos || s.find("mtc") != string::npos)
+		return MTC;
 	return ALGORITHM_NOT_FOUND;
 }
 OutputTypes GetOutputType(string s)
@@ -282,12 +304,63 @@ void RunCommandLineSystem(int argc, char** argv){
 		cout<<"Running Remia"<<endl;
 		dag = Remia::RunRemia(parameters);
 		break;
+	case WARA: /*Single input and multi input,  27 59 223 256*/ //Broken needs to be re written.
+		//cout<<"Running Wara"<<endl;
+		//Wara::Run_Wara(dag,parameters);
+		break;
+
+	case GORMA: /*numerator denominator 121 256*/ //partially broken Needs branch and Bound
+		//DagGen dag;
+		//Gorma g;
+		//g.RunGorma(parameters);
+		break;
+	case GDA:
+		//char * a[] = {"blah", "0", "1", ".5", "5"};
+		//GDA::RunGDA(5, a,dag);
+		break;
+	case CODOS: /* {"7","7", "5", "5", "3","3","2" };*/
+		cout<<"Running CODOS"<<endl;
+		dag = CoDOS::RunCoDOS(parameters);
+		break;
+	case NRT_ISI: /*45 23 67 93*/
+		/*char * a[] = {"blah", "3", "6", "9" };*/
+		//dag = NRT_ISI::RunNRT_ISI(parameters);
+		break;
+	case IDMA://numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		cout<< "Running IDMA"<<endl;
+		IDMA::RunIDMA(parameters, dag);
+		break;
+	case ISINCKU:
+		/*ISI_NCKU ncku;
+		char * a[] = {"blah", "11", "10", "6", "5" };
+		ncku.RUN_NCKU(dag,5,a);
+		dag->generateDropletDag("NCKU.txt");
+		delete dag;*/
+		break;
+	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		cout<<"Running Griffith"<<endl;
+		GriffDilute::RunGriffith(parameters, dag);
+		break;
+	case DMRW:  //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		cout<< "Running DMRW"<<endl;
+		RoyDilute::RunDMRW(parameters,dag);
+		break;
+	case MTC:
+		/*char * a[] = {"blah", "test", "16", "10", "12", "13", "14" };
+		MTC::RunMTC(7,a, dag);
+		cout << dag->isEmpty()<<endl;
+		dag->generateDotyGraph("MTC.dot");
+		//delete dag;
+		 */
+		break;
 	case ALGORITHM_NOT_FOUND:
 	default:
 		cerr<<"ERROR: algorithm " << algorithmToRun << " not recognized." << endl;
 		return;
 	}
-
 
 
 	string output = argv[OUTPUT_TYPE_POSITION];

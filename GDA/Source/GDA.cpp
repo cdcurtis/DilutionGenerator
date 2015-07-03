@@ -35,6 +35,8 @@ void GDA :: RunGDA(int argc, char* argv[], DagGen *dag)
 	//d is an integer that detrmines the accuracy level of Ca.
 	int i,j;
 	char *stopstring;
+	if(dag == NULL)
+		dag = new DagGen();
 
 	//DagGen* dag = new DagGen();
 	GDA gda;

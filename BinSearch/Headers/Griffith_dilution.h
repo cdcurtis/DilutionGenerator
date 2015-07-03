@@ -65,7 +65,7 @@ public:
 	void calcNumDropsFin(pair <vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals);
 	void expandDag(DagGen * dag, VertexCounts* VC);
 	static void GriffithDilute_Process(DiluteDroplet* db, DiluteDroplet* di, int num_ops, double DesiredConcentrate, double tolerance, DagGen*);
-	static void RunGriffith(int argc, char** argv, DagGen *);
+	static void RunGriffith(vector<string>, DagGen *);
 
 	//memory management
 	void DeleteM(vector<MixOp*> M);

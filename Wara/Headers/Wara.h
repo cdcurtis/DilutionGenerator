@@ -7,13 +7,13 @@ typedef vector< pair<W_node*, W_node*> > RCP;	//RCP - Replacement Candidate Pair
 
 class Wara
 {
-private:
+public:
 	bool found;	//flag being used to find the parent node for a given node. Part of maximal droplet shraing function logic
 	int uid;
 	string b, r, w, m, s, o;
 	int b_count, r_count, o_count;
 	vector < W_node* > SMT;	//Forest to hold the mixing tree for each PCV.
-public:
+
 	int s_count, m_count, w_count;
 	Wara();
 	W_node* Find_parent(W_node *T, W_node *p, W_node *m);
@@ -37,7 +37,7 @@ public:
 	bool checkIfUniqueNodeInStack(stack< W_node * > Q, W_node *n);
 	void convertDataStructureForMixingTree(stack < W_node* > Q, DagGen *dag, stack< Vertex *>& vertices, vector < W_CV* > PCV);
 
-	void Run_Wara(DagGen *dag, int argc, char* argv[]);
+	static void Run_Wara(DagGen *dag, std::vector<std::string>);
 };
 
 #endif /*__WARA__H_*/

@@ -47,7 +47,7 @@ public:
 	static DiluteRet* populateIDMA_M(double tolerance, double DesiredConcentrate, DagGen* M, int num_ops);
 	//TODO::move expander back here. Makes more sense
 	//Getters and Setters
-	static void RunDMRW(int argc, char** argv, DagGen*);
+	static void RunDMRW(vector<string> , DagGen*);
 };
 
 #endif /* ROY_DILUTION_H_ */

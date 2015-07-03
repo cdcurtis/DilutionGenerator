@@ -75,7 +75,7 @@ std::vector < Rect_Cood > CoDOS :: getRectangle(Matrix M)
 
 		x1 = it->first;
 		y1 = it->second;
-		
+
 		if(x1 < N-1 && y1 < d-1)
 		{
 			x2 = x1;
@@ -176,7 +176,7 @@ Rect_Cood CoDOS :: getHighestPrecedenceRectangle(std::vector < Rect_Cood > recta
 Matrix CoDOS :: CoDOS_Main(Entry T, Entry W)
 {
 	Matrix M;
-	
+
 	std::vector < Rect_Cood > rectangles;
 	Rect_Cood k;
 	int x1,x4,y1,y4;
@@ -348,7 +348,7 @@ void CoDOS :: Construct_Graph(Matrix M, DagGen *dag)
 	}
 }
 
-DagGen* CoDOS :: RunCoDOS(int argc, char* argv[])
+DagGen* CoDOS :: RunCoDOS(std::vector<std::string> parameters)
 {
 	//(option)1 - CV_R1, Wt_R1, CV_R2, Wt_R2, CV_R3, Wt_R3, ... -> Each reactant has different weight
 	//(option)2 - CV_R1, CV_R2, CV_R3, CV_R4, ...	-> Each Reactant has same weight i.e., 1
@@ -361,18 +361,22 @@ DagGen* CoDOS :: RunCoDOS(int argc, char* argv[])
 	int val_cv = 0, tmp_val_cv;
 	unsigned int i;
 
-	if(atoi(argv[1]) == 1)
-		for(i = 2; i<argc; i = i+2)
+	if(!IsInteger(parameters[0]))
+		for(i = 1; i<parameters.size(); i = i+2)
 		{
-			T.push_back(atoi(argv[i]));
-			val_cv += atoi(argv[i]);
-			W.push_back(atoi(argv[i+1]));
+			T.push_back(atoi(parameters[i].c_str()));
+			val_cv += atoi(parameters[i].c_str());
+
+
+			int cents = atof(parameters[i+1].c_str()) * 100.0;
+
+			W.push_back(cents);
 		}
 	else
-		for(i = 2; i<argc; i++)
+		for(i = 1; i<parameters.size(); i++)
 		{
-			T.push_back(atoi(argv[i]));
-			val_cv += atoi(argv[i]);
+			T.push_back(atoi(parameters[i].c_str()));
+			val_cv += atoi(parameters[i].c_str());
 			W.push_back(1);
 		}
 
@@ -417,10 +421,10 @@ DagGen* CoDOS :: RunCoDOS(int argc, char* argv[])
 	}
 
 
-	std::cout<<"achievable CV = <";
-	for(i=0; i<argc-2; i++)
-		std::cout<<T[i]<<",";
-	std::cout<<">\n";
+	//std::cout<<"achievable CV = <";
+	//for(i=0; i<argc-2; i++)
+	//		std::cout<<T[i]<<",";
+	//std::cout<<">\n";
 
 	M = codos.CoDOS_Main(T,W);
 

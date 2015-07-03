@@ -23,6 +23,16 @@ class CoDOS
 private:
 	int d, NR;	//NR - Number of reactants
 	Matrix index;
+
+	static inline bool IsInteger(const std::string & s)
+	{
+		if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
+
+		char * p ;
+		strtol(s.c_str(), &p, 10) ;
+
+		return (*p == 0) ;
+	}
 public:
 	CoDOS();
 
@@ -36,7 +46,7 @@ public:
 	Vertex* createVertex(std::string str,DagGen *dag, VertexType type, int count =-1);
 	void Construct_Graph(Matrix M, DagGen *dag);
 
-	static DagGen* RunCoDOS(int argc, char* argv[]);
+	static DagGen* RunCoDOS(std::vector<std::string>);
 };
 
 #endif

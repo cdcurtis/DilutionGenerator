@@ -499,7 +499,7 @@ void NRT_ISI :: getDag(NRTISINode *R, DagGen *dag)
 }
 
 //Calls all the functions.
-DagGen* NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
+DagGen* NRT_ISI :: RunNRT_ISI(std::vector<std::string> parameters)
 {
 	//SUM of CVs must equal a multiple of 2
 	//CV1, CV2, CV3, CV4, CV5, .... -> All the target CV's to be achieved
@@ -508,11 +508,11 @@ DagGen* NRT_ISI :: RunNRT_ISI(int argc, char* argv[])
 
 	int cf = 0;
 
-	for(int i = 1; i<argc; i++)
+	for(unsigned int i = 0; i<parameters.size(); i++)
 	{
-		nrt.T.push(atoi(argv[i]));
-		if(atoi(argv[i]) > cf)
-			cf = atoi(argv[i]);
+		nrt.T.push(atoi(parameters[i].c_str()));
+		if(atoi(parameters[i].c_str()) > cf)
+			cf = atoi(parameters[i].c_str());
 	}
 
 	while(cf != 0)

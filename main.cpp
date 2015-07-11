@@ -90,6 +90,7 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 {
 	//unsigned int i = 0;
 	unsigned int sum =0;
+	int denom=0;
 	char buffer[10];
 	if(parameters.size() == 0){
 		cerr<<"There are no parameters for the alogorithm."<<endl;
@@ -164,7 +165,20 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 		}
 		break;
 	case NRT_ISI:
-	case ISINCKU:
+		for(unsigned int i =0;  i < parameters.size(); ++i){
+			if(!IsInteger(parameters[i])){
+				ErrorMessage = "\"" + parameters[i] + "\" is not an integer";
+				return false;
+			}
+		}
+		break;
+	case ISINCKU: //TODO:: Check OutOfRange validation.
+		for(unsigned int i =0;  i < parameters.size(); ++i){
+			if(!IsInteger(parameters[i])){
+				ErrorMessage = "\"" + parameters[i] + "\" is not an integer";
+				return false;
+			}
+		}
 		break;
 	case IDMA:/*numOps, tolerance, DesiredConcentrate*/
 	case GRIFFITH:
@@ -184,6 +198,33 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 			}
 		}
 		break;
+	case MTC:
+
+		if(IsInteger(parameters[0])){
+			denom = atoi(parameters[0].c_str());
+			if(!IsDivisibleofPower(denom, 2)){
+				ErrorMessage = "Denominator: " + parameters[0] + " needs to be a power of 2.";
+				return false;
+			}
+		}
+		else {
+			ErrorMessage = parameters[0] + "is not an integer.";
+			return false;
+		}
+
+
+		for(unsigned int i = 1; i<parameters.size(); ++i) {
+			if(!IsInteger(parameters[i])) {
+				ErrorMessage = "\"" + parameters[i] + "\" is not an integer.";
+				return false;
+			}
+			if(denom <= atoi(parameters[i].c_str())){
+				ErrorMessage = "The numerator: " + parameters[i] + " needs to be smaller than the denominator " + parameters[0] + ".";
+				return false;
+			}
+		}
+
+		break;
 	default:
 		break;
 	}
@@ -201,7 +242,7 @@ string GetUserInput(string userMessage)
 
 DilutionAlgorithms GetDilutionAlgorithm(string s)
 {
-	if(s.find("1") != string::npos || s.find("MINMIX") != string::npos || s.find("MinMix") != string::npos || s.find("Min Mix") != string::npos || s.find("minmix") != string::npos || s.find("min mix") != string::npos)
+	if(s.find("MINMIX") != string::npos || s.find("MinMix") != string::npos || s.find("Min Mix") != string::npos || s.find("minmix") != string::npos || s.find("min mix") != string::npos)
 		return MINMIX;
 	if(s.find("REMIA") != string::npos || s.find("Remia") != string::npos)
 		return REMIA;
@@ -215,7 +256,7 @@ DilutionAlgorithms GetDilutionAlgorithm(string s)
 		return CODOS;
 	if(s.find("NRT_ISI") !=  string::npos || s.find("NRTISI") != string::npos)
 		return NRT_ISI;
-	if (s.find("ISINCKU") != string::npos || s.find("ISINCKU") != string::npos)
+	if (s.find("ISINCKU") != string::npos || s.find("ISI_NCKU") != string::npos)
 		return ISINCKU;
 	if(s.find("IDMA") != string::npos || s.find("idma") != string::npos)
 		return  IDMA;
@@ -324,19 +365,18 @@ void RunCommandLineSystem(int argc, char** argv){
 		break;
 	case NRT_ISI: /*45 23 67 93*/
 		/*char * a[] = {"blah", "3", "6", "9" };*/
-		//dag = NRT_ISI::RunNRT_ISI(parameters);
+		cout<<"Running NRT_ISI"<<endl;
+		dag = NRT_ISI::RunNRT_ISI(parameters);
 		break;
 	case IDMA://numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
 		cout<< "Running IDMA"<<endl;
 		IDMA::RunIDMA(parameters, dag);
 		break;
-	case ISINCKU:
-		/*ISI_NCKU ncku;
-		char * a[] = {"blah", "11", "10", "6", "5" };
-		ncku.RUN_NCKU(dag,5,a);
-		dag->generateDropletDag("NCKU.txt");
-		delete dag;*/
+	case ISINCKU:/* numerator differnceBetweenSamples n^2(denominator) numSample  {11 10 6 5 }*/
+		dag = new DagGen();
+		cout << "Running NCKU"<<endl;
+		ISI_NCKU::RUN_NCKU(parameters, dag);
 		break;
 	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
@@ -348,14 +388,13 @@ void RunCommandLineSystem(int argc, char** argv){
 		cout<< "Running DMRW"<<endl;
 		RoyDilute::RunDMRW(parameters,dag);
 		break;
-	case MTC:
-		/*char * a[] = {"blah", "test", "16", "10", "12", "13", "14" };
-		MTC::RunMTC(7,a, dag);
-		cout << dag->isEmpty()<<endl;
-		dag->generateDotyGraph("MTC.dot");
-		//delete dag;
-		 */
+	case MTC:/*filename denominator numerators ... {test 16 10 12 13 14}*/
+
+		parameters.insert(parameters.begin(),argv[FILE_NAME_POSITION]);
+		dag = new DagGen();
+		MTC::RunMTC(parameters, dag);
 		break;
+
 	case ALGORITHM_NOT_FOUND:
 	default:
 		cerr<<"ERROR: algorithm " << algorithmToRun << " not recognized." << endl;

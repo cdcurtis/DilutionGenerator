@@ -13,13 +13,14 @@
 #include "../Headers/WeightedGraph.h"
 #include "../Headers/MTC.h"
 
-void MTC::RunMTC(int argc, char** argv, DagGen * dag, bool printWasteResults)
+void MTC::RunMTC(std::vector<std::string> parameters, DagGen * dag, bool printWasteResults)
 {
+
 	MTC mtc;
-	std::string filename = argv[1];
+	std::string filename = parameters[0];
 	std::string basedirectory = "C:\\Users\\Chris\\Documents\\DilutionGenerator\\DilutionGenerator\\";
 
-	mtc.MTCPhase1(argc, argv);
+	mtc.MTCPhase1(parameters);
 
 	std:: string runTravelingSales = basedirectory + "MTC\\lkh.exe " + filename +".par";
 	system(runTravelingSales.c_str());
@@ -33,10 +34,10 @@ void MTC::RunMTC(int argc, char** argv, DagGen * dag, bool printWasteResults)
 	mtc.MTCPhase2(phase2, dag, printWasteResults);
 }
 
-void MTC::MTCPhase1(int argc, char ** argv)
+void MTC::MTCPhase1(std::vector<std::string> parameters)
 {
-	std::string fileName = argv[1];
-	int SizeOfGraph = atoi(argv[2]);
+	std::string fileName = parameters[0];
+	int SizeOfGraph = atoi(parameters[1].c_str());
    	int conCount=1;
    	_brujinGragh = BrujinGraph(SizeOfGraph);
 
@@ -44,8 +45,8 @@ void MTC::MTCPhase1(int argc, char ** argv)
    	_weightedGraph = WeightedGraph(&_brujinGragh);
    	_weightedGraph.addVertex(_brujinGragh.allNodes.at(0));
 
-   	for(int i = 3; i<argc; ++i){
-   		_weightedGraph.addVertex(_brujinGragh.allNodes.at(atoi(argv[i])));
+   	for(unsigned int i = 2; i<parameters.size(); ++i){
+   		_weightedGraph.addVertex(_brujinGragh.allNodes.at(atoi(parameters[i].c_str())));
 		++conCount;
    	}
 	//std::cout<<"FileName:" << fileName<<std::endl;

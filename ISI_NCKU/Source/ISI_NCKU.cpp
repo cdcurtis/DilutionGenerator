@@ -368,16 +368,19 @@ void ISI_NCKU :: createDag(DagGen *dag)
 			swap(currentLastLevel, nextLastLevel);
 	}
 }
-
-void ISI_NCKU :: RUN_NCKU(DagGen *dag, int argc, char* argv[])
+void ISI_NCKU :: RUN_NCKU(std::vector<std::string> parameters, DagGen *dag)
+{
+	ISI_NCKU ncku;
+	return ncku.RUN_NCKU_Internal(parameters,dag);
+}
+void ISI_NCKU :: RUN_NCKU_Internal(std::vector<std::string> parameters, DagGen *dag)
 {
 	if(dag ==NULL)
 		dag = new DagGen();
-	//Extracting the values of 'a', 'd', 'n' & 'count' from argv[]
-	a = atoi(argv[1]);
-	d = atoi(argv[2]);
-	n = atoi(argv[3]);
-	count = atoi(argv[4]);
+	a = atoi(parameters[0].c_str());
+	d = atoi(parameters[1].c_str());
+	n = atoi(parameters[2].c_str());
+	count = atoi(parameters[3].c_str());
 
 	//Using the formula, count = 2^(k+1) + 1, we find 'k' from count i.e. k = ((count-1)/2)^(1/2)
 	int tmp = (count - 1)/2;

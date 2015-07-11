@@ -82,7 +82,7 @@ private:
 	void getDag(NRTISINode *R, DagGen *dag);
 	void printLevelOrder(NRTISINode *R);
 public:
-	static DagGen* RunNRT_ISI(int argc, char* argv[]);
+	static DagGen* RunNRT_ISI(std::vector<std::string>);
 };
 
 

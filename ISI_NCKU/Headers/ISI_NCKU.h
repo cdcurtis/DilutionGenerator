@@ -35,6 +35,8 @@ private:
 	bool found;
 	std::vector < int > av;
 
+
+public:
 	//Holds the vertices for the boundary nodes. Received from Wara. The 1st entry will always hold the vertices corresponding to lower boundary nodes and the 2nd entry will always hold the vertices corresponding to upper boundary nodes
 	std::vector < std::vector < Vertex* > > boundary_vertices_wara;
 	int lb_index, ub_index;	//indices for LB & UB CF's
@@ -45,7 +47,7 @@ private:
 	std::vector < vertices > tree_vertices;	//keeps the vertices of all the nodes in the tree
 
 	std::queue<vertices> currentLastLevel, nextLastLevel;
-public:
+
 	ISI_NCKU();
 
 	node_ISI* Find_parent(node_ISI *T, node_ISI *p, node_ISI *m);
@@ -56,7 +58,9 @@ public:
 	vertices createVertices(node_ISI *T, Vertex *vs, Vertex *vm);
 	void update_vertex_count(node_ISI *T, node_ISI *currNode, int diff, float add);
 	void createDag(DagGen *dag);
-	void RUN_NCKU(DagGen *dag, int argc, char* argv[]);
+	void RUN_NCKU_Internal(std::vector<std::string>, DagGen *dag);
+	static void RUN_NCKU(std::vector<std::string>, DagGen *dag);
+
 };
 
 

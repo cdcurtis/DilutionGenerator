@@ -53,7 +53,7 @@ class MTC
 
 	MTC() {}
 
-	void MTCPhase1(int, char**);
+	void MTCPhase1(std::vector<std::string>);
 	void MTCPhase2(std::vector<std::string>, DagGen *, bool );
 
 	int toInt(std::string);
@@ -66,7 +66,7 @@ class MTC
 	void fillDagGen(std::vector<HamiltonianPath>, int, DagGen*, bool);
 
 public:
-	static void RunMTC(int, char**, DagGen*, bool printWasteResults = false );
+	static void RunMTC(std::vector<std::string>, DagGen*, bool printWasteResults = false );
 };
 
 #endif /* MTC_H_ */

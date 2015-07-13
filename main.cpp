@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <string>
-#include "UserHelpStrings.h"
 #include "DagGen/Headers/DagGen.h"
 #include "MinMix/Headers/MinMix.h"
 #include "Remia/Headers/Remia.h"
@@ -23,55 +22,32 @@
 #include "MTC/Headers/MTC.h"
 
 const bool SILENCE_OUTPUT = false;
-
-enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, GRIFFITH, DMRW, MTC, ALGORITHM_NOT_FOUND};
-enum OutputTypes {DOTY, DIGITAL, FLOW, FLATFILE, JSON, OUTPUT_ALL, OUPUT_NOT_FOUND};
-
-inline bool IsInteger(const std::string & s)
-{
-	if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
-
-	char * p ;
-	strtol(s.c_str(), &p, 10) ;
-
-	return (*p == 0) ;
-}
-inline bool IsDouble(const std:: string & s)
-{
-	char *endptr = NULL;
-	float long_value;
-
-	errno = 0;  // clear errno
-	long_value = strtof(s.c_str(), &endptr);  // try to convert input as base 10
-	if (errno == ERANGE || *endptr != '\0')
-		return false;
-
-	return true;
-}
-inline bool IsDivisibleofPower(int n, int powerOf){
-	if(n==0) return false;
-	while (n % powerOf == 0) {
-		n /= powerOf;
-	}
-	return n == 1;
-}
-
-void RunCommandLineSystem(int argc, char** argv);
-void RunMenuSystem(DagGen * = NULL);
-
-
 const int OUTPUT_TYPE_POSITION = 1;
 const int FILE_NAME_POSITION = 2;
 const int ALGORITHM_NAME = 3;
 const int ALGORITHM_ARGS_START = 4;
 
+enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, GRIFFITH, DMRW, MTC, ALGORITHM_NOT_FOUND};
+enum OutputTypes {DOTY, DIGITAL, FLOW, FLATFILE, JSON, OUTPUT_ALL, OUPUT_NOT_FOUND};
+
+
+void RunCommandLineSystem(int argc, char** argv);
+bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & parameters, string& ErrorMessage);
+void OutputDag(DagGen* dag, string output, string fileName);
+
+DilutionAlgorithms GetDilutionAlgorithm(string s);
+OutputTypes GetOutputType(string s);
+
+inline bool IsInteger(const std::string & s);
+inline bool IsDouble(const std:: string & s);
+inline bool IsDivisibleofPower(int n, int powerOf);
+
 int main (int argc, char* argv [])
 {
-	if (argc > 1)
+	if (argc > 2)
 		RunCommandLineSystem(argc, argv);
 	else{
 		cerr<< "ERROR: See Doc for proper positioning"<<endl;
-		//	RunMenuSystem();
 	}
 
 	if(!SILENCE_OUTPUT)
@@ -80,16 +56,153 @@ int main (int argc, char* argv [])
 }
 
 
-/*
- * Each Concentration Value must be an integer.
- * all values must be declared before the Names are declared
- */
+void RunCommandLineSystem(int argc, char** argv){
+	string algorithmToRun="";
+	if(argc > ALGORITHM_NAME)
+		algorithmToRun = argv[ALGORITHM_NAME];
+	else {
+		cerr<<"Error: System went into command line system with no content.\n Switching to menu system.\n";
+		//return RunMenuSystem();
+	}
+
+	DilutionAlgorithms algorithm = GetDilutionAlgorithm(algorithmToRun);
+	DagGen * dag = NULL;
+	vector<string> parameters;
+
+
+	for(int i = ALGORITHM_ARGS_START; i< argc; ++i)
+		parameters.push_back(argv[i]);
+
+	string errorMessage;
+	if(!ValidateParameters(algorithm,parameters,errorMessage)){
+		cerr<<"Arguments for " << algorithmToRun << " invalid\n"<< errorMessage<<endl;
+		return;
+	}
+
+	if(!SILENCE_OUTPUT)
+		cout<<"Validated Parameters"<<endl;
+
+	switch(algorithm){
+	case MINMIX: /* Concentration Values,  7 7 5 5 3 3 2*/
+		if(!SILENCE_OUTPUT)
+			cout<<"Running MINMIX"<<endl;
+		dag = MinMix::RunMinMix(parameters);
+		break;
+	case REMIA:	/*numerator denominator,   131 256*/
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Remia"<<endl;
+		dag = Remia::RunRemia(parameters);
+		break;
+	case WARA: /*Single input and multi input,  27 59 223 256*/ //Broken needs to be re written.
+		//cout<<"Running Wara"<<endl;
+		//Wara::Run_Wara(dag,parameters);
+		break;
+
+	case GORMA: /*numerator denominator 121 256*/ //partially broken Needs branch and Bound
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Gorma: This algorithm takes a while"<<endl;
+		dag= new DagGen();
+		Gorma::RunGorma(parameters,dag);
+		break;
+	case GDA:
+		//char * a[] = {"blah", "0", "1", ".5", "5"};
+		//GDA::RunGDA(5, a,dag);
+		break;
+	case CODOS: /* {"7","7", "5", "5", "3","3","2" };*/
+		if(!SILENCE_OUTPUT)
+			cout<<"Running CODOS"<<endl;
+		dag = CoDOS::RunCoDOS(parameters);
+		break;
+	case NRT_ISI: /*45 23 67 93*/
+		/*char * a[] = {"blah", "3", "6", "9" };*/
+		if(!SILENCE_OUTPUT)
+			cout<<"Running NRT_ISI"<<endl;
+		dag = NRT_ISI::RunNRT_ISI(parameters);
+		break;
+	case IDMA://numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		if(!SILENCE_OUTPUT)
+			cout<< "Running IDMA"<<endl;
+		IDMA::RunIDMA(parameters, dag);
+		break;
+	case ISINCKU:/* numerator differnceBetweenSamples n^2(denominator) numSample  {11 10 6 5 }*/
+		dag = new DagGen();
+		if(!SILENCE_OUTPUT)
+			cout << "Running NCKU"<<endl;
+		ISI_NCKU::RUN_NCKU(parameters, dag);
+		break;
+	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Griffith"<<endl;
+		GriffDilute::RunGriffith(parameters, dag);
+		break;
+	case DMRW:  //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+		dag = new DagGen();
+		if(!SILENCE_OUTPUT)
+			cout<< "Running DMRW"<<endl;
+		RoyDilute::RunDMRW(parameters,dag);
+		break;
+	case MTC:/*filename denominator numerators ... {test 16 10 12 13 14}*/
+		if(!SILENCE_OUTPUT)
+			cout<<"Runnig MTC"<<endl;
+		parameters.insert(parameters.begin(),argv[FILE_NAME_POSITION]);
+		dag = new DagGen();
+		MTC::RunMTC(parameters, dag);
+		break;
+
+	case ALGORITHM_NOT_FOUND:
+	default:
+		cerr<<"ERROR: algorithm " << algorithmToRun << " not recognized." << endl;
+		return;
+	}
+	if(!SILENCE_OUTPUT)
+		cout<<"Success"<<endl;
+
+	string output = argv[OUTPUT_TYPE_POSITION];
+	string fileName = argv[FILE_NAME_POSITION];
+	if(fileName == "CONSOLE")
+		fileName = "";
+	OutputDag(dag, output, fileName);
+
+	delete dag;
+}
+
+void OutputDag(DagGen* dag, string output, string fileName)
+{
+	OutputTypes outputType = GetOutputType(output);
+
+	switch (outputType){
+	case OUTPUT_ALL:
+		dag->WriteToFile(fileName);
+		dag->generateMCFLOWDag(fileName);
+		dag->generateDropletDag(fileName);
+		dag->generateDotyGraph(fileName);
+		break;
+	case DIGITAL:
+		dag->generateDropletDag(fileName);
+		break;
+	case FLOW:
+		dag->generateMCFLOWDag(fileName);
+		break;
+	case FLATFILE:
+		dag->WriteToFile(fileName);
+		break;
+	case DOTY:
+		dag->generateDotyGraph(fileName);
+		break;
+	default:
+		cerr<<"ERROR: no output recognized for " << output <<"\n";
+		//RunMenuSystem(dag);
+		return;
+	}
+}
+
 bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & parameters, string& ErrorMessage)
 {
 	//unsigned int i = 0;
 	unsigned int sum =0;
 	int denom=0;
-	char buffer[10];
 	if(parameters.size() == 0){
 		cerr<<"There are no parameters for the alogorithm."<<endl;
 		return false;
@@ -229,15 +342,6 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 	return true;
 }
 
-string GetUserInput(string userMessage)
-{
-	cout <<userMessage;
-	char userInput[50];
-	cin.get(userInput,50);
-
-	return userInput;
-}
-
 DilutionAlgorithms GetDilutionAlgorithm(string s)
 {
 	if(s.find("MINMIX") != string::npos || s.find("MinMix") != string::npos || s.find("Min Mix") != string::npos || s.find("minmix") != string::npos || s.find("min mix") != string::npos)
@@ -281,251 +385,30 @@ OutputTypes GetOutputType(string s)
 	return OUPUT_NOT_FOUND;
 }
 
-void OutputDag(DagGen* dag, string output, string fileName)
+inline bool IsInteger(const std::string & s)
 {
-	OutputTypes outputType = GetOutputType(output);
+	if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
 
-	switch (outputType){
-	case OUTPUT_ALL:
-		dag->WriteToFile(fileName);
-		dag->generateMCFLOWDag(fileName);
-		dag->generateDropletDag(fileName);
-		dag->generateDotyGraph(fileName);
-		break;
-	case DIGITAL:
-		dag->generateDropletDag(fileName);
-		break;
-	case FLOW:
-		dag->generateMCFLOWDag(fileName);
-		break;
-	case FLATFILE:
-		dag->WriteToFile(fileName);
-		break;
-	case DOTY:
-		dag->generateDotyGraph(fileName);
-		break;
-	default:
-		cerr<<"ERROR: no output recognized for " << output <<"\n";
-		//RunMenuSystem(dag);
-		return;
-	}
+	char * p ;
+	strtol(s.c_str(), &p, 10) ;
+
+	return (*p == 0) ;
 }
+inline bool IsDouble(const std:: string & s)
+{
+	char *endptr = NULL;
 
-void RunCommandLineSystem(int argc, char** argv){
-	string algorithmToRun="";
-	if(argc > ALGORITHM_NAME)
-		algorithmToRun = argv[ALGORITHM_NAME];
-	else {
-		cerr<<"Error: System went into command line system with no content.\n Switching to menu system.\n";
-		//return RunMenuSystem();
-	}
+	errno = 0;  // clear errno
+	strtof(s.c_str(), &endptr);  // try to convert input as base 10
+	if (errno == ERANGE || *endptr != '\0')
+		return false;
 
-	DilutionAlgorithms algorithm = GetDilutionAlgorithm(algorithmToRun);
-	DagGen * dag = NULL;
-	vector<string> parameters;
-
-
-	for(int i = ALGORITHM_ARGS_START; i< argc; ++i)
-		parameters.push_back(argv[i]);
-
-	string errorMessage;
-	if(!ValidateParameters(algorithm,parameters,errorMessage)){
-		cerr<<"Arguments for " << algorithmToRun << " invalid\n"<< errorMessage<<endl;
-		return;
-	}
-
-	if(!SILENCE_OUTPUT)
-		cout<<"Validated Parameters"<<endl;
-
-	switch(algorithm){
-	case MINMIX: /* Concentration Values,  7 7 5 5 3 3 2*/
-		if(!SILENCE_OUTPUT)
-			cout<<"Running MINMIX"<<endl;
-		dag = MinMix::RunMinMix(parameters);
-		break;
-	case REMIA:	/*numerator denominator,   131 256*/
-		if(!SILENCE_OUTPUT)
-			cout<<"Running Remia"<<endl;
-		dag = Remia::RunRemia(parameters);
-		break;
-	case WARA: /*Single input and multi input,  27 59 223 256*/ //Broken needs to be re written.
-		//cout<<"Running Wara"<<endl;
-		//Wara::Run_Wara(dag,parameters);
-		break;
-
-	case GORMA: /*numerator denominator 121 256*/ //partially broken Needs branch and Bound
-		if(!SILENCE_OUTPUT)
-			cout<<"Running Gorma: This algorithm takes a while"<<endl;
-		dag= new DagGen();
-		Gorma::RunGorma(parameters,dag);
-		break;
-	case GDA:
-		//char * a[] = {"blah", "0", "1", ".5", "5"};
-		//GDA::RunGDA(5, a,dag);
-		break;
-	case CODOS: /* {"7","7", "5", "5", "3","3","2" };*/
-		if(!SILENCE_OUTPUT)
-			cout<<"Running CODOS"<<endl;
-		dag = CoDOS::RunCoDOS(parameters);
-		break;
-	case NRT_ISI: /*45 23 67 93*/
-		/*char * a[] = {"blah", "3", "6", "9" };*/
-		if(!SILENCE_OUTPUT)
-			cout<<"Running NRT_ISI"<<endl;
-		dag = NRT_ISI::RunNRT_ISI(parameters);
-		break;
-	case IDMA://numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
-		dag = new DagGen();
-		if(!SILENCE_OUTPUT)
-			cout<< "Running IDMA"<<endl;
-		IDMA::RunIDMA(parameters, dag);
-		break;
-	case ISINCKU:/* numerator differnceBetweenSamples n^2(denominator) numSample  {11 10 6 5 }*/
-		dag = new DagGen();
-		if(!SILENCE_OUTPUT)
-			cout << "Running NCKU"<<endl;
-		ISI_NCKU::RUN_NCKU(parameters, dag);
-		break;
-	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
-		dag = new DagGen();
-		if(!SILENCE_OUTPUT)
-			cout<<"Running Griffith"<<endl;
-		GriffDilute::RunGriffith(parameters, dag);
-		break;
-	case DMRW:  //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
-		dag = new DagGen();
-		if(!SILENCE_OUTPUT)
-			cout<< "Running DMRW"<<endl;
-		RoyDilute::RunDMRW(parameters,dag);
-		break;
-	case MTC:/*filename denominator numerators ... {test 16 10 12 13 14}*/
-		if(!SILENCE_OUTPUT)
-			cout<<"Runnig MTC"<<endl;
-		parameters.insert(parameters.begin(),argv[FILE_NAME_POSITION]);
-		dag = new DagGen();
-		MTC::RunMTC(parameters, dag);
-		break;
-
-	case ALGORITHM_NOT_FOUND:
-	default:
-		cerr<<"ERROR: algorithm " << algorithmToRun << " not recognized." << endl;
-		return;
-	}
-	if(!SILENCE_OUTPUT)
-		cout<<"Success"<<endl;
-
-	string output = argv[OUTPUT_TYPE_POSITION];
-	string fileName = argv[FILE_NAME_POSITION];
-	if(fileName == "CONSOLE")
-		fileName = "";
-	OutputDag(dag, output, fileName);
-
-	delete dag;
+	return true;
 }
-
-
-
-
-/*void RunOutputSystem(DagGen* dag)
-{
-	if(dag == NULL || dag->isEmpty()) {
-		cerr<<"ERROR: Generated dag is empty or does not exist.\n";
-		return;
+inline bool IsDivisibleofPower(int n, int powerOf){
+	if(n==0) return false;
+	while (n % powerOf == 0) {
+		n /= powerOf;
 	}
-	while(true) {
-		string userInput;
-		cout<< string(80,'=')<<"\n";
-		cout<<"What output format do you want?\n";
-		cout<<"\t1. Digital Microfluidic instructions.\n";
-		cout<<"\t2. Continuous Flow Instructions.\n";
-		cout<<"\t3. Dilution Generator File.\n";
-		cout<<"\t4. Doty Graph.\n";
-		cout<<"\t5. All.\n";
-		cout<<"\t6. Exit.\n";
-
-		cin >> userInput;
-		if(IsInteger(userInput)){
-			int userChoice = atoi(userInput.c_str());
-			string fileName = GetUserInput("Enter name for file. Press enter to output to console.\n");
-
-			switch (userChoice) {
-			case 1:
-				dag->generateDropletDag(fileName);
-				break;
-			case 2:
-				dag->generateMCFLOWDag(fileName);
-				break;
-			case 3:
-				dag->WriteToFile(fileName);
-				break;
-			case 4:
-				dag->generateDotyGraph(fileName);
-				break;
-			case 5:
-				dag->WriteToFile(fileName);
-				dag->generateMCFLOWDag(fileName);
-				dag->generateDropletDag(fileName);
-				dag->generateDotyGraph(fileName);
-				break;
-			case 6:
-				cout <<"Returning to Main menu.\n";
-				return;
-			default:
-				cerr << "ERROR: User entered unspecified choice, try again.\n";
-				continue;
-			}
-		}
-		else{
-			cerr<< "ERROR: "<< userInput << " is not a number, try again.\n";
-			continue;
-		}
-	}
-}*/
-/*bool DoesUserNeedHelp(string s)
-{
-	return s.find("-Help") != -1 || s.find("-help") != -1;
-}*/
-/*
-void DisplayHelp(DilutionAlgorithms algorithm)
-{
-	switch (algorithm) {
-		case MINMIX:
-			cout<<UserHelpString::MINMIX_HELP_STRING<<endl;
-			GetUserInput("Press Enter to exit.\n");
-			return;
-		default:
-			break;
-	}
+	return n == 1;
 }
-
-void RunMenuSystem(DagGen* dag){
-	if(dag != NULL)
-		RunOutputSystem(dag);
-
-	while (true) {
-		cout << "What dilution algorithm do you want to perform?\n Type -Help after your choice for more information.\n";
-		cout << "\t1. MinMix\n";
-
-		string userInput;
-		getline(cin, userInput);
-
-		DilutionAlgorithms dilutionAlgorithm = getDilutionAlgorithm(userInput);
-		if(dilutionAlgorithm == NOTFOUND){
-			cout << "ERROR: Dilution Algorithm not found try again.";
-			continue;
-		}
-		bool needsHelp = DoesUserNeedHelp(userInput);
-
-		switch (dilutionAlgorithm) {
-		case MINMIX:
-			if(needsHelp)
-				DisplayHelp(MINMIX);
-			else
-				 MinMix::RunMinMix();
-			break;
-		default:
-			break;
-		}
-	}
-
-}*/

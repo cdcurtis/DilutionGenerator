@@ -401,10 +401,11 @@ Vertex* NRT_ISI :: createVertex(int &count, string str,DagGen *dag, VertexType t
 {
 	ostringstream oss;
 	Vertex* v;
+	if(!type == DISPENSE){
 	count++;
 	oss << count;
 	str += oss.str();
-
+	}
 	v = dag->addVertex(type, str);
 	return (v);
 }

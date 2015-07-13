@@ -618,9 +618,11 @@ Vertex* NCKU_Wara :: createVertex(int &count, string str, DagGen *dag, VertexTyp
 	ostringstream oss;
 	Vertex* v;
 
+	if(!type == DISPENSE) {
 	oss << count;
 	str += oss.str();
 	count++;
+	}
 	v = dag->addVertex(type, str);
 	return (v);
 }

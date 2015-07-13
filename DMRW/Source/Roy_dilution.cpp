@@ -266,7 +266,7 @@ DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, doubl
 
 	if(Debug3){cout<<"the final size of AvailDroplets is: "<<AvailDroplets.size()<<flush<<endl;}
 	if(Debug2){outputMixSplits(Mix_Splits);}
-	if(true){outputAvailableDroplets(AvailDroplets);}
+	//if(true){outputAvailableDroplets(AvailDroplets);}
 
 	pair<vector<MixOp*>, vector<DiluteDroplet*> > MD = make_pair(Mix_Splits, AvailDroplets);
 	DiluteRet* ret = new DiluteRet;
@@ -274,7 +274,7 @@ DiluteRet* RoyDilute::PerformDilution(DiluteDroplet* di,DiluteDroplet* db, doubl
 	vector<double> endConc;
 	endConc.push_back(Rational::RattoFloat(AvailDroplets.back()->Concentration));
 	ret->endConcentration = endConc;
-	cout<<"End concentration is: "<<ret->endConcentration[0]<<flush<<endl;
+//	cout<<"End concentration is: "<<ret->endConcentration[0]<<flush<<endl;
 	int base = AvailDroplets.back()->Concentration.denom;
 	ret->base = base;
 	return ret;
@@ -783,7 +783,7 @@ if(Debug){
 DiluteRet* RoyDilute::RoyDilute_IDMA(DiluteDroplet * L, DiluteDroplet* R, double tol, double Ct, int n)
 {
 
-	bool Debug = true;
+	bool Debug = false;
 	RoyDilute RD;
 	DagGen dag;
 

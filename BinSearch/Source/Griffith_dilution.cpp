@@ -139,7 +139,7 @@ DiluteDroplet* GriffDilute::CreateDroplet(Rational Concentration) {
 DiluteRet GriffDilute::PerformDilution(DiluteDroplet* di, DiluteDroplet* db, double tolerance, double DesiredConcentrate, int num_ops)
 {
 	bool Debug = false;
-	bool Debug2 = true;
+	bool Debug2 = false;
 	int id = 0;
 	vector< MixOp*> Mixes;
 
@@ -897,43 +897,13 @@ void GriffDilute::GriffithDilute_Process(DiluteDroplet* db, DiluteDroplet* di, i
 	pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals;
 	DiluteRet valid;
 
-	//cout<<" /////////before PerformDilution\\\\\\\\\ "<<flush<<endl;
 	valid = GD.PerformDilution(di, db, tolerance, DesiredConcentrate, num_ops);
 	DilutionVals = valid.DilutionVals;
-	//cout<<" /////////after PerformDilution \\\\\\\\\\ "<<flush<<endl;
 
-
-
-	//cout<<" //////////before CreateDag \\\\\\\\\ "<<flush<<endl;
 	VertexCounts* VC = GD.CreateDag(dag, DilutionVals);
-	//cout<<" //////////after CreateDag\\\\\\\\\ "<<flush<<endl;
 
-	//cout<<" //////////before expand Dag\\\\\\\\\ "<<flush<<endl;
 	GD.expandDag(dag, VC);
-	//cout<<" //////////after expand Dag\\\\\\\\\ "<<flush<<endl;
 
-//	cout<<" //////////before generate DropletDag\\\\\\\\\ "<<flush<<endl;
-//	dag->generateDropletDag("DropletDagT.cpp");
-	//cout<<" //////////after generate DropletDag\\\\\\\\\ "<<flush<<endl;
-
-//	cout<<" //////////before generate DotyGraph\\\\\\\\\ "<<flush<<endl;
-	//dag->generateDotyGraph("Test.dot");
-	//cout<<" //////////after generate DotyGrpah\\\\\\\\\ "<<flush<<endl;
-
-	//cout<<" /////////before validation testing\\\\\\\\\ "<<flush<<endl;
-//	int base = valid.base;
-//	vector<double> endConcentration = valid.endConcentration;
-//	bool value = dag->isValidSingleReactantDilution(endConcentration, base);
-//	cout<<" //////////end validation testing\\\\\\\\\ "<<flush<<endl;
-
-//	if(value)
-//	{
-//		cout<<"Validity test passed"<<flush<<endl;
-//	}
-//	else
-//	{
-//		cout<<"validity test not passed"<<flush<<endl;
-//	}
 
 	return;
 }

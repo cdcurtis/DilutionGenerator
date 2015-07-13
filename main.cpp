@@ -22,6 +22,7 @@
 #include "IDMA/Headers/IDMA.h"
 #include "MTC/Headers/MTC.h"
 
+const bool SILENCE_OUTPUT = false;
 
 enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, GRIFFITH, DMRW, MTC, ALGORITHM_NOT_FOUND};
 enum OutputTypes {DOTY, DIGITAL, FLOW, FLATFILE, JSON, OUTPUT_ALL, OUPUT_NOT_FOUND};
@@ -66,9 +67,6 @@ const int ALGORITHM_ARGS_START = 4;
 
 int main (int argc, char* argv [])
 {
-	cout<< "Welcome to my world!" <<endl;
-
-
 	if (argc > 1)
 		RunCommandLineSystem(argc, argv);
 	else{
@@ -76,8 +74,8 @@ int main (int argc, char* argv [])
 		//	RunMenuSystem();
 	}
 
-
-	cout<<"Terminating"<<endl;
+	if(!SILENCE_OUTPUT)
+		cout<<"Exiting Program."<<endl;
 	return 0;
 }
 
@@ -260,7 +258,7 @@ DilutionAlgorithms GetDilutionAlgorithm(string s)
 		return ISINCKU;
 	if(s.find("IDMA") != string::npos || s.find("idma") != string::npos)
 		return  IDMA;
-	if(s.find("GRIFFITH") != string::npos || s.find("griffith") != string::npos)
+	if(s.find("GRIFFITH") != string::npos || s.find("griffith") != string::npos || s.find("Griffith") != string::npos)
 		return GRIFFITH;
 	if(s.find("DMRW") != string::npos || s.find("dmrw") != string::npos)
 		return DMRW;
@@ -336,13 +334,18 @@ void RunCommandLineSystem(int argc, char** argv){
 		return;
 	}
 
+	if(!SILENCE_OUTPUT)
+		cout<<"Validated Parameters"<<endl;
+
 	switch(algorithm){
 	case MINMIX: /* Concentration Values,  7 7 5 5 3 3 2*/
-		cout<<"Running MINMIX"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<<"Running MINMIX"<<endl;
 		dag = MinMix::RunMinMix(parameters);
 		break;
 	case REMIA:	/*numerator denominator,   131 256*/
-		cout<<"Running Remia"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Remia"<<endl;
 		dag = Remia::RunRemia(parameters);
 		break;
 	case WARA: /*Single input and multi input,  27 59 223 256*/ //Broken needs to be re written.
@@ -351,45 +354,53 @@ void RunCommandLineSystem(int argc, char** argv){
 		break;
 
 	case GORMA: /*numerator denominator 121 256*/ //partially broken Needs branch and Bound
-		//DagGen dag;
-		//Gorma g;
-		//g.RunGorma(parameters);
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Gorma: This algorithm takes a while"<<endl;
+		dag= new DagGen();
+		Gorma::RunGorma(parameters,dag);
 		break;
 	case GDA:
 		//char * a[] = {"blah", "0", "1", ".5", "5"};
 		//GDA::RunGDA(5, a,dag);
 		break;
 	case CODOS: /* {"7","7", "5", "5", "3","3","2" };*/
-		cout<<"Running CODOS"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<<"Running CODOS"<<endl;
 		dag = CoDOS::RunCoDOS(parameters);
 		break;
 	case NRT_ISI: /*45 23 67 93*/
 		/*char * a[] = {"blah", "3", "6", "9" };*/
-		cout<<"Running NRT_ISI"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<<"Running NRT_ISI"<<endl;
 		dag = NRT_ISI::RunNRT_ISI(parameters);
 		break;
 	case IDMA://numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
-		cout<< "Running IDMA"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<< "Running IDMA"<<endl;
 		IDMA::RunIDMA(parameters, dag);
 		break;
 	case ISINCKU:/* numerator differnceBetweenSamples n^2(denominator) numSample  {11 10 6 5 }*/
 		dag = new DagGen();
-		cout << "Running NCKU"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout << "Running NCKU"<<endl;
 		ISI_NCKU::RUN_NCKU(parameters, dag);
 		break;
 	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
-		cout<<"Running Griffith"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<<"Running Griffith"<<endl;
 		GriffDilute::RunGriffith(parameters, dag);
 		break;
 	case DMRW:  //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
-		cout<< "Running DMRW"<<endl;
+		if(!SILENCE_OUTPUT)
+			cout<< "Running DMRW"<<endl;
 		RoyDilute::RunDMRW(parameters,dag);
 		break;
 	case MTC:/*filename denominator numerators ... {test 16 10 12 13 14}*/
-
+		if(!SILENCE_OUTPUT)
+			cout<<"Runnig MTC"<<endl;
 		parameters.insert(parameters.begin(),argv[FILE_NAME_POSITION]);
 		dag = new DagGen();
 		MTC::RunMTC(parameters, dag);
@@ -400,7 +411,8 @@ void RunCommandLineSystem(int argc, char** argv){
 		cerr<<"ERROR: algorithm " << algorithmToRun << " not recognized." << endl;
 		return;
 	}
-
+	if(!SILENCE_OUTPUT)
+		cout<<"Success"<<endl;
 
 	string output = argv[OUTPUT_TYPE_POSITION];
 	string fileName = argv[FILE_NAME_POSITION];

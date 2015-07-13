@@ -479,8 +479,8 @@ void Dilute::calcNumDropsFin(pair <vector<MixOp*>, vector<DiluteDroplet*> > Dilu
 VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<DiluteDroplet*> > DilutionVals)
 {
 
-	bool Debugger = true;
-	bool Debug2 = true;
+	bool Debugger = false;
+	bool Debug2 = false;
 	//RoyDilute dag;
 	vector<MixOp*> Mixes = DilutionVals.first;
 	vector<DiluteDroplet*> AvailableDroplets = DilutionVals.second;
@@ -575,15 +575,15 @@ VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<Di
 			{
 				if(vertices.at(v)->label.find(split) != std::string::npos) //check if it's a split (outgoing)
 				{
-					cout<<"vertices at (v) in pre1 else is: "<<vertices.at(v)->label<<", "<<vertices.at(v)->dh<<flush<<endl;
-					cout<<"cur pre1 droplet first is: "<<cur->Mixes->DropletsPreMix.first<<flush<<endl;
+					//cout<<"vertices at (v) in pre1 else is: "<<vertices.at(v)->label<<", "<<vertices.at(v)->dh<<flush<<endl;
+				//	cout<<"cur pre1 droplet first is: "<<cur->Mixes->DropletsPreMix.first<<flush<<endl;
 					if(vertices.at(v)->dh->uID == cur->Mixes->DropletsPreMix.first->uID)// or vertices.at(v)->dh == cur->Mixes->DropletsPreMix.second) //if the non wastedroplet is the current one
 					{
 						//do not create new vertex, just connect to current mix vertex.
 						if(Debugger){cout<<"pre1 else inner"<<flush<<endl; }
 						pre1 = vertices.at(v);
-						cout<<"pre 1 in else inner is: "<<pre1->dh->uID<<" conc = ";
-						pre1->dh->Concentration.display();
+					//	cout<<"pre 1 in else inner is: "<<pre1->dh->uID<<" conc = ";
+					//	pre1->dh->Concentration.display();
 					}
 				}
 			}
@@ -605,7 +605,7 @@ VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<Di
 		else if(Rational::RattoFloat(cur->Mixes->DropletsPreMix.second->Concentration) == 0)
 		{
 			if(Debugger){cout<<"pre2 else if"<<flush<<endl; }
-			cout<<"buffer count pre2 else if is: "<<bufferCount<<flush<<endl;
+			//cout<<"buffer count pre2 else if is: "<<bufferCount<<flush<<endl;
 			ostringstream convert2;
 			convert2 << bufferCount;
 			string label2 = buffer + convert2.str();
@@ -630,8 +630,8 @@ VertexCounts* Dilute::CreateDagRoy(DagGen * dag, pair< vector<MixOp*>, vector<Di
 						if(Debugger){cout<<"pre 2 else inner"<<flush<<endl; }
 						//do not create new vertex, just connect to current mix vertex.
 						pre2 = vertices.at(v);
-						cout<<"pre 2 in else inner is: "<<pre2->dh->uID<<" conc = ";
-						pre2->dh->Concentration.display();
+						//cout<<"pre 2 in else inner is: "<<pre2->dh->uID<<" conc = ";
+						//pre2->dh->Concentration.display();
 					}
 				}
 			}

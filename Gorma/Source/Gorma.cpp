@@ -138,8 +138,8 @@ void Gorma :: printLevelOrder(GormaNode *T)
 		currentLevel.pop();
 		if (currNode)
 		{
-      			//cout<< currNode->cv->num<<"/"<<currNode->cv->deno<<"="<<currNode->cv->val<<"-"<<currNode->status<<"\t";
-      			cout<<currNode->id<<"->["<<currNode->cv->num<<"/"<<currNode->cv->deno<<", "<<currNode->status<<"]"<<"\t";
+			//cout<< currNode->cv->num<<"/"<<currNode->cv->deno<<"="<<currNode->cv->val<<"-"<<currNode->status<<"\t";
+			cout<<currNode->id<<"->["<<currNode->cv->num<<"/"<<currNode->cv->deno<<", "<<currNode->status<<"]"<<"\t";
 			nextLevel.push(currNode->left);
 			nextLevel.push(currNode->right);
 		}
@@ -264,17 +264,17 @@ void Gorma :: Tree_Evaluate(GormaNode *p, GormaTreeValue *m, stack <GormaNode *>
 
 		if(p->cv->val == 1 && !found)
 		{
-				m->R++;
-				sk.push(p);
+			m->R++;
+			sk.push(p);
 		}
 		else if(p->cv->val == 0 && !found)
 		{
-				m->B++;
-				sk.push(p);
+			m->B++;
+			sk.push(p);
 		}
 
-	    if(p->left) Tree_Evaluate(p->left, m, sk);
-	    if(p->right) Tree_Evaluate(p->right, m, sk);
+		if(p->left) Tree_Evaluate(p->left, m, sk);
+		if(p->right) Tree_Evaluate(p->right, m, sk);
 	}
 }
 
@@ -300,15 +300,15 @@ GormaNode* Gorma :: Tree_Duplicate(GormaNode *s)
 
 		t->status = s->status;
 
-	    if(s->left)
-	    	t->left = Tree_Duplicate(s->left);
-	    else
-	    	t->left = NULL;
+		if(s->left)
+			t->left = Tree_Duplicate(s->left);
+		else
+			t->left = NULL;
 
-	    if(s->right)
-	    	t->right = Tree_Duplicate(s->right);
-	    else
-	    	t->right = NULL;
+		if(s->right)
+			t->right = Tree_Duplicate(s->right);
+		else
+			t->right = NULL;
 
 		return t;
 	}
@@ -380,9 +380,9 @@ void Gorma :: Maximal_Droplet_Sharing(GormaNode *T)
 	GormaNode *m = new GormaNode();	// node to hold the nodes from dummy stack one at a time
 	GormaNode *parent = new GormaNode();	//node to hold the parent of the node in picture
 
-    	while(!node_stack.empty())
+	while(!node_stack.empty())
 	{
-	begin:
+		begin:
 		if(node_stack.empty())
 			break;
 
@@ -445,20 +445,20 @@ bool Gorma :: getAncestors(GormaNode *T, GormaNode *v, stack <GormaNode *>& An)
 {
 	/* base cases */
 	if (T == NULL)
-    	return false;
+		return false;
 
 	if (T->cv->val == v->cv->val)
-    	return true;
+		return true;
 
 	/* If target is present in either left or right subtree of this node, then print this node */
-  	if (getAncestors(T->left, v, An) || getAncestors(T->right, v, An))
-  	{
-  		An.push(T);
-    		return true;
-  	}
+	if (getAncestors(T->left, v, An) || getAncestors(T->right, v, An))
+	{
+		An.push(T);
+		return true;
+	}
 
-  	/* Else return false */
-  	return false;
+	/* Else return false */
+	return false;
 }
 
 bool Gorma :: checkIfLeftChild(GormaNode *T, GormaNode *v)
@@ -490,7 +490,7 @@ GormaNode* Gorma :: CMT_Enumeration(CV *ct)
 
 	Tree_Evaluate(best_t, min_r, eval);
 
-    	GormaNode *v = new GormaNode();
+	GormaNode *v = new GormaNode();
 
 	//Declaring the dummy node
 	GormaNode *dummy = new GormaNode();
@@ -700,14 +700,20 @@ void Gorma :: convertDataStructure(GormaNode *T, CV* pcv, DagGen &dag)
 		}
 	}
 }
+void Gorma :: RunGorma (std::vector<std::string> parameters, DagGen* dag)
+{
+	Gorma g;
+	return g.RunGorma_internal(*dag,parameters);
+}
 
-void Gorma :: RunGorma(DagGen &dag, int argc, char* argv[])
+
+void Gorma :: RunGorma_internal(DagGen &dag, std::vector<std::string> parameters)
 {
 	GormaNode *root = new GormaNode();
 	int num, deno, gcd;
 
-	num = atoi(argv[1]);
-	deno = atoi(argv[2]);
+	num = atoi(parameters[0].c_str());
+	deno = atoi(parameters[1].c_str());
 
 	for(int i=1;i<=num&&i<=deno;i++)
 	{
@@ -726,15 +732,15 @@ void Gorma :: RunGorma(DagGen &dag, int argc, char* argv[])
 	root = CMT_Enumeration(t_cv);
 	//cout<<"Tree Enumeration Complete\n";
 
-//	printLevelOrder(root);
+	//	printLevelOrder(root);
 
 	convertDataStructure(root, t_cv, dag);
 
 	//cout<<"Your Dag files are in ../output folder\n\n";
 
-   // 	dag.generateJSON("../output/Example.json");
-   //dag.generateDropletDag("../output/DropletDag.cpp");
-   //dag.generateDotyGraph("../output/Example.dot");
+	// 	dag.generateJSON("../output/Example.json");
+	//dag.generateDropletDag("../output/DropletDag.cpp");
+	//dag.generateDotyGraph("../output/Example.dot");
 
 }
 

@@ -72,7 +72,8 @@ public:
 	void createVertex(int &count, string str,DagGen &dag, GormaNode* tmp, stack< Vertex *>& vertices, VertexType type);
 	Vertex* getCorrespondingVertex(GormaNode *T, stack< Vertex *>& vertices, VertexType type);
 
-	void RunGorma(DagGen &dag, int argc, char* argv[]);
+	static void RunGorma (std::vector<std::string>, DagGen*);
+	void RunGorma_internal(DagGen &dag, std::vector<std::string>);
 };
 
 #endif

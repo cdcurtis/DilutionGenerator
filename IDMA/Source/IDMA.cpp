@@ -175,7 +175,7 @@ void IDMA::TrimDag(DagGen* M, int Vid, DiluteRet *valid)
 	if(Debug){cout<<"skewNum is: "<<skewNum<<flush<<endl;}
 
 	int diluteID = valid->DilutionVals.first.at(skewNum-1)->DropletsPostMix.second->uID;
-	cout<<"fist MixOp deleted in trimDag() is (pre1, pre2): ("<<valid->DilutionVals.first.at(skewNum)->DropletsPreMix.first->uID<<", "<<valid->DilutionVals.first.at(skewNum)->DropletsPreMix.second->uID<<")"<<flush<<endl;
+//	cout<<"fist MixOp deleted in trimDag() is (pre1, pre2): ("<<valid->DilutionVals.first.at(skewNum)->DropletsPreMix.first->uID<<", "<<valid->DilutionVals.first.at(skewNum)->DropletsPreMix.second->uID<<")"<<flush<<endl;
 	for(unsigned i = skewNum; i < valid->DilutionVals.first.size(); i++)
 	{
 		delete (valid->DilutionVals.first.at(i));
@@ -183,7 +183,7 @@ void IDMA::TrimDag(DagGen* M, int Vid, DiluteRet *valid)
 	valid->DilutionVals.first.erase(valid->DilutionVals.first.begin()+skewNum, valid->DilutionVals.first.end());
 
 	//remove all DiluteDroplets after MixOp* outgoing
-	cout<<"first droplet deleted is: "<<valid->DilutionVals.second.at(diluteID)->uID<<flush<<endl;
+//	cout<<"first droplet deleted is: "<<valid->DilutionVals.second.at(diluteID)->uID<<flush<<endl;
 	valid->DilutionVals.second.at(diluteID)->Concentration.display();
 	for(unsigned i = diluteID; i < valid->DilutionVals.second.size(); ++i)
 	{
@@ -193,7 +193,7 @@ void IDMA::TrimDag(DagGen* M, int Vid, DiluteRet *valid)
 
 	if(true)
 	{
-		cout<<"outputting dilutionVals after trim"<<flush<<endl;
+	//	cout<<"outputting dilutionVals after trim"<<flush<<endl;
 		outputAvailableDroplets(valid->DilutionVals.second);
 		outputMixSplits(valid->DilutionVals.first);
 	}
@@ -329,42 +329,42 @@ pair< pair<int, DiluteDroplet*>, pair<int, DiluteDroplet*> > IDMA::findSkewParen
 
 pair< pair<int, DiluteDroplet*>, pair<int, DiluteDroplet*> > IDMA::findSkewParentConcDiGraph(int skewID, DiluteRet* valid)
 {
-    bool Debug = true;
-    if(Debug){cout<<"skew ID is: "<<skewID<<flush<<endl;}
-    if(Debug){cout<<"size of dil vals is: "<<valid->DilutionVals.first.size()<<flush<<endl;}
+	bool Debug = false;
+	if(Debug){cout<<"skew ID is: "<<skewID<<flush<<endl;}
+	if(Debug){cout<<"size of dil vals is: "<<valid->DilutionVals.first.size()<<flush<<endl;}
 
-    int DropletID = valid->DilutionVals.second.at(skewID-1)->uID;
-    if(Debug){cout<<"DropletID is: "<<DropletID<<flush<<endl;}
-    if(Debug)
-    {
-    	cout<<"DropletID conc is: ";
-    	valid->DilutionVals.second.at(skewID-1)->Concentration.display();
-    }
-    int MixIndex  = 0;
-    for(unsigned i = 0; i < valid->DilutionVals.first.size(); i++)
-    {
+	int DropletID = valid->DilutionVals.second.at(skewID-1)->uID;
+	if(Debug){cout<<"DropletID is: "<<DropletID<<flush<<endl;}
+	if(Debug)
+	{
+		cout<<"DropletID conc is: ";
+		valid->DilutionVals.second.at(skewID-1)->Concentration.display();
+	}
+	int MixIndex  = 0;
+	for(unsigned i = 0; i < valid->DilutionVals.first.size(); i++)
+	{
 		if(valid->DilutionVals.first.at(i)->DropletsPostMix.first->uID == DropletID or valid->DilutionVals.first.at(i)->DropletsPostMix.second->uID == DropletID)
 		{
 			if(Debug){cout<<"MixIndex set to: "<<i<<flush<<endl;}
-	   		MixIndex = i;
+			MixIndex = i;
 		}
-    }
+	}
 
-    if(Debug){cout<<"MixID is: "<<MixIndex<<flush<<endl;}
+	if(Debug){cout<<"MixID is: "<<MixIndex<<flush<<endl;}
 
-    //skewID is index into dilutionVals for skewdroplet.
-   	double concLPar = Rational::RattoFloat(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->Concentration);
-    double concRPar = Rational::RattoFloat(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->Concentration);
-    if(Debug){cout<<"concL dropl= "<<concLPar<<flush<<endl;}
-    if(Debug){cout<<"concR drop = "<<concRPar<<flush<<endl;}
+	//skewID is index into dilutionVals for skewdroplet.
+	double concLPar = Rational::RattoFloat(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->Concentration);
+	double concRPar = Rational::RattoFloat(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->Concentration);
+	if(Debug){cout<<"concL dropl= "<<concLPar<<flush<<endl;}
+	if(Debug){cout<<"concR drop = "<<concRPar<<flush<<endl;}
 
-    if(Debug){cout<<"L parent drop is: "<<valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->uID<<flush<<endl;}
-    if(Debug){cout<<"R parent drop is: "<<valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->uID<<flush<<endl;}
+	if(Debug){cout<<"L parent drop is: "<<valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->uID<<flush<<endl;}
+	if(Debug){cout<<"R parent drop is: "<<valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->uID<<flush<<endl;}
 
-    pair<int, DiluteDroplet*> LPar = make_pair(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->uID, valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second);
-    pair<int, DiluteDroplet*> RPar = make_pair(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->uID, valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first);
-    pair< pair<int, DiluteDroplet*>, pair<int, DiluteDroplet*> > ret = make_pair(LPar, RPar);
-    return ret;
+	pair<int, DiluteDroplet*> LPar = make_pair(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second->uID, valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.second);
+	pair<int, DiluteDroplet*> RPar = make_pair(valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first->uID, valid->DilutionVals.first.at(MixIndex)->DropletsPreMix.first);
+	pair< pair<int, DiluteDroplet*>, pair<int, DiluteDroplet*> > ret = make_pair(LPar, RPar);
+	return ret;
 }
 
 double IDMA::findSkewConc(int skewID, DiluteRet* valid, DagGen* M)
@@ -410,13 +410,13 @@ double IDMA::findSkewConc(int skewID, DiluteRet* valid, DagGen* M)
 int IDMA::findSkewDroplet(double skewConc, DiluteRet* valid)
 {
 
-    for(unsigned i = 0; i < valid->DilutionVals.second.size(); i++)
-    {
-	if(Rational::RattoFloat(valid->DilutionVals.second.at(i)->Concentration) == skewConc)
+	for(unsigned i = 0; i < valid->DilutionVals.second.size(); i++)
 	{
-	    return i;
+		if(Rational::RattoFloat(valid->DilutionVals.second.at(i)->Concentration) == skewConc)
+		{
+			return i;
+		}
 	}
-    }
 
 }
 vector<DiluteDroplet*> IDMA::findAvailDroplets(int skewID, DiluteRet* valid, DagGen* M)
@@ -481,11 +481,13 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 	if(Debug){ cout<<"target concentration is: "<<valid->endConcentration.at(0)<<flush<<endl;}
 
 	//int j = 0; //WTH IS J???? bad paper ill defined, using my closest approximation
-	cout<<"before getting the vertices"<<flush<<endl;
+	if(Debug)
+		cout<<"before getting the vertices"<<flush<<endl;
 	vector<Vertex*> curParents;
 	vector<Vertex*> vertices = M->Vertices();
 	vector<Edge*> edges = M->Edges();
-	cout<<"after getting the vertices"<<flush<<endl;
+	if(Debug)
+		cout<<"after getting the vertices"<<flush<<endl;
 
 	double leftParent = Rational::RattoFloat(parentConcentrations.first.second->Concentration);
 	int leftParVertID = parentConcentrations.first.first;
@@ -545,8 +547,10 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 			//add the mix op
 			int skewLoc = findSkewDroplet(skewConc, valid);
 			IDMAMix->DropletsPreMix = make_pair(valid->DilutionVals.second.at(skewLoc), parentConcentrations.second.second); //second.second == right parent
-			cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
-			cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
+			if(Debug)
+				cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
+			if(Debug)
+				cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
 			IDMAMix->DropletsPostMix = make_pair(Rcopy, Right);
 			valid->DilutionVals.first.push_back(IDMAMix);
 
@@ -573,8 +577,10 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 			//add the mix op
 			int skewLoc = findSkewDroplet(skewConc, valid);
 			IDMAMix->DropletsPreMix = make_pair(parentConcentrations.first.second, valid->DilutionVals.second.at(skewLoc)); //first.second == right parent
-			cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
-			cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
+			if(Debug)
+				cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
+			if(Debug)
+				cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
 
 			IDMAMix->DropletsPostMix = make_pair(Left, Lcopy);
 			valid->DilutionVals.first.push_back(IDMAMix);
@@ -606,9 +612,11 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 			//add the mix op
 			int skewLoc = findSkewDroplet(skewConc, valid);
 			IDMAMix->DropletsPreMix = make_pair(parentConcentrations.first.second, valid->DilutionVals.second.at(skewLoc)); //first.second == left parent
-		    	cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
-			cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
+			if(Debug){
+				cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
 
+				cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
+			}
 			IDMAMix->DropletsPostMix = make_pair(Left, Lcopy);
 			valid->DilutionVals.first.push_back(IDMAMix);
 
@@ -637,8 +645,10 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 			int skewLoc = findSkewDroplet(skewConc, valid);
 			IDMAMix->DropletsPreMix = make_pair(valid->DilutionVals.second.at(skewLoc), parentConcentrations.second.second); //second.second == right parent
 			IDMAMix->DropletsPostMix = make_pair(Left, Rcopy);
+			if(Debug) {
 			cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;
 			cout<<"premixIDMA R = "<<IDMAMix->DropletsPreMix.second<<flush<<endl;
+			}
 			valid->DilutionVals.first.push_back(IDMAMix);
 
 
@@ -666,8 +676,8 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int > IDMA::LR_Calc(DiluteRet *valid
 
 pair< pair<DiluteDroplet*, DiluteDroplet*>, int> IDMA::LR_CalcDiGraph(DiluteRet *valid, int n, int skewID, pair< pair<int, DiluteDroplet*>, pair<int, DiluteDroplet*> > parentConcentrations, DiluteDroplet* Right, DiluteDroplet* Rcopy, DiluteDroplet* Left, DiluteDroplet* Lcopy, MixOp* IDMAMix)
 {
-	bool Debug = true;
-	bool Debug2 = true;
+	bool Debug = false;
+	bool Debug2 = false;
 	int Vid = skewID-1;
 	int LRid;
 	double CTarget = valid->endConcentration.at(0); //only one final diltion, always first
@@ -802,7 +812,7 @@ pair< pair<DiluteDroplet*, DiluteDroplet*>, int> IDMA::LR_CalcDiGraph(DiluteRet 
 			Lcopy->uID = id;
 			IDMAMix->DropletsPostMix = make_pair(Left, Lcopy);
 
-		    if(Debug){cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;}
+			if(Debug){cout<<"premixIDMA L = "<<IDMAMix->DropletsPreMix.first<<flush<<endl;}
 			if(Debug){cout<<"postmixIDMA L = "<<IDMAMix->DropletsPostMix.first->uID<<flush<<endl;}
 			if(Debug){cout<<"postmixIDMA R = "<<IDMAMix->DropletsPostMix.second->uID<<flush<<endl;}
 
@@ -954,18 +964,18 @@ DagGen* IDMA::IntegrateDags(DagGen* M, DagGen* H) //returns union of G and DRMW 
 
 void IDMA::IntegrateDigraphs(DiluteRet* validM, DiluteRet* validH, DiluteDroplet* LeftOrig, DiluteDroplet* RightOrig) //upon return, M will contain the final Digraph, H will be deleted
 {
-    int Debug = false;
-    bool Debug2 = false;
-    if(Debug)
-    {
+	int Debug = false;
+	bool Debug2 = false;
+	if(Debug)
+	{
 		cout<<"left orig is: "<<LeftOrig->uID<<flush<<endl;
 		cout<<"right orig is: "<<RightOrig->uID<<flush<<endl;
-    }
+	}
 
 	int incrVal = validM->DilutionVals.second.size();
 
-    if(Debug2)
-    {
+	if(Debug2)
+	{
 		//modify uID of DilutionDroplets and MixOps to reflect deletions
 		cout<<"validM in integrate is: "<<flush<<endl;
 		RoyDilute temp1;
@@ -977,7 +987,7 @@ void IDMA::IntegrateDigraphs(DiluteRet* validM, DiluteRet* validH, DiluteDroplet
 		outputAvailableDroplets(validH->DilutionVals.second);
 		outputMixSplits(validH->DilutionVals.first);
 		cout<<endl;
-    }
+	}
 
 	DiluteDroplet* del1 = validH->DilutionVals.second.at(0);
 	DiluteDroplet* del2 = validH->DilutionVals.second.at(1);
@@ -988,28 +998,28 @@ void IDMA::IntegrateDigraphs(DiluteRet* validM, DiluteRet* validH, DiluteDroplet
 	{
 		//cout<<"validH @ i is: "<<validH->DilutionVals.second.at(i)->uID<<flush<<endl;
 		if(Rational::RattoFloat(validH->DilutionVals.second.at(i)->Concentration) != 1 and Rational::RattoFloat(validH->DilutionVals.second.at(i)->Concentration) != 0)
-	    {
-	    	//cout<<"validH@i Pre mix is: "<<validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first->uID<<", "<<validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second->uID<<flush<<endl;;
+		{
+			//cout<<"validH@i Pre mix is: "<<validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first->uID<<", "<<validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second->uID<<flush<<endl;;
 
-	    	if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first == del1)
-	    	{
+			if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first == del1)
+			{
 				//replace premix with Lorig
 				validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first = LeftOrig;
-	    	}
-	    	if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second == del1)
-	    	{
+			}
+			if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second == del1)
+			{
 				validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second = LeftOrig;
-	    	}
+			}
 
-	    	if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second == del2)
-	    	{
+			if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second == del2)
+			{
 				//replace premix with Rorig
 				validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.second = RightOrig;
-	    	}
-	    	if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first == del2)
-	    	{
+			}
+			if(validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first == del2)
+			{
 				validH->DilutionVals.second.at(i)->Mixes->DropletsPreMix.first = RightOrig;
-	    	}
+			}
 		}
 		else
 		{
@@ -1020,31 +1030,31 @@ void IDMA::IntegrateDigraphs(DiluteRet* validM, DiluteRet* validH, DiluteDroplet
 	if(Debug){cout<<"before delete copies of orig IntegrateDigraphs"<<flush<<endl;}
 
 	//delete these new copies now that they have been replaced
-    delete(validH->DilutionVals.second.at(0));
-    delete(validH->DilutionVals.second.at(1));
+	delete(validH->DilutionVals.second.at(0));
+	delete(validH->DilutionVals.second.at(1));
 
-    validH->DilutionVals.second.erase(validH->DilutionVals.second.begin(), validH->DilutionVals.second.begin()+2);
+	validH->DilutionVals.second.erase(validH->DilutionVals.second.begin(), validH->DilutionVals.second.begin()+2);
 
 
-    if(Debug){cout<<"before increase counts of validH"<<flush<<endl;}
+	if(Debug){cout<<"before increase counts of validH"<<flush<<endl;}
 	//adjust ids of remaining droplets
-    int increase = validM->DilutionVals.second.size()-2; //minus two accuonts for above2 deletions
+	int increase = validM->DilutionVals.second.size()-2; //minus two accuonts for above2 deletions
 
-    if(Debug){cout<<"increase = "<<increase<<flush<<endl;}
+	if(Debug){cout<<"increase = "<<increase<<flush<<endl;}
 
-    for(unsigned i = 0; i < validH->DilutionVals.second.size(); i++)
-    {
+	for(unsigned i = 0; i < validH->DilutionVals.second.size(); i++)
+	{
 		validH->DilutionVals.second.at(i)->uID = validH->DilutionVals.second.at(i)->uID + increase;
-    }
+	}
 
-    if(Debug2)
-    {
-   		RoyDilute temp1;
+	if(Debug2)
+	{
+		RoyDilute temp1;
 		cout<<"validH in integrate after increase is: "<<flush<<endl;
 		outputAvailableDroplets(validH->DilutionVals.second);
 		outputMixSplits(validH->DilutionVals.first);
 		cout<<endl;
-    }
+	}
 
 	//append H DiluteDroplets to M DiluteDroplets
 	validM->DilutionVals.second.insert(validM->DilutionVals.second.end(), validH->DilutionVals.second.begin(), validH->DilutionVals.second.end());
@@ -1077,7 +1087,7 @@ void IDMA::DispenseCorrection(DiluteRet* validM)
 		else if(Rational::RattoFloat(validM->DilutionVals.second.at(i)->Concentration) == 0 and first == false)
 		{
 			dupdisID = validM->DilutionVals.second.at(i)->uID;
-			cout<<"found is: "<<dupdisID<<flush<<endl;
+		//	cout<<"found is: "<<dupdisID<<flush<<endl;
 			delete(validM->DilutionVals.second.at(i));
 			validM->DilutionVals.second.erase(validM->DilutionVals.second.begin()+i, validM->DilutionVals.second.begin()+i+1);
 
@@ -1088,13 +1098,13 @@ void IDMA::DispenseCorrection(DiluteRet* validM)
 				{
 					validM->DilutionVals.first.at(j)->DropletsPreMix.first = validM->DilutionVals.second.at(firstID);
 					validM->DilutionVals.second.at(firstID)->count++;
-					cout<<"replaced with:"<<validM->DilutionVals.second.at(firstID)->uID<<flush<<endl;
-			}
+				//	cout<<"replaced with:"<<validM->DilutionVals.second.at(firstID)->uID<<flush<<endl;
+				}
 				if(validM->DilutionVals.first.at(j)->DropletsPreMix.second->uID == dupdisID)
 				{
 					validM->DilutionVals.first.at(j)->DropletsPreMix.second = validM->DilutionVals.second.at(firstID);
 					validM->DilutionVals.second.at(firstID)->count++;
-					cout<<"replaced with:"<<validM->DilutionVals.second.at(firstID)->uID<<flush<<endl;
+				//	cout<<"replaced with:"<<validM->DilutionVals.second.at(firstID)->uID<<flush<<endl;
 				}
 			}
 
@@ -1120,7 +1130,7 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 	IDMA ID;
 	DagGen* M;
 	DagGen* H;
-//	DagGen* Mprime;
+	//	DagGen* Mprime;
 	DagGen* createDagBackup;
 
 	int numW = 0;
@@ -1131,7 +1141,7 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 	DiluteRet* validM;
 	DiluteRet* validH;
 
-	cout<<"the Desired concentrate is: "<<DesiredConcentrate<<flush<<endl;
+	//cout<<"the Desired concentrate is: "<<DesiredConcentrate<<flush<<endl;
 
 	if(Debug3){cout<<"----------IDMA_Process::Before IDMA_M----------- "<<flush<<endl;}
 	validM = RoyDilute::populateIDMA_M(tolerance, DesiredConcentrate, M, num_ops);
@@ -1140,11 +1150,11 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 
 	if(false)
 	{
-	    cout<<"validM Dilution vals before Pruning"<<flush<<endl;
-	    Dilute Dil;
-	    Dil.outputAvailableDroplets(validM->DilutionVals.second);
-	    Dil.outputMixSplits(validM->DilutionVals.first);
-	    cout<<"after validM create dag and display"<<flush<<endl;
+	//	cout<<"validM Dilution vals before Pruning"<<flush<<endl;
+		Dilute Dil;
+		Dil.outputAvailableDroplets(validM->DilutionVals.second);
+		Dil.outputMixSplits(validM->DilutionVals.first);
+//		cout<<"after validM create dag and display"<<flush<<endl;
 	}
 
 	//pruning graph in preparation for IDMA algorithms
@@ -1166,16 +1176,16 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 
 	if(false)
 	{
-	    cout<<"validM Dilution vals before Pruning"<<flush<<endl;
-	    Dilute Dil;
-	    Dil.outputAvailableDroplets(validM->DilutionVals.second);
-	    Dil.outputMixSplits(validM->DilutionVals.first);
-	    cout<<"after validM create dag and display"<<flush<<endl;
+	//	cout<<"validM Dilution vals before Pruning"<<flush<<endl;
+		Dilute Dil;
+		Dil.outputAvailableDroplets(validM->DilutionVals.second);
+		Dil.outputMixSplits(validM->DilutionVals.first);
+	//	cout<<"after validM create dag and display"<<flush<<endl;
 	}
 
 	if(skewID == -1)
 	{
-		cout<<"NO SKEW FOUND! M' == M  == DMRW Digraph, USE DMRW expanded dags"<<flush<<endl;
+	//	cout<<"NO SKEW FOUND! M' == M  == DMRW Digraph, USE DMRW expanded dags"<<flush<<endl;
 		DiluteDroplet* db = new DiluteDroplet;
 		DiluteDroplet* di = new DiluteDroplet;
 		db->Concentration = Rational(0, pow(2,num_ops));
@@ -1216,16 +1226,16 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 		if(Debug1)
 		{
 			DagGen* dag2 = new DagGen();
-		    cout<<"validM Dilution vals after LR_Calc"<<flush<<endl;
-		    Dilute Dil;
-		    Dil.outputMixSplits(validM->DilutionVals.first);
-		    Dil.outputAvailableDroplets(validM->DilutionVals.second);
-		    cout<<"size of droplets: "<<validM->DilutionVals.second.size()<<flush<<endl;
-		    cout<<"size of MixOp: "<<validM->DilutionVals.first.size()<<flush<<endl;
-		    RoyDilute DagOps2;
-		    VertexCounts* VC2 = Dil.CreateDagRoy(dag2, validM->DilutionVals);
-		    cout<<"after LR_Calc create dag and display"<<flush<<endl;
-		    delete dag2;
+			cout<<"validM Dilution vals after LR_Calc"<<flush<<endl;
+			Dilute Dil;
+			Dil.outputMixSplits(validM->DilutionVals.first);
+			Dil.outputAvailableDroplets(validM->DilutionVals.second);
+			cout<<"size of droplets: "<<validM->DilutionVals.second.size()<<flush<<endl;
+			cout<<"size of MixOp: "<<validM->DilutionVals.first.size()<<flush<<endl;
+			RoyDilute DagOps2;
+			VertexCounts* VC2 = Dil.CreateDagRoy(dag2, validM->DilutionVals);
+			cout<<"after LR_Calc create dag and display"<<flush<<endl;
+			delete dag2;
 		}
 
 		DiluteDroplet* LeftOrig = LRpair.first.first;
@@ -1249,7 +1259,7 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 
 		if(false)
 		{
-			cout<<"output validH dilution vals after RoyDilute_IDMA H"<<flush<<endl;
+		//	cout<<"output validH dilution vals after RoyDilute_IDMA H"<<flush<<endl;
 			Dilute Dil;
 			Dil.outputAvailableDroplets(validH->DilutionVals.second);
 			Dil.outputMixSplits(validH->DilutionVals.first);
@@ -1272,13 +1282,13 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 		ID.DispenseCorrection(validM); //removed additional dispense if any left over from above (shouldn't be)
 		if(Debug3){cout<<"----------IDMA_Process::after dispensecorrection----------"<<flush<<endl;}
 
-		if(true)
+		/*if(true)
 		{
 			cout<<"output DilutionVals M, after integrate digraphs"<<flush<<endl;
 			Dilute Dil;
 			Dil.outputAvailableDroplets(validM->DilutionVals.second);
 			Dil.outputMixSplits(validM->DilutionVals.first);
-		}
+		}*/
 
 
 		if(Debug3){cout<<"----------IDMA_Process::before createDagRoy----------"<<flush<<endl;}
@@ -1304,12 +1314,12 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 		if(false){cout<<"-----------IDMA_Process::before generate DotyGraph------------"<<flush<<endl;}
 		Mprime->generateDotyGraph("MprimeCreateT.dot");
 		if(false){cout<<"-----------IDMA_Process::after generate DotyGrpah------------"<<flush<<endl;}
-*/
+		 */
 		//now, call expander after verifying digraph
 		if(Debug3){cout<<"---------- IDMA_Process::Before Dag expander ---------- "<<flush<<endl;}
 		Dil.expander(Mprime, VC);
 		if(Debug3){cout<<"---------- IDMA_Process:: Afer Dag expander ---------- "<<flush<<endl;}
-/*
+		/*
 		//resultant dag should be correct, check with isvalidsinglereactant
 		if(true){cout<<"-----------IDMA_Process::before generate DropletDag------------"<<flush<<endl;}
 		Mprime->generateDropletDag("MprimeafterExpanderT.cpp");
@@ -1318,7 +1328,7 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 		if(true){cout<<"------------IDMA_Process::before generate DotyGraph------------"<<flush<<endl;}
 		Mprime->generateDotyGraph("MprimeafterExpander.dot");
 		if(true){cout<<"------------IDMA_Process::after generate DotyGrpah------------"<<flush<<endl;}
-*/
+		 */
 		numW = Mprime->calcNumWaste();
 		numMS = Mprime->calcNumMixSplits();
 
@@ -1330,14 +1340,15 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 		bool value = Mprime->isValidSingleReactantDilution(endConcentration, base);
 		if(Debug3){cout<<"-----------IDMA_Process::end validation testing ------------"<<flush<<endl;}
 
-		if(value)
+		/*if(value)
 		{
 			cout<<"Validity test passed"<<flush<<endl;
 		}
 		else
 		{
 			cout<<"validity test not passed"<<flush<<endl;
-		}
+		}*/
+
 	}
 
 	if(Debug3)cout<<"---------- IDMA_PRocess::before mem management IDMA_Process ---------"<<flush<<endl;
@@ -1350,15 +1361,15 @@ pair< int, int > IDMA::IDMA_Process(int num_ops, double DesiredConcentrate, doub
 	//cout<<"5"<<flush<<endl;
 	//Mprime->~DagGen();
 
-	cout<<Mprime->isEmpty();
+	//cout<<Mprime->isEmpty();
 	//[kenneth] Print this:// Mprime->Vertices()
 	return ret;
 }
 
- void IDMA:: RunIDMA(vector<string> parameters, DagGen * dag)
+void IDMA:: RunIDMA(vector<string> parameters, DagGen * dag)
 {
-	 if(dag == NULL)
-		 dag = new DagGen();
+	if(dag == NULL)
+		dag = new DagGen();
 	/*numOps, tolerance, DesiredConcentrate*/
 	/*if(argc<4){
 		cerr<<"In correct Input: <NumOps>, <tolerance> <DesiredConcentration>" << endl;

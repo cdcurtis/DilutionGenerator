@@ -216,7 +216,7 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 		for(unsigned int i = 0; i< parameters.size(); ++i)
 			if(!IsInteger(parameters[i]))
 				break;
-		for(unsigned int i = 0; i<parameters.size(); ++i)
+		for(unsigned int i ; i<parameters.size(); ++i)
 			if(IsInteger(parameters[i])){
 				ErrorMessage = "Concentration values mixed with concetration names.";
 				return false;

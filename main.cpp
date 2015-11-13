@@ -362,7 +362,7 @@ DilutionAlgorithms GetDilutionAlgorithm(string s)
 		return ISINCKU;
 	if(s.find("IDMA") != string::npos || s.find("idma") != string::npos)
 		return  IDMA;
-	if(s.find("GRIFFITH") != string::npos || s.find("griffith") != string::npos || s.find("Griffith") != string::npos)
+	if(s.find("BINARYSEARCH") != string::npos || s.find("binary") != string::npos || s.find("Griffith") != string::npos)
 		return GRIFFITH;
 	if(s.find("DMRW") != string::npos || s.find("dmrw") != string::npos)
 		return DMRW;
@@ -378,7 +378,7 @@ OutputTypes GetOutputType(string s)
 		return DIGITAL;
 	if (s.find("FLOW") != string::npos || s.find("flow") != string::npos)
 		return FLOW;
-	if(s.find("DAGGEN") != string::npos || s.find("daggen") != string::npos || s.find("FLAT") != string::npos )
+	if(s.find("DILUTGEN") != string::npos || s.find("dilut") != string::npos || s.find("FLAT") != string::npos )
 		return FLATFILE;
 	if(s.find("DOT") != string::npos || s.find("dot") != string::npos)
 		return DOTY;

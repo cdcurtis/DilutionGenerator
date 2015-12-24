@@ -229,6 +229,11 @@ bool DagGen :: isValidSingleReactantDilution(std::vector<double> endConcentratio
 	}
 }*/
 	
+Vertex * DagGen :: addVertex(Vertex* vertex)
+{
+	this->addVertex(vertex->type, vertex->label);
+}
+
 Vertex * DagGen :: addVertex(VertexType vertexType, std::string label)
 {
 	Vertex* v =  new Vertex(vertexType,label,IDs++);
@@ -446,6 +451,22 @@ void DagGen::removeAssociatedEdges(int nodeID)
 		}
 	}
 	return;
+}
+
+map<int,int> DagGen::MergeTree(DagGen * tree)
+{
+	map <int, int> IDsMap;
+
+	for(unsigned int i = 0; i< tree->Vertices().size(); ++i){
+		Vertex * v = this->addVertex(tree->Vertices()[i]->type,tree->Vertices()[i]->label);
+		IDsMap.insert(pair<int, int>(tree->Vertices()[i]->uniqueID, v->uniqueID));
+	}
+
+	for(unsigned int i = 0; i< tree->Edges().size(); ++i ) {
+		this->addEdge(IDsMap.find(tree->Edges()[i]->parent)->second, IDsMap.find(tree->Edges()[i]->child)->second);
+	}
+
+	return IDsMap;
 }
 
 std::vector<Vertex*> & DagGen :: Vertices()

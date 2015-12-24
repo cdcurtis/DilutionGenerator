@@ -81,15 +81,19 @@ public:
 	}
 	
 	Vertex * addVertex(VertexType, std :: string );
+	Vertex * addVertex(Vertex* vertex);
 	void removeVertex(int Vid);
 	bool isEmpty();
 	bool isValidSingleReactantDilution(std :: vector<double>, int);
+
+
 	//bool isValidMultipleReactantDilution(std :: vector<int>);
 
 	void addEdge (int , int );
 	void addEdge (Vertex* , Vertex* );
 	void removeEdge(int);
 	void removeAssociatedEdges(int nodeID);
+	std::map<int,int> MergeTree(DagGen * );
 	
 	void generateJSON(std :: string = "");
 	void generateDotyGraph(std :: string = "");

@@ -16,7 +16,8 @@
 #include "CoDOS/Headers/CoDOS.h"
 #include "NRT_ISI/Headers/NRT_ISI.h"
 #include "ISI_NCKU/Headers/ISI_NCKU.h"
-#include "BinSearch/Headers/Griffith_dilution.h"
+#include "BinarySearch/BinarySearch.h"
+//#include "BinSearch/Headers/Griffith_dilution.h"
 #include "DMRW/Headers/Roy_dilution.h"
 #include "IDMA/Headers/IDMA.h"
 #include "MTC/Headers/MTC.h"
@@ -27,7 +28,7 @@ const int FILE_NAME_POSITION = 2;
 const int ALGORITHM_NAME = 3;
 const int ALGORITHM_ARGS_START = 4;
 
-enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, GRIFFITH, DMRW, MTC, ALGORITHM_NOT_FOUND};
+enum DilutionAlgorithms {MINMIX, REMIA, WARA, GORMA, GDA, CODOS, NRT_ISI, ISINCKU, IDMA, BINARYSEARCH, DMRW, MTC, ALGORITHM_NOT_FOUND};
 enum OutputTypes {DOTY, DIGITAL, FLOW, FLATFILE, JSON, OUTPUT_ALL, OUPUT_NOT_FOUND};
 
 
@@ -131,11 +132,11 @@ void RunCommandLineSystem(int argc, char** argv){
 			cout << "Running NCKU"<<endl;
 		ISI_NCKU::RUN_NCKU(parameters, dag);
 		break;
-	case GRIFFITH: //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
+	case BINARYSEARCH: 	// tolerance, desiredconcentration, dropletConcentration(optional), bufferConcentration(optional)
 		dag = new DagGen();
 		if(!SILENCE_OUTPUT)
-			cout<<"Running Griffith"<<endl;
-		GriffDilute::RunGriffith(parameters, dag);
+			cout<<"Running Binary Search"<<endl;
+		dag = RunBinarySearchTrueMixingTree(parameters);
 		break;
 	case DMRW:  //numops  tolerance desiredconcentratin /*10  .0078125 0.1015625*/
 		dag = new DagGen();
@@ -291,8 +292,20 @@ bool ValidateParameters(DilutionAlgorithms algorithm, const vector<string> & par
 			}
 		}
 		break;
+	case BINARYSEARCH: 	//tolerance, desiredConcentration, Reagent Concentration, Buffer Concentration.
+		if(parameters.size()<2){
+			ErrorMessage = "Incorrect number of parameters.";
+			return false;
+		}
+		for( unsigned int i= 0; i < parameters.size(); ++i) {
+			if(!IsDouble(parameters[i])){
+				ErrorMessage = parameters[i] + " is not a double.";
+				return false;
+			}
+		}
+
+		break;
 	case IDMA:/*numOps, tolerance, DesiredConcentrate*/
-	case GRIFFITH:
 	case DMRW:
 		if(parameters.size()<3){
 			ErrorMessage = "Incorrect number of parameters.";
@@ -363,7 +376,7 @@ DilutionAlgorithms GetDilutionAlgorithm(string s)
 	if(s.find("IDMA") != string::npos || s.find("idma") != string::npos)
 		return  IDMA;
 	if(s.find("BINARYSEARCH") != string::npos || s.find("binary") != string::npos || s.find("Griffith") != string::npos)
-		return GRIFFITH;
+		return BINARYSEARCH;
 	if(s.find("DMRW") != string::npos || s.find("dmrw") != string::npos)
 		return DMRW;
 	if(s.find("MTC") != string::npos || s.find("mtc") != string::npos)
